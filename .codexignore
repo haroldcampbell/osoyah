@@ -1,0 +1,25 @@
+# Large or generated directories
+node_modules/
+dist/
+build/
+.angular/
+.cache/
+
+# Python artifacts
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.tox/
+
+# Virtual environments
+.venv/
+venv/
+
+# VCS and OS
+.git/
+.DS_Store
+
+# Logs
+*.log

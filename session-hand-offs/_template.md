@@ -1,0 +1,16 @@
+# yyyy-mm-dd-title
+
+## Summary
+- ...
+
+## Work Completed
+- ...
+
+## Decisions
+- ...
+
+## Open Questions
+- ...
+
+## Next Steps
+- ...

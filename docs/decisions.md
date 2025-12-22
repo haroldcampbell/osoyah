@@ -11,6 +11,9 @@ Current active decisions, consolidated from session hand-offs. When a decision c
 
 -   Use file-based mock data in `client/public/assets/data.json` accessed via `HttpClient`.
 -   Keep data models limited to Board/List/Card for now.
+-   Use Playwright for E2E tests.
+-   Use Angular CDK drag-and-drop for list/card ordering.
+-   Maintain board state in-memory on the client until backend persistence is added.
 
 ## Specs and documentation
 

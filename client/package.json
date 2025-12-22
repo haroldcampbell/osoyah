@@ -9,7 +9,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "e2e": "playwright test"
   },
   "private": true,
   "dependencies": {
@@ -32,6 +33,7 @@
     "@angular/cli": "^18.2.11",
     "@angular/compiler-cli": "^18.2.0",
     "@types/jasmine": "~5.1.0",
+    "@playwright/test": "^1.54.2",
     "angular-eslint": "21.0.1",
     "eslint": "^9.39.1",
     "jasmine-core": "~5.2.0",

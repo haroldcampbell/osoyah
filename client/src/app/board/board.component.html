@@ -1,0 +1,154 @@
+<section class="board-shell">
+  <header class="board-header">
+    <div class="board-title" data-testid="board-title">Kanban</div>
+    <p class="board-subtitle">Minimal board for focused flow.</p>
+  </header>
+
+  <div class="board-state" *ngIf="loading">Loading board...</div>
+  <div class="board-state error" *ngIf="error">{{ error }}</div>
+
+  <div class="board" *ngIf="board && !loading" data-testid="board">
+    <div class="board-toolbar">
+      <div class="board-name">{{ board.title }}</div>
+      <div class="add-list">
+        <input
+          type="text"
+          placeholder="New list title"
+          [(ngModel)]="newListTitle"
+          (keyup.enter)="addList()"
+          data-testid="add-list-input"
+        />
+        <button type="button" (click)="addList()" data-testid="add-list-button">Add list</button>
+      </div>
+    </div>
+
+    <div
+      class="lists"
+      cdkDropList
+      cdkDropListOrientation="horizontal"
+      [cdkDropListData]="board.lists"
+      (cdkDropListDropped)="dropList($event)"
+    >
+      <article
+        class="list"
+        *ngFor="let list of board.lists; trackBy: trackByListId"
+        cdkDrag
+        data-testid="list"
+        [attr.data-list-id]="list.id"
+        [attr.data-list-title]="list.title"
+      >
+        <header class="list-header" cdkDragHandle data-testid="list-handle">
+          <div class="list-title" *ngIf="editingListId !== list.id" data-testid="list-title">
+            {{ list.title }}
+          </div>
+          <input
+            type="text"
+            class="list-title-input"
+            *ngIf="editingListId === list.id"
+            [(ngModel)]="editingListTitle"
+            (keyup.enter)="saveListEdit(list)"
+            data-testid="list-title-input"
+          />
+          <div class="list-actions">
+            <button
+              type="button"
+              *ngIf="editingListId !== list.id"
+              (click)="startListEdit(list)"
+              data-testid="edit-list"
+            >
+              Rename
+            </button>
+            <button
+              type="button"
+              *ngIf="editingListId === list.id"
+              (click)="saveListEdit(list)"
+              data-testid="save-list"
+            >
+              Save
+            </button>
+            <button
+              type="button"
+              *ngIf="editingListId === list.id"
+              (click)="cancelListEdit()"
+              data-testid="cancel-list"
+            >
+              Cancel
+            </button>
+            <button type="button" (click)="removeList(list)" data-testid="remove-list">Remove</button>
+          </div>
+        </header>
+
+        <div
+          class="cards"
+          cdkDropList
+          [id]="list.id"
+          [cdkDropListConnectedTo]="cardDropListIds"
+          [cdkDropListData]="list.cards"
+          (cdkDropListDropped)="dropCard($event)"
+          data-testid="card-dropzone"
+          [attr.data-list-id]="list.id"
+        >
+          <div
+            class="card"
+            *ngFor="let card of list.cards; trackBy: trackByCardId"
+            cdkDrag
+            data-testid="card"
+            [attr.data-card-id]="card.id"
+          >
+            <div class="card-body" *ngIf="!isEditingCard(list, card)">
+              <div class="card-title">{{ card.title }}</div>
+              <p class="card-description" *ngIf="card.description">{{ card.description }}</p>
+              <div class="card-actions">
+                <button type="button" (click)="startCardEdit(list, card)" data-testid="edit-card">
+                  Edit
+                </button>
+                <button type="button" (click)="removeCard(list, card)" data-testid="remove-card">
+                  Delete
+                </button>
+              </div>
+            </div>
+
+            <div class="card-edit" *ngIf="isEditingCard(list, card)">
+              <input
+                type="text"
+                placeholder="Card title"
+                [(ngModel)]="editingCardTitle"
+                data-testid="card-title-input"
+              />
+              <textarea
+                rows="3"
+                placeholder="Description"
+                [(ngModel)]="editingCardDescription"
+                data-testid="card-description-input"
+              ></textarea>
+              <div class="card-actions">
+                <button type="button" (click)="saveCardEdit(list, card)" data-testid="save-card">
+                  Save
+                </button>
+                <button type="button" (click)="cancelCardEdit()" data-testid="cancel-card">
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="empty-cards" *ngIf="list.cards.length === 0">No cards yet.</div>
+        </div>
+
+        <div class="add-card">
+          <input
+            type="text"
+            placeholder="Add a card"
+            [(ngModel)]="newCardTitles[list.id]"
+            (keyup.enter)="addCard(list)"
+            data-testid="add-card-input"
+            [attr.data-list-id]="list.id"
+          />
+          <button type="button" (click)="addCard(list)" data-testid="add-card-button">Add card</button>
+        </div>
+      </article>
+
+      <div class="empty-board" *ngIf="board.lists.length === 0">No lists yet. Add one to start.</div>
+    </div>
+  </div>
+</section>

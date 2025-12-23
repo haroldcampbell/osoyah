@@ -11,11 +11,15 @@
 
 ## Primary Directives
 
+-   Review and follow the AGENTS.md
 -   Read the last session hand-off.
 -   Before answering status or decision questions, read the latest entry in `session-hand-offs/` and `docs/decisions.md`.
+-   Ensure new session hand-off filenames do not include milestone IDs (e.g., avoid `M00X`).
 
 ## Entries
 
+-   2025-12-22-02-e2e-dragto-fix.md - E2E drag-and-drop locator fix
+-   2025-12-22-01-m002-outstanding.md - M002 lint fix, Playwright install timeout, E2E EPERM
 -   2025-12-21-03-basic-kanban.md - M002 UI, drag/drop, unit tests, Playwright setup
 -   2025-12-21-02-frontend-setup.md - M001 implementation, tooling, Material, mock API
 -   2025-12-21-01-repo-scaffold.md - repo setup, templates, principles, hand-off system, git init

@@ -1,4 +1,31 @@
-import { expect, test } from '@playwright/test';
+import { expect, type Locator, test } from '@playwright/test';
+
+async function dragToCenter(
+  page: {
+    mouse: {
+      move: (x: number, y: number, options?: { steps?: number }) => Promise<void>;
+      down: () => Promise<void>;
+      up: () => Promise<void>;
+    };
+    waitForTimeout: (ms: number) => Promise<void>;
+  },
+  source: Locator,
+  target: Locator,
+): Promise<void> {
+  await source.scrollIntoViewIfNeeded();
+  await target.scrollIntoViewIfNeeded();
+  const sourceBox = await source.boundingBox();
+  const targetBox = await target.boundingBox();
+  if (!sourceBox || !targetBox) {
+    throw new Error('Drag-and-drop targets not visible.');
+  }
+  await page.mouse.move(sourceBox.x + sourceBox.width / 2, sourceBox.y + sourceBox.height / 2, { steps: 10 });
+  await page.mouse.down();
+  await page.waitForTimeout(100);
+  await page.mouse.move(targetBox.x + targetBox.width / 2, targetBox.y + targetBox.height / 2, { steps: 10 });
+  await page.waitForTimeout(100);
+  await page.mouse.up();
+}
 
 test('renders the board and supports list management', async ({ page }) => {
   await page.goto('/');
@@ -21,7 +48,32 @@ test('renders the board and supports list management', async ({ page }) => {
   await expect(page.locator('[data-testid="list"][data-list-title="QA"]')).toHaveCount(0);
 });
 
-test('supports card CRUD and drag-and-drop flow', async ({ page }) => {
+test('supports card CRUD flow', async ({ page }) => {
+  await page.goto('/');
+
+  const backlogList = page.locator('[data-testid="list"][data-list-title="Backlog"]');
+
+  await backlogList.locator('[data-testid="add-card-input"]').fill('Draft launch notes');
+  await backlogList.locator('[data-testid="add-card-button"]').click();
+  await expect(backlogList.locator('[data-testid="card"]', { hasText: 'Draft launch notes' })).toBeVisible();
+
+  const newCard = backlogList.locator('[data-testid="card"]', { hasText: 'Draft launch notes' });
+  const newCardId = await newCard.getAttribute('data-card-id');
+  if (!newCardId) {
+    throw new Error('New card id missing after add.');
+  }
+  const newCardById = backlogList.locator(`[data-testid="card"][data-card-id="${newCardId}"]`);
+  await newCardById.locator('[data-testid="edit-card"]').click();
+  await newCardById.locator('[data-testid="card-description-input"]').fill('Share with the team.');
+  await newCardById.locator('[data-testid="save-card"]').click();
+  await expect(newCardById.locator('text=Share with the team.')).toBeVisible();
+
+  page.once('dialog', (dialog) => dialog.accept());
+  await newCardById.locator('[data-testid="remove-card"]').click();
+  await expect(backlogList.locator('[data-testid="card"]', { hasText: 'Draft launch notes' })).toHaveCount(0);
+});
+
+test('supports dragging a card between lists', async ({ page }) => {
   await page.goto('/');
 
   const backlogList = page.locator('[data-testid="list"][data-list-title="Backlog"]');
@@ -29,28 +81,31 @@ test('supports card CRUD and drag-and-drop flow', async ({ page }) => {
 
   await backlogList.locator('[data-testid="add-card-input"]').fill('Draft launch notes');
   await backlogList.locator('[data-testid="add-card-button"]').click();
-  await expect(backlogList.locator('[data-testid="card"]', { hasText: 'Draft launch notes' })).toBeVisible();
-
   const newCard = backlogList.locator('[data-testid="card"]', { hasText: 'Draft launch notes' });
-  await newCard.locator('[data-testid="edit-card"]').click();
-  await newCard.locator('[data-testid="card-description-input"]').fill('Share with the team.');
-  await newCard.locator('[data-testid="save-card"]').click();
-  await expect(newCard.locator('text=Share with the team.')).toBeVisible();
+  await expect(newCard).toBeVisible();
 
-  await page.dragAndDrop(
-    backlogList.locator('[data-testid="card"]').first(),
-    inProgressList.locator('[data-testid="card-dropzone"]'),
-  );
-  await expect(inProgressList.locator('[data-testid="card"]')).toHaveCount(2);
+  const newCardId = await newCard.getAttribute('data-card-id');
+  if (!newCardId) {
+    throw new Error('New card id missing after add.');
+  }
+  const newCardById = backlogList.locator(`[data-testid="card"][data-card-id="${newCardId}"]`);
+  await dragToCenter(page, newCardById, inProgressList.locator('[data-testid="card-dropzone"]'));
 
-  page.once('dialog', (dialog) => dialog.accept());
-  await newCard.locator('[data-testid="remove-card"]').click();
-  await expect(backlogList.locator('[data-testid="card"]', { hasText: 'Draft launch notes' })).toHaveCount(0);
+  const newCardInProgress = inProgressList.locator(`[data-testid="card"][data-card-id="${newCardId}"]`);
+  await expect(newCardInProgress).toBeVisible();
+  await expect(backlogList.locator(`[data-testid="card"][data-card-id="${newCardId}"]`)).toHaveCount(0);
+});
 
-  await page.dragAndDrop(
-    page.locator('[data-testid="list"]').nth(0),
-    page.locator('[data-testid="list"]').nth(1),
-  );
-  const firstListTitle = await page.locator('[data-testid="list"]').nth(0).getAttribute('data-list-title');
-  expect(firstListTitle).not.toBe('Backlog');
+test('supports reordering lists', async ({ page }) => {
+  await page.goto('/');
+
+  const lists = page.locator('[data-testid="list"]');
+  const firstList = lists.nth(0);
+  const secondList = lists.nth(1);
+  const originalFirstTitle = await firstList.getAttribute('data-list-title');
+
+  await dragToCenter(page, firstList.locator('[data-testid="list-handle"]'), secondList);
+  const updatedFirstTitle = await lists.nth(0).getAttribute('data-list-title');
+  expect(updatedFirstTitle).not.toBe(originalFirstTitle);
+
 });

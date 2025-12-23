@@ -15,6 +15,11 @@ Current active decisions, consolidated from session hand-offs. When a decision c
 -   Use Angular CDK drag-and-drop for list/card ordering.
 -   Maintain board state in-memory on the client until backend persistence is added.
 
+## Testing
+
+-   For Angular CDK drag-and-drop, prefer mouse-driven drag with small pauses over Playwright's `dragAndDrop`/`dragTo`.
+-   E2E assertions should prefer stable identifiers (e.g., `data-card-id`) over list counts or transient text.
+
 ## Specs and documentation
 
 -   Specs are named with `S00X-` prefixes and live alongside each milestone’s `milestone.md`.

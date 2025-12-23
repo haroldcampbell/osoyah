@@ -10,4 +10,5 @@
 
 -   M001-Foundation
 -   M002-Core Kanban
--   M003-Collaboration
+-   M003-Component Refactor
+-   M004-Collaboration

@@ -5,13 +5,13 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "lint": "ng lint",
+    "lint": "ng lint 2>&1 | tee logs/lint.log",
     "format": "prettier --write .",
-    "format:check": "prettier --check .",
+    "format:check": "prettier --check . 2>&1 | tee logs/prettier.log",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "e2e": "playwright test",
-    "e2e:log": "npm run e2e 2>&1 | tee e2e.log"
+    "test": "ng test --watch=false 2>&1 | tee logs/test.log",
+    "e2e": "playwright test 2>&1 | tee logs/e2e.log",
+    "e2e:report": "playwright show-report logs/playwright-report"
   },
   "private": true,
   "dependencies": {

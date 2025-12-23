@@ -1,0 +1,41 @@
+@if (!isEditing) {
+  <div class="card-body">
+    <div class="card-title">{{ card.title }}</div>
+    @if (card.description) {
+      <p class="card-description">{{ card.description }}</p>
+    }
+    <div class="card-actions">
+      <button
+        type="button"
+        (click)="boardService.startCardEdit(list, card)"
+        data-testid="edit-card"
+      >
+        Edit
+      </button>
+      <button type="button" (click)="requestRemove()" data-testid="remove-card">Delete</button>
+    </div>
+  </div>
+} @else {
+  <div class="card-edit">
+    <input
+      type="text"
+      placeholder="Card title"
+      [(ngModel)]="boardService.editingCardTitle"
+      data-testid="card-title-input"
+    />
+    <textarea
+      rows="3"
+      placeholder="Description"
+      [(ngModel)]="boardService.editingCardDescription"
+      data-testid="card-description-input"
+    ></textarea>
+    <div class="card-actions">
+      <button type="button" (click)="boardService.saveCardEdit(list, card)" data-testid="save-card">
+        Save
+      </button>
+      <button type="button" (click)="boardService.cancelCardEdit()" data-testid="cancel-card">
+        Cancel
+      </button>
+    </div>
+  </div>
+}

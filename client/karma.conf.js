@@ -29,9 +29,9 @@ module.exports = function (config) {
     listenAddress: '127.0.0.1',
     colors: true,
     logLevel: config.LOG_INFO,
-    autoWatch: true,
+    autoWatch: false,
     browsers: ['ChromeHeadless'],
-    singleRun: false,
-    restartOnFileChange: true,
+    singleRun: true,
+    restartOnFileChange: false,
   });
 };

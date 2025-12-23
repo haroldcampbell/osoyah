@@ -1,0 +1,67 @@
+<header class="list-header" cdkDragHandle data-testid="list-handle">
+  @if (!isEditingList) {
+    <div class="list-title" data-testid="list-title">
+      {{ list.title }}
+    </div>
+  } @else {
+    <input
+      type="text"
+      class="list-title-input"
+      [(ngModel)]="boardService.editingListTitle"
+      (keyup.enter)="boardService.saveListEdit(list)"
+      data-testid="list-title-input"
+    />
+  }
+  <div class="list-actions">
+    @if (!isEditingList) {
+      <button type="button" (click)="boardService.startListEdit(list)" data-testid="edit-list">
+        Rename
+      </button>
+    } @else {
+      <button type="button" (click)="boardService.saveListEdit(list)" data-testid="save-list">
+        Save
+      </button>
+      <button type="button" (click)="boardService.cancelListEdit()" data-testid="cancel-list">
+        Cancel
+      </button>
+    }
+    <button type="button" (click)="requestRemoveList()" data-testid="remove-list">Remove</button>
+  </div>
+</header>
+
+<div
+  class="cards"
+  cdkDropList
+  [id]="list.id"
+  [cdkDropListConnectedTo]="boardService.cardDropListIds"
+  [cdkDropListData]="list.cards"
+  (cdkDropListDropped)="boardService.dropCard($event)"
+  data-testid="card-dropzone"
+  [attr.data-list-id]="list.id"
+>
+  @for (card of list.cards; track card.id) {
+    <app-board-card
+      cdkDrag
+      data-testid="card"
+      [attr.data-card-id]="card.id"
+      [card]="card"
+      [list]="list"
+    ></app-board-card>
+  }
+
+  @if (list.cards.length === 0) {
+    <div class="empty-cards">No cards yet.</div>
+  }
+</div>
+
+<div class="add-card">
+  <input
+    type="text"
+    placeholder="Add a card"
+    [(ngModel)]="newCardTitle"
+    (keyup.enter)="requestAddCard()"
+    data-testid="add-card-input"
+    [attr.data-list-id]="list.id"
+  />
+  <button type="button" (click)="requestAddCard()" data-testid="add-card-button">Add card</button>
+</div>

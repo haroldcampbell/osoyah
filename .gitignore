@@ -44,3 +44,4 @@ pnpm-debug.log*
 # e2e
 client/playwright-report/
 client/test-results/
+client/logs/

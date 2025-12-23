@@ -1,0 +1,88 @@
+@use '../../../styles/tokens' as tokens;
+
+:host {
+  background: tokens.$color-surface-muted;
+  border-radius: tokens.$radius-list;
+  padding: tokens.$space-md;
+  min-width: 260px;
+  max-width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$space-md;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+}
+
+.list-header {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$space-sm;
+  cursor: grab;
+}
+
+.list-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.list-title-input {
+  border: 1px solid tokens.$color-border;
+  border-radius: tokens.$radius-control;
+  padding: tokens.$input-padding-y tokens.$input-padding-x;
+  background: tokens.$color-card;
+  font-family: inherit;
+}
+
+.list-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: tokens.$space-xs;
+}
+
+.list-actions button {
+  border: none;
+  border-radius: tokens.$radius-pill;
+  padding: tokens.$button-padding-y tokens.$button-padding-x;
+  background: tokens.$color-neutral;
+  color: tokens.$color-card;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.list-actions button:last-child {
+  background: tokens.$color-danger;
+}
+
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$space-sm;
+  min-height: 120px;
+}
+
+.add-card {
+  display: flex;
+  gap: tokens.$space-xs;
+}
+
+.add-card input {
+  border: 1px solid tokens.$color-border;
+  border-radius: tokens.$radius-control;
+  padding: tokens.$input-padding-y tokens.$input-padding-x;
+  background: tokens.$color-card;
+  font-family: inherit;
+}
+
+.add-card button {
+  border: none;
+  border-radius: tokens.$radius-pill;
+  padding: tokens.$button-padding-y tokens.$button-padding-x;
+  background: tokens.$color-accent;
+  color: tokens.$color-card;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.empty-cards {
+  font-size: 0.85rem;
+  color: tokens.$color-text-soft;
+}

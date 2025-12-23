@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { of } from 'rxjs';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 
 import { BoardComponent } from './board.component';
 import { BoardService } from '../services/board.service';
@@ -28,22 +28,34 @@ const mockBoard: Board = {
 };
 
 describe('BoardComponent', () => {
+  let httpMock: HttpTestingController;
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [BoardComponent],
-      providers: [
-        {
-          provide: BoardService,
-          useValue: {
-            getBoards: () => of([mockBoard]),
-          },
-        },
-      ],
+      imports: [BoardComponent, HttpClientTestingModule],
     }).compileComponents();
+
+    httpMock = TestBed.inject(HttpTestingController);
   });
+
+  afterEach(() => {
+    httpMock.verify();
+  });
+
+  const initBoard = (): BoardComponent => {
+    const fixture = TestBed.createComponent(BoardComponent);
+    fixture.detectChanges();
+    const request = httpMock.expectOne('assets/data.json');
+    request.flush({ boards: [mockBoard] });
+    fixture.detectChanges();
+    return fixture.componentInstance;
+  };
 
   it('renders board lists and cards from data', () => {
     const fixture = TestBed.createComponent(BoardComponent);
+    fixture.detectChanges();
+    const request = httpMock.expectOne('assets/data.json');
+    request.flush({ boards: [mockBoard] });
     fixture.detectChanges();
 
     const listTitles = fixture.debugElement.queryAll(By.css('[data-testid="list-title"]'));
@@ -55,56 +67,48 @@ describe('BoardComponent', () => {
   });
 
   it('adds a list when a title is provided', () => {
-    const fixture = TestBed.createComponent(BoardComponent);
-    const component = fixture.componentInstance;
-    fixture.detectChanges();
+    initBoard();
+    const boardService = TestBed.inject(BoardService);
+    boardService.newListTitle = 'Review';
+    boardService.addList();
 
-    component.newListTitle = 'Review';
-    component.addList();
-
-    expect(component.board?.lists.some((list) => list.title === 'Review')).toBe(true);
+    expect(boardService.board?.lists.some((list) => list.title === 'Review')).toBe(true);
   });
 
   it('adds a card to a list when a title is provided', () => {
-    const fixture = TestBed.createComponent(BoardComponent);
-    const component = fixture.componentInstance;
-    fixture.detectChanges();
+    const component = initBoard();
 
-    const list = component.board?.lists[0];
+    const list = component.boardService.board?.lists[0];
     if (!list) {
       throw new Error('Missing list');
     }
 
-    component.newCardTitles[list.id] = 'New card';
-    component.addCard(list);
+    component.boardService.newCardTitles[list.id] = 'New card';
+    component.boardService.addCard(list);
 
     expect(list.cards.some((card) => card.title === 'New card')).toBe(true);
   });
 
   it('reorders lists via drag and drop', () => {
-    const fixture = TestBed.createComponent(BoardComponent);
-    const component = fixture.componentInstance;
-    fixture.detectChanges();
+    const component = initBoard();
 
     const event = {
       previousIndex: 0,
       currentIndex: 1,
-      container: { data: component.board?.lists ?? [] },
-      previousContainer: { data: component.board?.lists ?? [] },
+      container: { data: component.boardService.board?.lists ?? [] },
+      previousContainer: { data: component.boardService.board?.lists ?? [] },
     } as CdkDragDrop<BoardList[]>;
 
-    component.dropList(event);
+    component.boardService.dropList(event);
 
-    expect(component.board?.lists[0].title).toBe('Doing');
+    expect(component.boardService.board?.lists[0].title).toBe('Doing');
   });
 
   it('moves cards between lists via drag and drop', () => {
-    const fixture = TestBed.createComponent(BoardComponent);
-    const component = fixture.componentInstance;
-    fixture.detectChanges();
+    const component = initBoard();
 
-    const sourceList = component.board?.lists[0];
-    const targetList = component.board?.lists[1];
+    const sourceList = component.boardService.board?.lists[0];
+    const targetList = component.boardService.board?.lists[1];
     if (!sourceList || !targetList) {
       throw new Error('Missing lists');
     }
@@ -116,7 +120,7 @@ describe('BoardComponent', () => {
       container: { data: targetList.cards },
     } as CdkDragDrop<Card[]>;
 
-    component.dropCard(event);
+    component.boardService.dropCard(event);
 
     expect(sourceList.cards.some((card) => card.id === 'card-1')).toBe(false);
     expect(targetList.cards.some((card) => card.id === 'card-1')).toBe(true);

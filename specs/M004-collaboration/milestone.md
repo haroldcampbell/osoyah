@@ -1,4 +1,4 @@
-# M003-Collaboration: <Spec Title>
+# M004-Collaboration: <Spec Title>
 
 Conform to `principles.md`.
 

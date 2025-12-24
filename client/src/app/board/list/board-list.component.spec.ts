@@ -22,10 +22,7 @@ describe('BoardListComponent', () => {
   const mockList: BoardList = {
     id: 'list-1',
     title: 'Backlog',
-    cards: [
-      makeCard('card-1', 'Card One', 'First'),
-      makeCard('card-2', 'Card Two', ''),
-    ],
+    cards: [makeCard('card-1', 'Card One', 'First'), makeCard('card-2', 'Card Two', '')],
   };
 
   beforeEach(async () => {

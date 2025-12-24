@@ -14,6 +14,10 @@ export class BoardService {
   private readonly dataUrl = 'assets/data.json';
   private readonly http = inject(HttpClient);
   private idCounter = 0;
+  now = new Date();
+  private readonly clockId = window.setInterval(() => {
+    this.now = new Date();
+  }, 60000);
 
   board: Board | null = null;
   loading = true;
@@ -263,5 +267,71 @@ export class BoardService {
   private createId(prefix: string): string {
     this.idCounter += 1;
     return `${prefix}-${Date.now()}-${this.idCounter}`;
+  }
+
+  getLastActivityIso(card: Card): string {
+    const updatedAt = this.parseIsoDate(card.updatedAt);
+    const createdAt = this.parseIsoDate(card.createdAt);
+    if (updatedAt && createdAt && updatedAt < createdAt) {
+      return card.createdAt;
+    }
+    return card.updatedAt || card.createdAt;
+  }
+
+  getLastActivityTooltip(card: Card): string {
+    const created = this.formatExactDate(card.createdAt);
+    const updated = this.formatExactDate(card.updatedAt);
+    if (!created && !updated) {
+      return '';
+    }
+    if (!created) {
+      return `Updated: ${updated}`;
+    }
+    if (!updated) {
+      return `Created: ${created}`;
+    }
+    return `Created: ${created} | Updated: ${updated}`;
+  }
+
+  formatRelativeTime(iso: string): string {
+    const date = this.parseIsoDate(iso);
+    if (!date) {
+      return '';
+    }
+    const diffSeconds = Math.floor((this.now.getTime() - date.getTime()) / 1000);
+    if (diffSeconds < 60) {
+      return 'just now';
+    }
+    const diffMinutes = Math.floor(diffSeconds / 60);
+    if (diffMinutes < 60) {
+      return `${diffMinutes}m ago`;
+    }
+    const diffHours = Math.floor(diffMinutes / 60);
+    if (diffHours < 24) {
+      return `${diffHours}h ago`;
+    }
+    const diffDays = Math.floor(diffHours / 24);
+    if (diffDays < 30) {
+      return `${diffDays}d ago`;
+    }
+    const diffMonths = Math.floor(diffDays / 30);
+    if (diffMonths < 12) {
+      return `${diffMonths}mo ago`;
+    }
+    const diffYears = Math.floor(diffMonths / 12);
+    return `${diffYears}y ago`;
+  }
+
+  formatExactDate(iso: string): string {
+    const date = this.parseIsoDate(iso);
+    return date ? date.toLocaleString() : '';
+  }
+
+  private parseIsoDate(iso: string): Date | null {
+    if (!iso) {
+      return null;
+    }
+    const date = new Date(iso);
+    return Number.isNaN(date.getTime()) ? null : date;
   }
 }

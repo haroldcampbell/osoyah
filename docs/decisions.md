@@ -32,3 +32,4 @@ Current active decisions, consolidated from session hand-offs. When a decision c
 -   Use domain-driven design boundaries where possible; define bounded contexts for new features and avoid cross-context model leakage unless explicitly specified in the spec.
 -   Track progress via session hand-off entries in `session-hand-offs/`.
 -   Session hand-offs use `yyyy-mm-dd-nn-title.md` filenames for same-day ordering. DO NOT include milestone ID (e.g. m00x) as a part of the session hand-off filename or title.
+-   Prefer free SVG icons from established libraries (Font Awesome) instead of hand-drawn SVG paths.

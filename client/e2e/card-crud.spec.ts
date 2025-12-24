@@ -2,7 +2,10 @@ import { expect, type Locator, test } from '@playwright/test';
 
 // Spec: S002 Card Detail Side Panel
 
-async function clickCardBackground(page: { mouse: { click: (x: number, y: number) => Promise<void> } }, card: Locator): Promise<void> {
+async function clickCardBackground(
+  page: { mouse: { click: (x: number, y: number) => Promise<void> } },
+  card: Locator,
+): Promise<void> {
   const box = await card.boundingBox();
   if (!box) {
     throw new Error('Card bounding box missing.');
@@ -30,10 +33,11 @@ test('S002 adds a card, updates description, and deletes it from the panel', asy
   const panel = page.locator('[data-testid="card-panel"]');
   await expect(panel).toBeVisible();
   await panel.locator('#card-panel-description').fill('Share with the team.');
-  await panel.getByRole('button', { name: 'Save changes' }).click();
+  await panel.locator('.card-panel-title').click();
   await expect(newCardById.locator('text=Share with the team.')).toBeVisible();
 
   page.once('dialog', (dialog) => dialog.accept());
+  await panel.getByTestId('card-panel-menu').click();
   await panel.getByRole('button', { name: 'Delete card' }).click();
   await expect(
     backlogList.locator(`[data-testid="card"][data-card-id="${newCardId}"]`),

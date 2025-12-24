@@ -18,6 +18,8 @@
 
 ## Entries
 
+-   2025-12-24-02-s005-panel-polish.md - S005 card density + side-panel polish, mock data, E2E updates
+-   2025-12-24-01-dod-refinement.md - Refined M004 S005–S013 DoD checklists
 -   2025-12-22-02-e2e-dragto-fix.md - E2E drag-and-drop locator fix
 -   2025-12-22-01-m002-outstanding.md - M002 lint fix, Playwright install timeout, E2E EPERM
 -   2025-12-21-03-basic-kanban.md - M002 UI, drag/drop, unit tests, Playwright setup

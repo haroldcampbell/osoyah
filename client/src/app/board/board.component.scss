@@ -5,6 +5,7 @@
   color: tokens.$color-text-primary;
   background: radial-gradient(circle at top, #f7f1e7 0%, #f1efe8 35%, #e7ebe7 100%);
   min-height: 100vh;
+  --card-panel-width: 400px;
 }
 
 .board-shell {
@@ -65,6 +66,10 @@
   align-items: flex-start;
 }
 
+.board-layout-panel-open {
+  margin-right: calc(var(--card-panel-width) - 35px);
+}
+
 .board-name {
   font-size: 1.4rem;
   font-weight: 600;
@@ -85,15 +90,18 @@
 }
 
 .card-panel {
-  width: 320px;
-  min-width: 260px;
+  width: var(--card-panel-width);
+  min-width: 320px;
   background: tokens.$color-card;
-  border-radius: tokens.$radius-card;
   box-shadow: tokens.$shadow-card;
-  padding: tokens.$space-md;
-  position: sticky;
-  top: tokens.$space-lg;
-  align-self: flex-start;
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  z-index: 3;
+  box-sizing: border-box;
 }
 
 .card-panel-header {
@@ -102,6 +110,7 @@
   justify-content: space-between;
   gap: tokens.$space-sm;
   margin-bottom: tokens.$space-md;
+  padding: tokens.$space-md tokens.$space-md 0;
 }
 
 .card-panel-title {
@@ -116,10 +125,119 @@
   white-space: nowrap;
 }
 
+.card-panel-header-actions {
+  display: flex;
+  align-items: center;
+  gap: tokens.$space-xs;
+}
+
+.card-panel-menu {
+  position: relative;
+}
+
+.card-panel-menu[open] .card-panel-menu-popover {
+  display: flex;
+}
+
+.card-panel-menu-button {
+  list-style: none;
+  border: none;
+  background: transparent;
+  border-radius: 2px;
+  padding: 0.2rem 0.35rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.card-panel-menu-button:focus,
+.card-panel-menu-button:focus-visible {
+  outline: none;
+}
+
+.card-panel-menu-button::-webkit-details-marker {
+  display: none;
+}
+
+.card-panel-menu-icon {
+  width: 16px;
+  height: 2px;
+  background: tokens.$color-text-muted;
+  position: relative;
+  display: inline-block;
+}
+
+.card-panel-menu-icon::before,
+.card-panel-menu-icon::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  width: 16px;
+  height: 2px;
+  background: tokens.$color-text-muted;
+}
+
+.card-panel-menu-icon::before {
+  top: -5px;
+}
+
+.card-panel-menu-icon::after {
+  top: 5px;
+}
+
+.card-panel-menu-popover {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.4rem);
+  background: tokens.$color-card;
+  border-radius: 6px;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.2);
+  padding: 0.4rem;
+  flex-direction: column;
+  gap: 0.2rem;
+  z-index: 2;
+}
+
+.card-panel-menu-popover button {
+  border: none;
+  background: transparent;
+  text-align: left;
+  padding: 0.35rem 0.5rem;
+  border-radius: tokens.$radius-button;
+  cursor: pointer;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.card-panel-menu-popover button:hover {
+  background: tokens.$color-surface;
+}
+
+.card-panel-menu-delete {
+  color: tokens.$color-danger;
+}
+
 .card-panel-body {
   display: flex;
   flex-direction: column;
   gap: tokens.$space-md;
+  flex: 1 1 auto;
+  overflow: hidden;
+  min-height: 0;
+  padding: 0 tokens.$space-md tokens.$space-md;
+}
+
+.card-panel-scroll {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$space-md;
+  overflow-y: auto;
+  padding-right: tokens.$space-xs;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .card-panel-section {
@@ -148,15 +266,14 @@
 }
 
 .card-panel-meta {
-  display: grid;
-  gap: tokens.$space-xs;
+  display: flex;
+  align-items: center;
   font-size: 0.85rem;
   color: tokens.$color-text-muted;
 }
 
-.card-panel-meta-label {
-  font-weight: 600;
-  margin-right: tokens.$space-xs;
+.card-panel-meta-item {
+  font-weight: 400;
 }
 
 .card-panel-save {
@@ -171,34 +288,23 @@
   white-space: nowrap;
 }
 
-.card-panel-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: tokens.$space-xs;
-  margin-top: tokens.$space-xs;
-}
-
-.card-panel-delete {
-  border: none;
-  border-radius: tokens.$radius-button;
-  padding: tokens.$button-padding-y tokens.$button-padding-x;
-  background: tokens.$color-danger;
-  color: tokens.$color-card;
-  cursor: pointer;
-  font-size: 0.85rem;
-  white-space: nowrap;
-}
-
 .card-panel-comments {
   display: flex;
   flex-direction: column;
   gap: tokens.$space-sm;
+  max-height: 35vh;
+  overflow-y: auto;
+  padding-right: tokens.$space-xs;
 }
 
 .card-panel-comment {
   background: tokens.$color-surface;
   border-radius: tokens.$radius-card;
   padding: tokens.$space-sm;
+  transition:
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+  border: 1px solid transparent;
 }
 
 .card-panel-comment-body {
@@ -212,19 +318,87 @@
   justify-content: space-between;
   font-size: 0.75rem;
   color: tokens.$color-text-muted;
+  gap: tokens.$space-xs;
 }
 
 .card-panel-comment-meta button {
   border: none;
   background: transparent;
-  color: tokens.$color-danger;
   cursor: pointer;
   white-space: nowrap;
+  color: tokens.$color-text-muted;
+  opacity: 0.3;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  overflow: hidden;
+  transition:
+    opacity 0.2s ease,
+    color 0.2s ease;
+}
+
+.card-panel-comment:hover {
+  background: tokens.$color-surface-muted;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+}
+
+.card-panel-comment:hover .card-panel-comment-meta button {
+  opacity: 1;
+  color: tokens.$color-danger;
+}
+
+.card-panel-comment-meta button:hover,
+.card-panel-comment-meta button:focus-visible {
+  text-decoration: underline;
+}
+
+.comment-delete-icon {
+  width: 14px;
+  height: 14px;
+  display: inline-block;
+}
+
+.comment-delete-text {
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition:
+    max-width 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.card-panel-comment:hover .comment-delete-text {
+  max-width: 120px;
+  opacity: 1;
 }
 
 .card-panel-empty {
   font-size: 0.85rem;
   color: tokens.$color-text-soft;
+}
+
+.card-panel-comment-compose {
+  margin-top: auto;
+  padding-top: tokens.$space-sm;
+  background: tokens.$color-card;
+  position: sticky;
+  bottom: 0;
+  position: relative;
+  border-top: 1px solid tokens.$color-border;
+  border-radius: 1px;
+  padding-left: tokens.$space-md;
+  padding-right: tokens.$space-md;
+  margin-left: calc(-1 * tokens.$space-md);
+  margin-right: calc(-1 * tokens.$space-md);
+}
+
+.card-panel-comment-compose::before {
+  content: none;
+}
+
+.card-panel-comment-compact {
+  resize: none;
+  overflow: hidden;
 }
 
 .add-list input {
@@ -278,6 +452,9 @@
   .card-panel {
     width: 100%;
     position: static;
+    height: auto;
+    right: auto;
+    top: auto;
   }
 
   .list {

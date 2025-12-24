@@ -1,6 +1,13 @@
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, inject, OnInit } from '@angular/core';
+import {
+  AfterViewChecked,
+  Component,
+  ElementRef,
+  HostListener,
+  inject,
+  OnInit,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { BoardService } from '../services/board.service';
@@ -14,11 +21,31 @@ import { BoardList, Card, CardComment } from '../models/board.model';
   templateUrl: './board.component.html',
   styleUrl: './board.component.scss',
 })
-export class BoardComponent implements OnInit {
+export class BoardComponent implements OnInit, AfterViewChecked {
   readonly boardService = inject(BoardService);
+  private readonly elementRef = inject(ElementRef<HTMLElement>);
+  commentFocused = false;
+  private descriptionSaveTimeout?: number;
+  private lastScrolledCardId: string | null = null;
+
+  get commentExpanded(): boolean {
+    return this.commentFocused || this.boardService.panelCommentDraft.trim().length > 0;
+  }
 
   ngOnInit(): void {
     this.boardService.loadBoard();
+  }
+
+  ngAfterViewChecked(): void {
+    if (!this.selectedCard) {
+      this.lastScrolledCardId = null;
+      return;
+    }
+    if (this.lastScrolledCardId === this.selectedCard.id) {
+      return;
+    }
+    this.lastScrolledCardId = this.selectedCard.id;
+    this.scrollSelectedCardIntoView(this.selectedCard.id);
   }
 
   get selectedList(): BoardList | null {
@@ -41,13 +68,27 @@ export class BoardComponent implements OnInit {
   addComment(card: Card): void {
     this.boardService.addComment(card, this.boardService.panelCommentDraft);
     this.boardService.panelCommentDraft = '';
+    this.commentFocused = false;
   }
 
   removeComment(card: Card, comment: CardComment): void {
     this.boardService.removeComment(card, comment);
   }
 
-  saveCardDetails(card: Card): void {
+  handleDescriptionInput(card: Card): void {
+    if (this.descriptionSaveTimeout) {
+      window.clearTimeout(this.descriptionSaveTimeout);
+    }
+    this.descriptionSaveTimeout = window.setTimeout(() => {
+      this.boardService.saveCardPanelDetails(card);
+    }, 600);
+  }
+
+  flushDescriptionSave(card: Card): void {
+    if (this.descriptionSaveTimeout) {
+      window.clearTimeout(this.descriptionSaveTimeout);
+      this.descriptionSaveTimeout = undefined;
+    }
     this.boardService.saveCardPanelDetails(card);
   }
 
@@ -69,6 +110,30 @@ export class BoardComponent implements OnInit {
 
   closePanel(): void {
     this.boardService.closeCardPanel();
+    this.commentFocused = false;
+    if (this.descriptionSaveTimeout) {
+      window.clearTimeout(this.descriptionSaveTimeout);
+      this.descriptionSaveTimeout = undefined;
+    }
+  }
+
+  handleCommentFocus(): void {
+    this.commentFocused = true;
+  }
+
+  handleCommentBlur(): void {
+    if (!this.boardService.panelCommentDraft.trim()) {
+      this.commentFocused = false;
+    }
+  }
+
+  private scrollSelectedCardIntoView(cardId: string): void {
+    const host = this.elementRef.nativeElement;
+    const card = host.querySelector(`[data-testid="card"][data-card-id="${cardId}"]`);
+    if (!card) {
+      return;
+    }
+    card.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
   }
 
   @HostListener('document:keydown.escape')

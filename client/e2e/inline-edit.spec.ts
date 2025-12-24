@@ -5,15 +5,25 @@ import { expect, test } from '@playwright/test';
 test('S003 edits a list title inline', async ({ page }) => {
   await page.goto('/');
 
-  await page.locator('[data-testid="add-list-input"]').fill('Review');
+  const lists = page.locator('[data-testid="list"]');
+  const initialCount = await lists.count();
+  const reviewTitle = 'Review Temp';
+  await page.locator('[data-testid="add-list-input"]').fill(reviewTitle);
   await page.locator('[data-testid="add-list-button"]').click();
-  const reviewList = page.locator('[data-testid="list"][data-list-title="Review"]');
-  await expect(reviewList).toBeVisible();
+  await expect(lists).toHaveCount(initialCount + 1);
+  const newList = lists.nth(initialCount);
+  const newListId = await newList.getAttribute('data-list-id');
+  if (!newListId) {
+    throw new Error('New list id missing after add.');
+  }
+  const reviewList = page.locator(`[data-testid="list"][data-list-id="${newListId}"]`);
+  await expect(reviewList).toHaveAttribute('data-list-title', reviewTitle);
 
   await reviewList.locator('[data-testid="list-title"]').click();
-  await reviewList.locator('[data-testid="list-title-input"]').fill('QA');
+  const renamedTitle = 'QA Temp';
+  await reviewList.locator('[data-testid="list-title-input"]').fill(renamedTitle);
   await reviewList.locator('[data-testid="list-title-input"]').press('Enter');
-  await expect(page.locator('[data-testid="list"][data-list-title="QA"]')).toBeVisible();
+  await expect(reviewList).toHaveAttribute('data-list-title', renamedTitle);
 });
 
 test('S003 edits a card title inline', async ({ page }) => {

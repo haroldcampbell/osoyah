@@ -24,7 +24,7 @@ Out-of-scope:
 - [x] S002-Card Detail Side Panel
 - [x] S003-Inline Title Editing
 - [x] S004-Interaction Hygiene
-- [ ] S005-Card Density Layout
+- [x] S005-Card Density Layout
 - [ ] S006-Advanced Markdown Attachments
 - [ ] S007-Comment Edit History
 - [ ] S008-Drag Placeholder Cues

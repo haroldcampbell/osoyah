@@ -2,16 +2,16 @@
   @if (!isEditingList) {
     <div class="list-title-row">
       <div class="list-title-handle" cdkDragHandle data-testid="list-handle">
-      <button
-        type="button"
-        class="list-title-button"
-        (click)="startTitleEdit($event)"
-        (keydown.enter)="startTitleEdit($event)"
-        (keydown.space)="startTitleEdit($event)"
-        data-testid="list-title"
-      >
-        {{ list.title }}
-      </button>
+        <button
+          type="button"
+          class="list-title-button"
+          (click)="startTitleEdit($event)"
+          (keydown.enter)="startTitleEdit($event)"
+          (keydown.space)="startTitleEdit($event)"
+          data-testid="list-title"
+        >
+          {{ list.title }}
+        </button>
       </div>
       <details class="list-menu" #listMenu>
         <summary class="list-menu-button" aria-label="List actions" data-testid="list-menu">

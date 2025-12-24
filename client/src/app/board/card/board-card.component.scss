@@ -29,10 +29,48 @@
 }
 
 .card-description {
-  margin: 0 0 0.75rem;
+  margin: 0 0 0.6rem;
   padding-left: tokens.$space-xs;
   color: tokens.$color-text-muted;
   font-size: 0.9rem;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.card-description p,
+.card-description ul {
+  margin: 0;
+}
+
+.card-description ul {
+  padding-left: 1rem;
+}
+
+.card-description a {
+  color: tokens.$color-accent;
+  text-decoration: underline;
+}
+
+.card-description code {
+  font-family: 'Space Grotesk', 'Futura', sans-serif;
+  background: tokens.$color-surface;
+  padding: 0 0.2rem;
+  border-radius: 2px;
+}
+
+.card-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding-left: tokens.$space-xs;
+  font-size: 0.78rem;
+  color: tokens.$color-text-muted;
+}
+
+.card-meta-separator {
+  color: tokens.$color-text-soft;
 }
 
 .card-body {

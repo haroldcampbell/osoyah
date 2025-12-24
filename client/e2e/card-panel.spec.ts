@@ -28,8 +28,11 @@ test('S002 opens the card panel, manages comments, and closes it', async ({ page
   const comment = panel.locator('.card-panel-comment', { hasText: 'First comment' });
   await expect(comment).toBeVisible();
 
+  await comment.hover();
   await comment.getByRole('button', { name: 'Delete' }).click();
-  await expect(panel.locator('.card-panel-comment-body', { hasText: 'First comment' })).toHaveCount(0);
+  await expect(panel.locator('.card-panel-comment-body', { hasText: 'First comment' })).toHaveCount(
+    0,
+  );
 
   await page.keyboard.press('Escape');
   await expect(panel).toHaveCount(0);

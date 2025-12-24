@@ -23,10 +23,7 @@ const mockBoard: Board = {
     {
       id: 'list-1',
       title: 'Backlog',
-      cards: [
-        makeCard('card-1', 'Card One', 'First'),
-        makeCard('card-2', 'Card Two', 'Second'),
-      ],
+      cards: [makeCard('card-1', 'Card One', 'First'), makeCard('card-2', 'Card Two', 'Second')],
     },
     {
       id: 'list-2',

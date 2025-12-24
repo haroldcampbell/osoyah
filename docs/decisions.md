@@ -19,11 +19,16 @@ Current active decisions, consolidated from session hand-offs. When a decision c
 
 -   For Angular CDK drag-and-drop, prefer mouse-driven drag with small pauses over Playwright's `dragAndDrop`/`dragTo`.
 -   E2E assertions should prefer stable identifiers (e.g., `data-card-id`) over list counts or transient text.
+-   E2E test files should include spec tags in test titles and a short `// Spec: S00X` header comment for traceability.
 
 ## Specs and documentation
 
 -   Specs are named with `S00X-` prefixes and live alongside each milestone’s `milestone.md`.
 -   Milestone docs live at `specs/M00X-*/milestone.md`.
 -   Templates use `_template_<purpose>.md` naming.
+-   Milestone spec lists use `[ ]`/`[x]` checkboxes to track execution status.
+-   Specs should include a `Definition of Done` section when concrete completion criteria can be stated.
+-   Specs should avoid mixing concerns; if scope grows beyond a single cohesive behavior, split into a new spec.
+-   Use domain-driven design boundaries where possible; define bounded contexts for new features and avoid cross-context model leakage unless explicitly specified in the spec.
 -   Track progress via session hand-off entries in `session-hand-offs/`.
--   Session hand-offs use `yyyy-mm-dd-nn-title.md` filenames for same-day ordering.
+-   Session hand-offs use `yyyy-mm-dd-nn-title.md` filenames for same-day ordering. DO NOT include milestone ID (e.g. m00x) as a part of the session hand-off filename or title.

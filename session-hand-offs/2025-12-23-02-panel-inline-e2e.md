@@ -51,3 +51,6 @@ Removed `client/e2e/board.spec.ts`.
 ## Notes
 - List width locked to 280px to prevent inline-edit layout shifts.
 - Add-card row uses flex sizing to prevent button overflow.
+- Changes committed externally after this hand-off was drafted.
+- Remaining M004 specs (S005–S013) are not yet executed.
+- Tests must be run externally due to sandbox restrictions.

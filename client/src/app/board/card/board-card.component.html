@@ -1,41 +1,40 @@
-@if (!isEditing) {
-  <div class="card-body">
-    <div class="card-title">{{ card.title }}</div>
-    @if (card.description) {
-      <p class="card-description">{{ card.description }}</p>
-    }
-    <div class="card-actions">
+<div
+  class="card-body"
+  role="button"
+  tabindex="0"
+  (click)="openDetails()"
+  (keydown.enter)="openDetails()"
+  (keydown.space)="openDetails()"
+>
+  @if (!isEditing) {
+    <div class="card-title-row">
       <button
         type="button"
-        (click)="boardService.startCardEdit(list, card)"
-        data-testid="edit-card"
+        class="card-title-button"
+        (click)="startTitleEdit($event)"
+        (keydown.enter)="startTitleEdit($event)"
+        (keydown.space)="startTitleEdit($event)"
+        data-testid="card-title"
       >
-        Edit
-      </button>
-      <button type="button" (click)="requestRemove()" data-testid="remove-card">Delete</button>
-    </div>
-  </div>
-} @else {
-  <div class="card-edit">
-    <input
-      type="text"
-      placeholder="Card title"
-      [(ngModel)]="boardService.editingCardTitle"
-      data-testid="card-title-input"
-    />
-    <textarea
-      rows="3"
-      placeholder="Description"
-      [(ngModel)]="boardService.editingCardDescription"
-      data-testid="card-description-input"
-    ></textarea>
-    <div class="card-actions">
-      <button type="button" (click)="boardService.saveCardEdit(list, card)" data-testid="save-card">
-        Save
-      </button>
-      <button type="button" (click)="boardService.cancelCardEdit()" data-testid="cancel-card">
-        Cancel
+        {{ card.title }}
       </button>
     </div>
-  </div>
-}
+  } @else {
+    <div class="card-title-row">
+      <input
+        #titleInput
+        type="text"
+        class="card-title-input"
+        placeholder="Card title"
+        [(ngModel)]="boardService.editingCardTitle"
+        (blur)="cancelTitleEdit()"
+        (keyup.enter)="saveTitleEdit()"
+        (keyup.escape)="cancelTitleEdit()"
+        data-testid="card-title-input"
+      />
+    </div>
+  }
+  @if (card.description) {
+    <p class="card-description">{{ card.description }}</p>
+  }
+</div>

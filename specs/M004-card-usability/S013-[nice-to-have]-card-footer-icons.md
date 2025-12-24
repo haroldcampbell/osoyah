@@ -1,4 +1,4 @@
-# S012-[Nice-to-Have] Card Footer Icons: Consistent Metadata Row
+# S013-[Nice-to-Have] Card Footer Icons: Consistent Metadata Row
 
 Conform to `principles.md`.
 

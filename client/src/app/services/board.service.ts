@@ -3,7 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { map, Observable, take } from 'rxjs';
 
-import { Board, BoardList, Card } from '../models/board.model';
+import { Board, BoardList, Card, CardComment } from '../models/board.model';
 
 interface BoardsResponse {
   boards: Board[];
@@ -29,6 +29,11 @@ export class BoardService {
   editingCardTitle = '';
   editingCardDescription = '';
 
+  selectedCard: { listId: string; cardId: string } | null = null;
+  panelCardTitle = '';
+  panelCardDescription = '';
+  panelCommentDraft = '';
+
   getBoards(): Observable<Board[]> {
     return this.http.get<BoardsResponse>(this.dataUrl).pipe(map((data) => data.boards));
   }
@@ -41,6 +46,7 @@ export class BoardService {
       .subscribe({
         next: (boards) => {
           this.board = boards[0] ?? this.createEmptyBoard();
+          this.closeCardPanel();
           this.loading = false;
         },
         error: () => {
@@ -81,6 +87,8 @@ export class BoardService {
   }
 
   startListEdit(list: BoardList): void {
+    this.closeCardPanel();
+    this.cancelCardEdit();
     this.editingListId = list.id;
     this.editingListTitle = list.title;
   }
@@ -107,6 +115,9 @@ export class BoardService {
 
     this.board.lists = this.board.lists.filter((item) => item.id !== list.id);
     delete this.newCardTitles[list.id];
+    if (this.selectedCard?.listId === list.id) {
+      this.closeCardPanel();
+    }
   }
 
   addCard(list: BoardList): void {
@@ -115,18 +126,23 @@ export class BoardService {
       return;
     }
 
+    const now = new Date().toISOString();
     list.cards.push({
       id: this.createId('card'),
       title,
       description: '',
+      createdAt: now,
+      updatedAt: now,
+      comments: [],
     });
     this.newCardTitles[list.id] = '';
   }
 
   startCardEdit(list: BoardList, card: Card): void {
+    this.cancelListEdit();
     this.editingCard = { listId: list.id, cardId: card.id };
     this.editingCardTitle = card.title;
-    this.editingCardDescription = card.description ?? '';
+    this.editingCardDescription = card.description;
   }
 
   saveCardEdit(list: BoardList, card: Card): void {
@@ -137,6 +153,11 @@ export class BoardService {
 
     card.title = title;
     card.description = this.editingCardDescription.trim();
+    card.updatedAt = new Date().toISOString();
+    if (this.selectedCard?.cardId === card.id) {
+      this.panelCardTitle = card.title;
+      this.panelCardDescription = card.description;
+    }
     this.cancelCardEdit();
   }
 
@@ -148,6 +169,65 @@ export class BoardService {
 
   removeCard(list: BoardList, card: Card): void {
     list.cards = list.cards.filter((item) => item.id !== card.id);
+    if (this.selectedCard?.cardId === card.id) {
+      this.closeCardPanel();
+    }
+  }
+
+  openCardPanel(list: BoardList, card: Card): void {
+    this.selectedCard = { listId: list.id, cardId: card.id };
+    this.panelCardTitle = card.title;
+    this.panelCardDescription = card.description;
+    this.panelCommentDraft = '';
+  }
+
+  closeCardPanel(): void {
+    this.selectedCard = null;
+    this.panelCardTitle = '';
+    this.panelCardDescription = '';
+    this.panelCommentDraft = '';
+  }
+
+  saveCardPanelDetails(card: Card): void {
+    const title = this.panelCardTitle.trim();
+    if (!title) {
+      return;
+    }
+
+    card.title = title;
+    card.description = this.panelCardDescription.trim();
+    card.updatedAt = new Date().toISOString();
+  }
+
+  saveCardPanelTitle(card: Card): void {
+    const title = this.panelCardTitle.trim();
+    if (!title) {
+      return;
+    }
+
+    card.title = title;
+    card.updatedAt = new Date().toISOString();
+  }
+
+  addComment(card: Card, message: string): void {
+    const trimmed = message.trim();
+    if (!trimmed) {
+      return;
+    }
+
+    const now = new Date().toISOString();
+    const comment: CardComment = {
+      id: this.createId('comment'),
+      message: trimmed,
+      createdAt: now,
+    };
+    card.comments.push(comment);
+    card.updatedAt = now;
+  }
+
+  removeComment(card: Card, comment: CardComment): void {
+    card.comments = card.comments.filter((item) => item.id !== comment.id);
+    card.updatedAt = new Date().toISOString();
   }
 
   dropList(event: CdkDragDrop<BoardList[]>): void {

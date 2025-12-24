@@ -11,12 +11,18 @@
             {
               "id": "card-1",
               "title": "Define MVP",
-              "description": "Outline the minimum viable feature set."
+              "description": "Outline the minimum viable feature set.",
+              "createdAt": "2025-01-01T09:00:00Z",
+              "updatedAt": "2025-01-01T09:00:00Z",
+              "comments": []
             },
             {
               "id": "card-2",
               "title": "Wireframe core flows",
-              "description": "Sketch board, list, and card interactions."
+              "description": "Sketch board, list, and card interactions.",
+              "createdAt": "2025-01-02T10:30:00Z",
+              "updatedAt": "2025-01-02T10:30:00Z",
+              "comments": []
             }
           ]
         },
@@ -27,7 +33,10 @@
             {
               "id": "card-3",
               "title": "Set up CI",
-              "description": "Add basic lint and test checks."
+              "description": "Add basic lint and test checks.",
+              "createdAt": "2025-01-03T14:15:00Z",
+              "updatedAt": "2025-01-03T14:15:00Z",
+              "comments": []
             }
           ]
         },
@@ -38,7 +47,10 @@
             {
               "id": "card-4",
               "title": "Initialize repo",
-              "description": "Bootstrap project structure and docs."
+              "description": "Bootstrap project structure and docs.",
+              "createdAt": "2025-01-04T16:45:00Z",
+              "updatedAt": "2025-01-04T16:45:00Z",
+              "comments": []
             }
           ]
         }

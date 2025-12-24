@@ -1,7 +1,16 @@
 export interface Card {
   id: string;
   title: string;
-  description?: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+  comments: CardComment[];
+}
+
+export interface CardComment {
+  id: string;
+  message: string;
+  createdAt: string;
 }
 
 export interface BoardList {

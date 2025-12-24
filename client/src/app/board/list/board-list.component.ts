@@ -1,6 +1,14 @@
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
-import { Component, Input, inject } from '@angular/core';
+import {
+  AfterViewChecked,
+  Component,
+  ElementRef,
+  HostListener,
+  Input,
+  ViewChild,
+  inject,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { BoardList, Card } from '../../models/board.model';
@@ -17,9 +25,12 @@ import { BoardService } from '../../services/board.service';
     class: 'list',
   },
 })
-export class BoardListComponent {
+export class BoardListComponent implements AfterViewChecked {
   @Input({ required: true }) list!: BoardList;
   readonly boardService = inject(BoardService);
+  @ViewChild('titleInput') titleInput?: ElementRef<HTMLInputElement>;
+  @ViewChild('listMenu') listMenu?: ElementRef<HTMLDetailsElement>;
+  private needsFocus = false;
 
   get isEditingList(): boolean {
     return this.boardService.isEditingList(this.list);
@@ -31,6 +42,20 @@ export class BoardListComponent {
 
   set newCardTitle(value: string) {
     this.boardService.newCardTitles[this.list.id] = value;
+  }
+
+  startTitleEdit(event?: Event): void {
+    event?.stopPropagation();
+    this.boardService.startListEdit(this.list);
+    this.needsFocus = true;
+  }
+
+  saveTitleEdit(): void {
+    this.boardService.saveListEdit(this.list);
+  }
+
+  cancelTitleEdit(): void {
+    this.boardService.cancelListEdit();
   }
 
   requestRemoveList(): void {
@@ -55,5 +80,39 @@ export class BoardListComponent {
 
   requestRemoveCard(card: Card): void {
     this.boardService.removeCard(this.list, card);
+  }
+
+  ngAfterViewChecked(): void {
+    if (!this.isEditingList || !this.needsFocus) {
+      return;
+    }
+    const input = this.titleInput?.nativeElement;
+    if (!input) {
+      return;
+    }
+    this.needsFocus = false;
+    setTimeout(() => {
+      input.focus();
+      input.select();
+    });
+  }
+
+  @HostListener('document:keydown.escape')
+  handleEscape(): void {
+    if (this.listMenu?.nativeElement.open) {
+      this.listMenu.nativeElement.open = false;
+    }
+  }
+
+  @HostListener('document:click', ['$event'])
+  handleDocumentClick(event: MouseEvent): void {
+    if (!this.listMenu?.nativeElement.open) {
+      return;
+    }
+    const target = event.target as Node | null;
+    if (target && this.listMenu.nativeElement.contains(target)) {
+      return;
+    }
+    this.listMenu.nativeElement.open = false;
   }
 }

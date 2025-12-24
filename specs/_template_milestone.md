@@ -15,7 +15,7 @@ Out-of-scope:
 - ...
 
 ## Specs
-- S001-Spec title
-- ..
+- [ ] S001-Spec title
+- [ ] ..
 
 ## Notes

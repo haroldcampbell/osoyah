@@ -4,52 +4,159 @@
   background: tokens.$color-surface-muted;
   border-radius: tokens.$radius-list;
   padding: tokens.$space-md;
-  min-width: 260px;
-  max-width: 300px;
+  width: 280px;
+  min-width: 280px;
+  max-width: 280px;
+  flex: 0 0 280px;
   display: flex;
   flex-direction: column;
   gap: tokens.$space-md;
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+  box-sizing: border-box;
 }
 
 .list-header {
   display: flex;
   flex-direction: column;
   gap: tokens.$space-sm;
+}
+
+.list-title-row {
+  min-height: 1.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: tokens.$space-sm;
+  width: 100%;
+}
+
+.list-title-handle {
+  flex: 1 1 auto;
+  min-width: 0;
   cursor: grab;
 }
 
-.list-title {
-  font-size: 1.1rem;
+.list-title-button {
+  width: 100%;
+  text-align: left;
   font-weight: 600;
+  font-size: 1.1rem;
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 0 tokens.$input-padding-x;
+  cursor: text;
+  font-family: inherit;
+  color: inherit;
+  box-sizing: border-box;
+  line-height: 1.4;
 }
 
 .list-title-input {
   border: 1px solid tokens.$color-border;
-  border-radius: tokens.$radius-control;
-  padding: tokens.$input-padding-y tokens.$input-padding-x;
+  border-radius: 2px;
+  padding: 0 tokens.$input-padding-x;
   background: tokens.$color-card;
   font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+  font-weight: 600;
+  font-size: 1.1rem;
+  line-height: 1.4;
 }
 
-.list-actions {
+.list-menu {
+  position: relative;
+}
+
+.list-menu[open] .list-menu-popover {
   display: flex;
-  flex-wrap: wrap;
-  gap: tokens.$space-xs;
 }
 
-.list-actions button {
+.list-menu[open] .list-menu-button {
+  opacity: 1;
+}
+
+.list-menu-button {
+  list-style: none;
   border: none;
-  border-radius: tokens.$radius-pill;
-  padding: tokens.$button-padding-y tokens.$button-padding-x;
-  background: tokens.$color-neutral;
-  color: tokens.$color-card;
+  background: transparent;
+  border-radius: 2px;
+  padding: 0.2rem 0.35rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.3;
+  transition: opacity 0.15s ease;
+  white-space: nowrap;
+}
+
+.list-menu-button:focus,
+.list-menu-button:focus-visible {
+  outline: none;
+}
+
+.list-menu-button::-webkit-details-marker {
+  display: none;
+}
+
+.list-menu-icon {
+  width: 16px;
+  height: 2px;
+  background: tokens.$color-text-muted;
+  position: relative;
+  display: inline-block;
+}
+
+.list-menu-icon::before,
+.list-menu-icon::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  width: 16px;
+  height: 2px;
+  background: tokens.$color-text-muted;
+}
+
+.list-menu-icon::before {
+  top: -5px;
+}
+
+.list-menu-icon::after {
+  top: 5px;
+}
+
+.list-title-row:hover .list-menu-button {
+  opacity: 1;
+}
+
+.list-menu-popover {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.4rem);
+  background: tokens.$color-card;
+  border-radius: 6px;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.2);
+  padding: 0.4rem;
+  flex-direction: column;
+  gap: 0.2rem;
+  z-index: 2;
+}
+
+.list-menu-popover button {
+  border: none;
+  background: transparent;
+  text-align: left;
+  padding: 0.35rem 0.5rem;
+  border-radius: tokens.$radius-button;
   cursor: pointer;
   font-size: 0.85rem;
+  white-space: nowrap;
 }
 
-.list-actions button:last-child {
-  background: tokens.$color-danger;
+.list-menu-popover button:hover {
+  background: tokens.$color-surface;
 }
 
 .cards {
@@ -62,6 +169,8 @@
 .add-card {
   display: flex;
   gap: tokens.$space-xs;
+  width: 100%;
+  align-items: center;
 }
 
 .add-card input {
@@ -70,16 +179,21 @@
   padding: tokens.$input-padding-y tokens.$input-padding-x;
   background: tokens.$color-card;
   font-family: inherit;
+  flex: 1 1 0;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .add-card button {
   border: none;
-  border-radius: tokens.$radius-pill;
+  border-radius: tokens.$radius-button;
   padding: tokens.$button-padding-y tokens.$button-padding-x;
   background: tokens.$color-accent;
   color: tokens.$color-card;
   cursor: pointer;
   font-size: 0.85rem;
+  white-space: nowrap;
+  flex: 0 0 auto;
 }
 
 .empty-cards {

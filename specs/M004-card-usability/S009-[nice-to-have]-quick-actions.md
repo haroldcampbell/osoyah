@@ -1,4 +1,4 @@
-# S008-[Nice-to-Have] Quick Actions: Reduce Clicks
+# S009-[Nice-to-Have] Quick Actions: Reduce Clicks
 
 Conform to `principles.md`.
 

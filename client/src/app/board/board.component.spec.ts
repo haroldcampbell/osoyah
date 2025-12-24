@@ -7,6 +7,15 @@ import { BoardService } from '../services/board.service';
 import { Board, BoardList, Card } from '../models/board.model';
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
 
+const makeCard = (id: string, title: string, description: string): Card => ({
+  id,
+  title,
+  description,
+  createdAt: '2025-01-01T00:00:00Z',
+  updatedAt: '2025-01-01T00:00:00Z',
+  comments: [],
+});
+
 const mockBoard: Board = {
   id: 'board-1',
   title: 'Test Board',
@@ -15,14 +24,14 @@ const mockBoard: Board = {
       id: 'list-1',
       title: 'Backlog',
       cards: [
-        { id: 'card-1', title: 'Card One', description: 'First' },
-        { id: 'card-2', title: 'Card Two', description: 'Second' },
+        makeCard('card-1', 'Card One', 'First'),
+        makeCard('card-2', 'Card Two', 'Second'),
       ],
     },
     {
       id: 'list-2',
       title: 'Doing',
-      cards: [{ id: 'card-3', title: 'Card Three', description: 'Third' }],
+      cards: [makeCard('card-3', 'Card Three', 'Third')],
     },
   ],
 };

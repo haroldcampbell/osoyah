@@ -1,4 +1,4 @@
-# S011-[Nice-to-Have] Completeness Hints: Missing Details
+# S012-[Nice-to-Have] Completeness Hints: Missing Details
 
 Conform to `principles.md`.
 

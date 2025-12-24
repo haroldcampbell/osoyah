@@ -11,7 +11,14 @@ describe('BoardCardComponent', () => {
   let component: BoardCardComponent;
   let boardService: BoardService;
 
-  const mockCard: Card = { id: 'card-1', title: 'Card One', description: 'First' };
+  const mockCard: Card = {
+    id: 'card-1',
+    title: 'Card One',
+    description: 'First',
+    createdAt: '2025-01-01T00:00:00Z',
+    updatedAt: '2025-01-01T00:00:00Z',
+    comments: [],
+  };
   const mockList: BoardList = { id: 'list-1', title: 'Backlog', cards: [mockCard] };
 
   beforeEach(async () => {
@@ -28,20 +35,11 @@ describe('BoardCardComponent', () => {
     fixture.detectChanges();
   });
 
-  it('emits startEdit when edit button is clicked', () => {
-    const button = fixture.debugElement.query(By.css('[data-testid="edit-card"]'));
+  it('enters edit mode when the title is clicked', () => {
+    const button = fixture.debugElement.query(By.css('[data-testid="card-title"]'));
     button.nativeElement.click();
 
     expect(boardService.editingCard?.cardId).toBe(mockCard.id);
-  });
-
-  it('emits remove when confirmed', () => {
-    spyOn(window, 'confirm').and.returnValue(true);
-
-    const button = fixture.debugElement.query(By.css('[data-testid="remove-card"]'));
-    button.nativeElement.click();
-
-    expect(mockList.cards.length).toBe(0);
   });
 
   it('updates editing fields when in edit mode', () => {

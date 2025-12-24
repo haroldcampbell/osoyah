@@ -1,4 +1,4 @@
-# S010-[Nice-to-Have] Keyboard Shortcuts: Fast Navigation
+# S011-[Nice-to-Have] Keyboard Shortcuts: Fast Navigation
 
 Conform to `principles.md`.
 

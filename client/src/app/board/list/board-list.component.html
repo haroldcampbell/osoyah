@@ -1,32 +1,43 @@
-<header class="list-header" cdkDragHandle data-testid="list-handle">
+<header class="list-header">
   @if (!isEditingList) {
-    <div class="list-title" data-testid="list-title">
-      {{ list.title }}
+    <div class="list-title-row">
+      <div class="list-title-handle" cdkDragHandle data-testid="list-handle">
+      <button
+        type="button"
+        class="list-title-button"
+        (click)="startTitleEdit($event)"
+        (keydown.enter)="startTitleEdit($event)"
+        (keydown.space)="startTitleEdit($event)"
+        data-testid="list-title"
+      >
+        {{ list.title }}
+      </button>
+      </div>
+      <details class="list-menu" #listMenu>
+        <summary class="list-menu-button" aria-label="List actions" data-testid="list-menu">
+          <span class="list-menu-icon" aria-hidden="true"></span>
+        </summary>
+        <div class="list-menu-popover">
+          <button type="button" (click)="requestRemoveList()" data-testid="remove-list">
+            Remove
+          </button>
+        </div>
+      </details>
     </div>
   } @else {
-    <input
-      type="text"
-      class="list-title-input"
-      [(ngModel)]="boardService.editingListTitle"
-      (keyup.enter)="boardService.saveListEdit(list)"
-      data-testid="list-title-input"
-    />
+    <div class="list-title-row">
+      <input
+        #titleInput
+        type="text"
+        class="list-title-input"
+        [(ngModel)]="boardService.editingListTitle"
+        (blur)="cancelTitleEdit()"
+        (keyup.enter)="saveTitleEdit()"
+        (keyup.escape)="cancelTitleEdit()"
+        data-testid="list-title-input"
+      />
+    </div>
   }
-  <div class="list-actions">
-    @if (!isEditingList) {
-      <button type="button" (click)="boardService.startListEdit(list)" data-testid="edit-list">
-        Rename
-      </button>
-    } @else {
-      <button type="button" (click)="boardService.saveListEdit(list)" data-testid="save-list">
-        Save
-      </button>
-      <button type="button" (click)="boardService.cancelListEdit()" data-testid="cancel-list">
-        Cancel
-      </button>
-    }
-    <button type="button" (click)="requestRemoveList()" data-testid="remove-list">Remove</button>
-  </div>
 </header>
 
 <div
@@ -44,6 +55,7 @@
       cdkDrag
       data-testid="card"
       [attr.data-card-id]="card.id"
+      [class.card-selected]="boardService.selectedCard?.cardId === card.id"
       [card]="card"
       [list]="list"
     ></app-board-card>

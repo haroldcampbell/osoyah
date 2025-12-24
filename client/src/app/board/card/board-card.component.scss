@@ -7,35 +7,58 @@
   box-shadow: tokens.$shadow-card;
 }
 
-.card-title {
-  font-weight: 600;
+.card-title-row {
+  min-height: 1.75rem;
+  display: flex;
+  align-items: center;
   margin-bottom: 0.25rem;
+}
+
+.card-title-button {
+  width: auto;
+  text-align: left;
+  font-weight: 600;
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 0 0 0 tokens.$space-xs;
+  cursor: text;
+  font-family: inherit;
+  color: inherit;
+  box-sizing: border-box;
+  line-height: 1.4;
 }
 
 .card-description {
   margin: 0 0 0.75rem;
+  padding-left: tokens.$space-xs;
   color: tokens.$color-text-muted;
   font-size: 0.9rem;
 }
 
-.card-actions {
-  display: flex;
-  gap: tokens.$space-xs;
-  flex-wrap: wrap;
-}
-
-.card-actions button {
-  border: none;
-  border-radius: tokens.$radius-pill;
-  padding: tokens.$button-padding-y tokens.$button-padding-x;
-  background: tokens.$color-neutral;
-  color: tokens.$color-card;
+.card-body {
   cursor: pointer;
-  font-size: 0.85rem;
 }
 
-.card-actions button:last-child {
-  background: tokens.$color-danger;
+.card-body:focus,
+.card-body:focus-visible {
+  outline: none;
+}
+
+.card-title-input {
+  width: 100%;
+  border: 1px solid tokens.$color-border;
+  border-radius: 2px;
+  padding: 0 0 0 tokens.$space-xs;
+  background: tokens.$color-card;
+  font-family: inherit;
+  box-sizing: border-box;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.card-title-input:focus {
+  outline: 2px solid tokens.$color-accent;
+  outline-offset: 1px;
 }
 
 .card-edit input,
@@ -49,4 +72,9 @@
 
 .card-edit textarea {
   resize: vertical;
+}
+
+:host(.card-selected) {
+  outline: 2px solid tokens.$color-accent;
+  outline-offset: 2px;
 }

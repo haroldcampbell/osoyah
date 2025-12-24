@@ -1,4 +1,4 @@
-# S009-[Nice-to-Have] Activity Indicators: Last Updated
+# S010-[Nice-to-Have] Activity Indicators: Last Updated
 
 Conform to `principles.md`.
 

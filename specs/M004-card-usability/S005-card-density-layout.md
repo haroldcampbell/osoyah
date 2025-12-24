@@ -1,4 +1,4 @@
-# S004-Card Density Layout: Metadata on Cards
+# S005-Card Density Layout: Metadata on Cards
 
 Conform to `principles.md`.
 

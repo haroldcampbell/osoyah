@@ -29,25 +29,119 @@
         </div>
       </div>
 
-      <div
-        class="lists"
-        cdkDropList
-        cdkDropListOrientation="horizontal"
-        [cdkDropListData]="boardService.board.lists"
-        (cdkDropListDropped)="boardService.dropList($event)"
-      >
-        @for (list of boardService.board.lists; track list.id) {
-          <app-board-list
-            cdkDrag
-            data-testid="list"
-            [attr.data-list-id]="list.id"
-            [attr.data-list-title]="list.title"
-            [list]="list"
-          ></app-board-list>
-        }
+      <div class="board-layout">
+        <div
+          class="lists"
+          cdkDropList
+          cdkDropListOrientation="horizontal"
+          [cdkDropListData]="boardService.board.lists"
+          (cdkDropListDropped)="boardService.dropList($event)"
+        >
+          @for (list of boardService.board.lists; track list.id) {
+            <app-board-list
+              cdkDrag
+              data-testid="list"
+              [attr.data-list-id]="list.id"
+              [attr.data-list-title]="list.title"
+              [list]="list"
+            ></app-board-list>
+          }
 
-        @if (boardService.board.lists.length === 0) {
-          <div class="empty-board">No lists yet. Add one to start.</div>
+          @if (boardService.board.lists.length === 0) {
+            <div class="empty-board">No lists yet. Add one to start.</div>
+          }
+        </div>
+
+        @if (selectedCard && selectedList) {
+          <aside class="card-panel" data-testid="card-panel">
+            <header class="card-panel-header">
+              <div class="card-panel-title">Card details</div>
+              <button type="button" class="card-panel-close" (click)="closePanel()">Close</button>
+            </header>
+
+            <div class="card-panel-body">
+              <section class="card-panel-section">
+                <label class="card-panel-label" for="card-panel-title">Title</label>
+                <input
+                  id="card-panel-title"
+                  type="text"
+                  [(ngModel)]="boardService.panelCardTitle"
+                  (input)="saveCardTitle(selectedCard)"
+                />
+              </section>
+
+              <section class="card-panel-section">
+                <label class="card-panel-label" for="card-panel-description">Description</label>
+                <textarea
+                  id="card-panel-description"
+                  rows="4"
+                  [(ngModel)]="boardService.panelCardDescription"
+                ></textarea>
+              </section>
+
+              <section class="card-panel-section">
+                <div class="card-panel-label">Metadata</div>
+                <div class="card-panel-meta">
+                  <div>
+                    <span class="card-panel-meta-label">Created</span>
+                    <span>{{ selectedCard.createdAt | date: 'medium' }}</span>
+                  </div>
+                  <div>
+                    <span class="card-panel-meta-label">Updated</span>
+                    <span>{{ selectedCard.updatedAt | date: 'medium' }}</span>
+                  </div>
+                </div>
+                <div class="card-panel-actions">
+                  <button
+                    type="button"
+                    class="card-panel-save"
+                    (click)="saveCardDetails(selectedCard)"
+                  >
+                    Save changes
+                  </button>
+                  <button
+                    type="button"
+                    class="card-panel-delete"
+                    (click)="removeSelectedCard(selectedCard)"
+                  >
+                    Delete card
+                  </button>
+                </div>
+              </section>
+
+              <section class="card-panel-section">
+                <div class="card-panel-label">Comments</div>
+                <div class="card-panel-comments">
+                  @for (comment of selectedCard.comments; track comment.id) {
+                    <div class="card-panel-comment">
+                      <div class="card-panel-comment-body">{{ comment.message }}</div>
+                      <div class="card-panel-comment-meta">
+                        <span>{{ comment.createdAt | date: 'medium' }}</span>
+                        <button type="button" (click)="removeComment(selectedCard, comment)">
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  }
+                  @if (selectedCard.comments.length === 0) {
+                    <div class="card-panel-empty">No comments yet.</div>
+                  }
+                </div>
+              </section>
+
+              <section class="card-panel-section">
+                <label class="card-panel-label" for="card-panel-comment">Add comment</label>
+                <textarea
+                  id="card-panel-comment"
+                  rows="3"
+                  [(ngModel)]="boardService.panelCommentDraft"
+                ></textarea>
+                <button type="button" class="card-panel-save" (click)="addComment(selectedCard)">
+                  Post comment
+                </button>
+              </section>
+            </div>
+          </aside>
         }
       </div>
     </div>

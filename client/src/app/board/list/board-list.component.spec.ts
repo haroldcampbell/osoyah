@@ -3,8 +3,17 @@ import { By } from '@angular/platform-browser';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 import { BoardListComponent } from './board-list.component';
-import { BoardList } from '../../models/board.model';
+import { BoardList, Card } from '../../models/board.model';
 import { BoardService } from '../../services/board.service';
+
+const makeCard = (id: string, title: string, description: string): Card => ({
+  id,
+  title,
+  description,
+  createdAt: '2025-01-01T00:00:00Z',
+  updatedAt: '2025-01-01T00:00:00Z',
+  comments: [],
+});
 
 describe('BoardListComponent', () => {
   let fixture: ComponentFixture<BoardListComponent>;
@@ -14,8 +23,8 @@ describe('BoardListComponent', () => {
     id: 'list-1',
     title: 'Backlog',
     cards: [
-      { id: 'card-1', title: 'Card One', description: 'First' },
-      { id: 'card-2', title: 'Card Two', description: '' },
+      makeCard('card-1', 'Card One', 'First'),
+      makeCard('card-2', 'Card Two', ''),
     ],
   };
 
@@ -50,6 +59,9 @@ describe('BoardListComponent', () => {
   it('emits removeList when confirmed', () => {
     spyOn(window, 'confirm').and.returnValue(true);
 
+    const menu = fixture.debugElement.query(By.css('[data-testid="list-menu"]'));
+    menu.nativeElement.click();
+    fixture.detectChanges();
     const button = fixture.debugElement.query(By.css('[data-testid="remove-list"]'));
     button.nativeElement.click();
 

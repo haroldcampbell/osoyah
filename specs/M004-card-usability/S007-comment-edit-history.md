@@ -1,4 +1,4 @@
-# S006-Comment Edit History: Audit + Restore
+# S007-Comment Edit History: Audit + Restore
 
 Conform to `principles.md`.
 

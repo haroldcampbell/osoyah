@@ -1,4 +1,4 @@
-# S005-Advanced Markdown Attachments: Richer Content
+# S006-Advanced Markdown Attachments: Richer Content
 
 Conform to `principles.md`.
 

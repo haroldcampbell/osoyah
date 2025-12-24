@@ -20,18 +20,19 @@ Out-of-scope:
 - New board types or non-kanban workflows.
 
 ## Specs
-- S001-Card Metadata Model
-- S002-Card Detail Side Panel
-- S003-Inline Title Editing
-- S004-Card Density Layout
-- S005-Advanced Markdown Attachments
-- S006-Comment Edit History
-- S007-Drag Placeholder Cues
-- S008-[Nice-to-Have] Quick Actions
-- S009-[Nice-to-Have] Activity Indicators
-- S010-[Nice-to-Have] Keyboard Shortcuts
-- S011-[Nice-to-Have] Completeness Hints
-- S012-[Nice-to-Have] Card Footer Icons
+- [x] S001-Card Metadata Model
+- [x] S002-Card Detail Side Panel
+- [x] S003-Inline Title Editing
+- [x] S004-Interaction Hygiene
+- [ ] S005-Card Density Layout
+- [ ] S006-Advanced Markdown Attachments
+- [ ] S007-Comment Edit History
+- [ ] S008-Drag Placeholder Cues
+- [ ] S009-[Nice-to-Have] Quick Actions
+- [ ] S010-[Nice-to-Have] Activity Indicators
+- [ ] S011-[Nice-to-Have] Keyboard Shortcuts
+- [ ] S012-[Nice-to-Have] Completeness Hints
+- [ ] S013-[Nice-to-Have] Card Footer Icons
 
 ## Notes
 - Keep existing in-memory state and mock data patterns.

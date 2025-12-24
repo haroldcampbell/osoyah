@@ -12,16 +12,15 @@ Let users audit how a comment changed over time without leaving the card detail 
 - Multi-user attribution or permissions.
 - External audit logging or export.
 
+## Definition of Done
+- [ ] Comment data model includes updatedAt and edits fields; CardCommentEdit includes id, message, and editedAt.
+- [ ] Editing a comment appends an edit entry with the prior message and timestamp.
+- [ ] Comments show an edited indicator with the last edited time.
+- [ ] Edit history is collapsible per comment and ordered chronologically.
+- [ ] The original message is labeled in the history.
+- [ ] Edit history entries are retained in memory without trimming.
+- [ ] Acceptance tests pass.
+
 ## Acceptance tests (exact commands + expected artifacts/output)
 - `npm run lint` passes.
 - `npm run test` passes.
-
-## Notes (edge cases, hazards, perf constraints)
-- Data model additions (exact fields):
-  - CardComment: `updatedAt: string`, `edits: CardCommentEdit[]`
-  - CardCommentEdit: `id: string`, `message: string`, `editedAt: string`
-- When editing a comment, append a `CardCommentEdit` entry with the prior message and timestamp.
-- Comments show an "edited" indicator with the last edited time.
-- Edit history is collapsible per comment and shows prior messages verbatim in chronological order.
-- The first entry should be labeled as the original message.
-- Keep all edit history entries in memory (no trimming).

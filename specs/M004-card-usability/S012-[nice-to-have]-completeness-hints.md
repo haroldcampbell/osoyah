@@ -12,10 +12,12 @@ Encourage fuller card context without forcing extra steps.
 - Validation that blocks saving.
 - Mandatory fields beyond existing requirements.
 
+## Definition of Done
+- [ ] Cards show subtle hints when descriptions or comments are missing.
+- [ ] Hints are hidden when the related content exists.
+- [ ] Hints stay lightweight and do not dominate the card layout.
+- [ ] Acceptance tests pass.
+
 ## Acceptance tests (exact commands + expected artifacts/output)
 - `npm run lint` passes.
 - `npm run format:check` passes.
-
-## Notes (edge cases, hazards, perf constraints)
-- Hints should be lightweight and not dominate the card layout.
-- Hide hints when the card has the related content.

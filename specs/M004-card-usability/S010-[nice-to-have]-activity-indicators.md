@@ -12,10 +12,12 @@ Help teams scan for recently changed work.
 - Full activity feed or audit log.
 - Multi-user attribution.
 
+## Definition of Done
+- [ ] Cards show a subtle activity indicator (badge or last-updated time).
+- [ ] Indicators update when comments or descriptions change.
+- [ ] Indicators remain subtle to avoid clutter.
+- [ ] Acceptance tests pass.
+
 ## Acceptance tests (exact commands + expected artifacts/output)
 - `npm run lint` passes.
 - `npm run format:check` passes.
-
-## Notes (edge cases, hazards, perf constraints)
-- Indicators should remain subtle to avoid clutter.
-- Ensure indicators update when comments or descriptions change.

@@ -12,10 +12,12 @@ Provide a consistent, glanceable metadata area on every card.
 - Adding new metadata beyond what M004 defines.
 - Visual overhaul of the board.
 
+## Definition of Done
+- [ ] Card footer shows a compact icon row for comments, attachments, and updated time.
+- [ ] Icons are minimal and align with existing styling tokens.
+- [ ] Footer remains a single row to keep cards compact.
+- [ ] Acceptance tests pass.
+
 ## Acceptance tests (exact commands + expected artifacts/output)
 - `npm run lint` passes.
 - `npm run format:check` passes.
-
-## Notes (edge cases, hazards, perf constraints)
-- Icons should be minimal and consistent with existing styling tokens.
-- Avoid adding more than one row of icons to keep cards compact.

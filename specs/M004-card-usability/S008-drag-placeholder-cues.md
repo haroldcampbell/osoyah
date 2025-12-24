@@ -12,15 +12,15 @@ Make it obvious where a card will land by enhancing the placeholder's visual cue
 - Changing drag-and-drop behavior or logic.
 - Reordering or sizing rules beyond placeholder styling.
 
+## Definition of Done
+- [ ] Drag placeholder uses a muted/grey tint distinct from normal cards.
+- [ ] Placeholder includes a slight indentation or offset.
+- [ ] Placeholder height is reduced relative to a normal card.
+- [ ] Placeholder remains visible on narrow viewports.
+- [ ] Dragging within a list does not introduce layout jitter.
+- [ ] Acceptance tests pass.
+
 ## Acceptance tests (exact commands + expected artifacts/output)
 - `npm run lint` passes.
 - `npm run format:check` passes.
 - `npm run e2e` passes.
-
-## Notes (edge cases, hazards, perf constraints)
-- Placeholder styling should include:
-  - A muted/grey tint distinct from normal cards.
-  - Slight indentation or offset to highlight placement.
-  - Reduced height relative to a normal card.
-- Ensure placeholder remains visible on narrow viewports.
-- Avoid introducing layout jitter when dragging within a list.

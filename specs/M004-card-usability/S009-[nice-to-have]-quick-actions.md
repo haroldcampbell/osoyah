@@ -15,12 +15,13 @@ Speed up common workflows without leaving the board.
 -   Full command palette or power-user mode.
 -   Adding new card fields beyond M004 scope.
 
+## Definition of Done
+- [ ] Cards expose quick actions for adding a comment and editing the description.
+- [ ] Quick actions do not interfere with drag handles or click-to-open behavior.
+- [ ] Quick actions hide on small screens if they reduce readability.
+- [ ] Acceptance tests pass.
+
 ## Acceptance tests (exact commands + expected artifacts/output)
 
 -   `npm run lint` passes.
 -   `npm run test` passes.
-
-## Notes (edge cases, hazards, perf constraints)
-
--   Quick actions should not interfere with drag handles or card click-to-open behavior.
--   Hide actions on small screens if they reduce readability.

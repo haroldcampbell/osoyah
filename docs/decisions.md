@@ -27,7 +27,7 @@ Current active decisions, consolidated from session hand-offs. When a decision c
 -   Milestone docs live at `specs/M00X-*/milestone.md`.
 -   Templates use `_template_<purpose>.md` naming.
 -   Milestone spec lists use `[ ]`/`[x]` checkboxes to track execution status.
--   Specs should include a `Definition of Done` section when concrete completion criteria can be stated.
+-   Specs should include a `Definition of Done` section; add one before implementation if missing.
 -   Specs should avoid mixing concerns; if scope grows beyond a single cohesive behavior, split into a new spec.
 -   Use domain-driven design boundaries where possible; define bounded contexts for new features and avoid cross-context model leakage unless explicitly specified in the spec.
 -   Track progress via session hand-off entries in `session-hand-offs/`.

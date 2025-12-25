@@ -1,6 +1,6 @@
 # S007-Comment Edit History: Audit + Restore
 
-Conform to `principles.md`.
+Conform to `docs/principles.md`.
 
 ## Summary
 Add edit tracking for comments, showing prior versions and when edits occurred.

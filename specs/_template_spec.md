@@ -1,6 +1,6 @@
 # S00X-Title: <Spec Title>
 
-Conform to `principles.md`.
+Conform to `docs/principles.md`.
 
 ## Summary
 

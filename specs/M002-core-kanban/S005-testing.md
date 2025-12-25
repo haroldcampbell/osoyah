@@ -1,6 +1,6 @@
 # S005-Testing: Unit + E2E coverage
 
-Conform to `principles.md`.
+Conform to `docs/principles.md`.
 
 ## Summary
 

@@ -1,6 +1,6 @@
 # M002-Core Kanban: Basic board interactions
 
-Conform to `principles.md`.
+Conform to `docs/principles.md`.
 
 ## Summary
 Deliver a usable Kanban board UI with core list/card interactions and drag-and-drop.

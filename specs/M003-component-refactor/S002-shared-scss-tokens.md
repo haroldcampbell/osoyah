@@ -1,6 +1,6 @@
 # S002-Shared SCSS Tokens: Styling Primitives
 
-Conform to `principles.md`.
+Conform to `docs/principles.md`.
 
 ## Summary
 Introduce shared SCSS variables for spacing, radii, colors, and button sizing.

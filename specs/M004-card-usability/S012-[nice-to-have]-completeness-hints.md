@@ -1,6 +1,6 @@
 # S012-[Nice-to-Have] Completeness Hints: Missing Details
 
-Conform to `principles.md`.
+Conform to `docs/principles.md`.
 
 ## Summary
 Add subtle hints on cards when key details are missing (e.g., no description or no comments).

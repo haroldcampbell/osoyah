@@ -1,6 +1,6 @@
 # S003-List Management: Create, rename, remove
 
-Conform to `principles.md`.
+Conform to `docs/principles.md`.
 
 ## Summary
 

@@ -1,6 +1,6 @@
 # S010-[Nice-to-Have] Activity Indicators: Last Updated
 
-Conform to `principles.md`.
+Conform to `docs/principles.md`.
 
 ## Summary
 Surface lightweight activity indicators on cards (e.g., "edited" badge or last-updated time).

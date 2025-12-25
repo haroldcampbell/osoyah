@@ -1,6 +1,6 @@
 # S003-Mock API + Models + Sample Data
 
-Conform to `principles.md`.
+Conform to `docs/principles.md`.
 
 ## Summary
 Create a file-based mock API using `assets/data.json` and typed models for Board, List, Card.

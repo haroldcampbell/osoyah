@@ -1,6 +1,6 @@
 # S002-Angular Material Setup
 
-Conform to `principles.md`.
+Conform to `docs/principles.md`.
 
 ## Summary
 Install and configure Angular Material with a baseline theme and typography.

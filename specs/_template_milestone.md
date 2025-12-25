@@ -1,6 +1,6 @@
 # M00X-Title: <Spec Title>
 
-Conform to `principles.md`.
+Conform to `docs/principles.md`.
 
 ## Summary
 One paragraph overview of this milestone.

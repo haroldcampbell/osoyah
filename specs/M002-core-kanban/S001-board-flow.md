@@ -1,6 +1,6 @@
 # S001-Board Flow: Basic board view
 
-Conform to `principles.md`.
+Conform to `docs/principles.md`.
 
 ## Summary
 

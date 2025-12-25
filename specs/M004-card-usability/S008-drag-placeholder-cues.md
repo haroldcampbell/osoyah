@@ -1,6 +1,6 @@
 # S008-Drag Placeholder Cues: Clear Drop Targets
 
-Conform to `principles.md`.
+Conform to `docs/principles.md`.
 
 ## Summary
 Improve drag-and-drop placeholder styling so the drop position is clearly visible while dragging cards.

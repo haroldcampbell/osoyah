@@ -1,6 +1,6 @@
 # S004-E2E Regression: Refactor Validation
 
-Conform to `principles.md`.
+Conform to `docs/principles.md`.
 
 ## Summary
 Confirm the refactor preserves existing E2E behavior and update selectors if needed.

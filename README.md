@@ -4,7 +4,7 @@ Kanban app with FastAPI backend and Angular frontend.
 
 ## Principles
 
-All specs and milestones must conform to `principles.md`.
+All specs and milestones must conform to `docs/principles.md`.
 
 ## Structure
 

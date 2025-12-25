@@ -1,6 +1,6 @@
 # S001-Card Metadata Model: Descriptions, Comments, Created Date
 
-Conform to `principles.md`.
+Conform to `docs/principles.md`.
 
 ## Summary
 Extend the card model and mock data to support descriptions, comments/posts, and created/updated timestamps.

@@ -1,6 +1,6 @@
 # S002-Drag and Drop: Lists and cards
 
-Conform to `principles.md`.
+Conform to `docs/principles.md`.
 
 ## Summary
 

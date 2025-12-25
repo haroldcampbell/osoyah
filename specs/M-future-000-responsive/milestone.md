@@ -1,6 +1,6 @@
 # M-future-000-Responsive: Adaptive Layouts
 
-Conform to `principles.md`.
+Conform to `docs/principles.md`.
 
 ## Summary
 Plan a future milestone focused on making the application fully responsive across mobile, tablet, and desktop.

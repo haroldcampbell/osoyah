@@ -10,7 +10,7 @@
 
 -   Created folders: `server/`, `client/`, `specs/`, `docs/`, `infra/`, `scripts/`, `session-hand-offs/`.
 -   Added `specs/milestone.md` and spec/milestone templates.
--   Added `principles.md` and required conformance in `README.md` and spec templates.
+-   Added `docs/principles.md` and required conformance in `README.md` and spec templates.
 -   Added `session-hand-off.md` and `session-hand-offs/_template.md`.
 -   Initialized git and added `.gitignore` and `.codexignore`.
 

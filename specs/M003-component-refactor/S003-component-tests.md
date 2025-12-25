@@ -1,6 +1,6 @@
 # S003-Component Tests: List + Card
 
-Conform to `principles.md`.
+Conform to `docs/principles.md`.
 
 ## Summary
 Add unit coverage for the new list and card components.

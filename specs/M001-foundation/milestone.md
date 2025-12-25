@@ -1,6 +1,6 @@
 # M001: Configure core front-end environment
 
-Conform to `principles.md`.
+Conform to `docs/principles.md`.
 
 ## Summary
 

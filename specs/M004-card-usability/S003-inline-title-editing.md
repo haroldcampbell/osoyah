@@ -1,6 +1,6 @@
 # S003-Inline Title Editing: Lists + Cards
 
-Conform to `principles.md`.
+Conform to `docs/principles.md`.
 
 ## Summary
 Allow list titles and card titles to be edited inline with quick commit/cancel behavior.

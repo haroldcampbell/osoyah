@@ -1,6 +1,6 @@
 # S004-Interaction Hygiene: Menus, Focus, and Tokens
 
-Conform to `principles.md`.
+Conform to `docs/principles.md`.
 
 ## Summary
 Keep secondary interactions low-noise and consistent by defining menu dismissal behavior, focus outlines, and shared button styling tokens.

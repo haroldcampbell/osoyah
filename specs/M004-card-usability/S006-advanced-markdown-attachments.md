@@ -1,6 +1,6 @@
 # S006-Advanced Markdown Attachments: Richer Content
 
-Conform to `principles.md`.
+Conform to `docs/principles.md`.
 
 ## Summary
 Extend Markdown support to include advanced cases like image attachments, including drag-and-drop uploads similar to GitHub Projects.

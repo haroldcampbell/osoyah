@@ -1,6 +1,6 @@
 # S011-[Nice-to-Have] Keyboard Shortcuts: Fast Navigation
 
-Conform to `principles.md`.
+Conform to `docs/principles.md`.
 
 ## Summary
 Add keyboard shortcuts for common actions (open card, edit title, add comment).

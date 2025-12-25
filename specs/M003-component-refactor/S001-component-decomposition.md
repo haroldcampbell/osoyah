@@ -1,6 +1,6 @@
 # S001-Component Decomposition: Board → List + Card
 
-Conform to `principles.md`.
+Conform to `docs/principles.md`.
 
 ## Summary
 Split the existing board UI into `ListComponent` and `CardComponent` with clear ownership boundaries.

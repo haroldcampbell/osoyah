@@ -4,6 +4,7 @@
 
 This repository is operated by an automated coding agent (Codex CLI) using **spec-driven development**.
 Changes must be **incremental, auditable, and recoverable**.
+All work must conform to the foundational guidance in `docs/principles.md`.
 
 The agent is expected to work autonomously within these rules.
 

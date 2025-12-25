@@ -1,6 +1,6 @@
 # S009-[Nice-to-Have] Quick Actions: Reduce Clicks
 
-Conform to `principles.md`.
+Conform to `docs/principles.md`.
 
 ## Summary
 

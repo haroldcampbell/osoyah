@@ -1,6 +1,6 @@
 # S004-Card Management: Create, edit, remove
 
-Conform to `principles.md`.
+Conform to `docs/principles.md`.
 
 ## Summary
 

@@ -1,6 +1,6 @@
 # S002-Card Detail Side Panel: Open + Edit Card Details
 
-Conform to `principles.md`.
+Conform to `docs/principles.md`.
 
 ## Summary
 Add a side panel that opens when a card is clicked, showing and editing card details (title, description, comments/posts, created-at, updated-at).

@@ -1,6 +1,6 @@
 # M004-Card Usability: Information-Dense Cards
 
-Conform to `principles.md`.
+Conform to `docs/principles.md`.
 
 ## Summary
 Improve card usability by making cards more information-dense and editable, with a Trello/Asana-inspired detail view for descriptions, comments, and metadata.

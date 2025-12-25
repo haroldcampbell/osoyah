@@ -1,6 +1,6 @@
 # S005-Card Density Layout: Metadata on Cards
 
-Conform to `principles.md`.
+Conform to `docs/principles.md`.
 
 ## Summary
 Expose key metadata directly on the card surface (description preview, comment count, last activity time) to make cards more information-dense.

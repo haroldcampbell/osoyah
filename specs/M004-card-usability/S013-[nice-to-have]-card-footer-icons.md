@@ -1,6 +1,6 @@
 # S013-[Nice-to-Have] Card Footer Icons: Consistent Metadata Row
 
-Conform to `principles.md`.
+Conform to `docs/principles.md`.
 
 ## Summary
 Add a compact card footer icon row for comments/attachments/updated time.

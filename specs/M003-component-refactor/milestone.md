@@ -1,6 +1,6 @@
 # M003-Component Refactor: Modular Kanban UI
 
-Conform to `principles.md`.
+Conform to `docs/principles.md`.
 
 ## Summary
 Refactor the M002 board UI into modular Angular components with shared SCSS tokens, preserving existing behavior and tests while improving maintainability.

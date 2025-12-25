@@ -1,6 +1,6 @@
 # S001-Angular Workspace + Tooling
 
-Conform to `principles.md`.
+Conform to `docs/principles.md`.
 
 ## Summary
 Set up the Angular workspace with core dev tooling and conventions for consistent local development.

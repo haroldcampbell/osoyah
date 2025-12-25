@@ -15,11 +15,10 @@ import { BoardListComponent } from './list/board-list.component';
 import { BoardList, Card, CardComment } from '../models/board.model';
 
 @Component({
-  selector: 'app-board',
-  standalone: true,
-  imports: [CommonModule, FormsModule, DragDropModule, BoardListComponent],
-  templateUrl: './board.component.html',
-  styleUrl: './board.component.scss',
+    selector: 'app-board',
+    imports: [CommonModule, FormsModule, DragDropModule, BoardListComponent],
+    templateUrl: './board.component.html',
+    styleUrl: './board.component.scss'
 })
 export class BoardComponent implements OnInit, AfterViewChecked {
   readonly boardService = inject(BoardService);

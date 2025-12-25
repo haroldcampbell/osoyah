@@ -16,14 +16,13 @@ import { BoardCardComponent } from '../card/board-card.component';
 import { BoardService } from '../../services/board.service';
 
 @Component({
-  selector: 'app-board-list',
-  standalone: true,
-  imports: [CommonModule, FormsModule, DragDropModule, BoardCardComponent],
-  templateUrl: './board-list.component.html',
-  styleUrl: './board-list.component.scss',
-  host: {
-    class: 'list',
-  },
+    selector: 'app-board-list',
+    imports: [CommonModule, FormsModule, DragDropModule, BoardCardComponent],
+    templateUrl: './board-list.component.html',
+    styleUrl: './board-list.component.scss',
+    host: {
+        class: 'list',
+    }
 })
 export class BoardListComponent implements AfterViewChecked {
   @Input({ required: true }) list!: BoardList;

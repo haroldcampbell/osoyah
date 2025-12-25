@@ -10,7 +10,7 @@
 
 ## Specs/Docs Updates
 - `specs/M004-card-usability/S005-card-density-layout.md`
-- `specs/M004-card-usability/S006-advanced-markdown-attachments.md`
+- `specs/M004-card-usability/S006-01-markdown-rendering-safety.md`
 - `specs/M004-card-usability/S007-comment-edit-history.md`
 - `specs/M004-card-usability/S008-drag-placeholder-cues.md`
 - `specs/M004-card-usability/S009-[nice-to-have]-quick-actions.md`

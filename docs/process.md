@@ -14,10 +14,14 @@ and focuses on how we work session-to-session.
 - Read `AGENTS.md`, `docs/principles.md`, and `docs/decisions.md`.
 - Read the latest entry in `session-hand-offs/` and the index in
   `session-hand-off.md` for current status and next steps.
+- Before any implementation, begin with a collaborative review of the
+  target spec to confirm scope, acceptance tests, and open questions.
 
 ## Spec-First Execution
 
 - Work from a single spec in `/specs/`; do not mix specs.
+- All development starts with the spec review; no coding before the
+  spec is reviewed together.
 - Keep changes minimal and aligned with `docs/principles.md`.
 - When ambiguous, prefer existing behavior and document the choice.
 

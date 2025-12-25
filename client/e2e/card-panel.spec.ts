@@ -6,6 +6,11 @@ async function clickCardBackground(
   page: { mouse: { click: (x: number, y: number) => Promise<void> } },
   card: Locator,
 ): Promise<void> {
+  const meta = card.locator('.card-meta');
+  if (await meta.count()) {
+    await meta.first().click();
+    return;
+  }
   const box = await card.boundingBox();
   if (!box) {
     throw new Error('Card bounding box missing.');

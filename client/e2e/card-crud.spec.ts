@@ -6,6 +6,11 @@ async function clickCardBackground(
   page: { mouse: { click: (x: number, y: number) => Promise<void> } },
   card: Locator,
 ): Promise<void> {
+  const meta = card.locator('.card-meta');
+  if (await meta.count()) {
+    await meta.first().click();
+    return;
+  }
   const box = await card.boundingBox();
   if (!box) {
     throw new Error('Card bounding box missing.');
@@ -32,9 +37,10 @@ test('S002 adds a card, updates description, and deletes it from the panel', asy
   await clickCardBackground(page, newCardById);
   const panel = page.locator('[data-testid="card-panel"]');
   await expect(panel).toBeVisible();
+  await panel.locator('.card-panel-description-empty').click();
   await panel.locator('#card-panel-description').fill('Share with the team.');
   await panel.locator('.card-panel-title').click();
-  await expect(newCardById.locator('text=Share with the team.')).toBeVisible();
+  await expect(newCardById.locator('.card-description')).toContainText('Share with the team.');
 
   page.once('dialog', (dialog) => dialog.accept());
   await panel.getByTestId('card-panel-menu').click();

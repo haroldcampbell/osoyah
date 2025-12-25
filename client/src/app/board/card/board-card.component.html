@@ -34,7 +34,7 @@
       />
     </div>
   }
-  @if (card.description?.trim()) {
+  @if (card.description.trim()) {
     <div class="card-description" [innerHTML]="renderDescriptionPreview(card.description)"></div>
   }
   <div class="card-meta" data-testid="card-meta">

@@ -265,6 +265,96 @@
   resize: vertical;
 }
 
+.card-panel-description-view {
+  border: 1px solid tokens.$color-border;
+  border-radius: tokens.$radius-control;
+  padding: tokens.$input-padding-y tokens.$input-padding-x;
+  background: tokens.$color-card;
+  min-height: 4.5rem;
+  cursor: text;
+}
+
+.card-panel-description-empty {
+  border: 1px dashed tokens.$color-border;
+  border-radius: tokens.$radius-control;
+  padding: tokens.$input-padding-y tokens.$input-padding-x;
+  background: tokens.$color-card;
+  color: tokens.$color-text-soft;
+  text-align: left;
+  cursor: text;
+  font-family: inherit;
+}
+
+.card-panel-markdown {
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: tokens.$color-text-primary;
+}
+
+.card-panel-markdown p {
+  margin: 0 0 tokens.$space-xs;
+}
+
+.card-panel-markdown h1,
+.card-panel-markdown h2,
+.card-panel-markdown h3 {
+  margin: 0 0 tokens.$space-xs;
+  font-weight: 600;
+}
+
+.card-panel-markdown h1 {
+  font-size: 1.05rem;
+}
+
+.card-panel-markdown h2 {
+  font-size: 1rem;
+}
+
+.card-panel-markdown h3 {
+  font-size: 0.95rem;
+}
+
+.card-panel-markdown ul,
+.card-panel-markdown ol {
+  margin: 0 0 tokens.$space-xs;
+  padding-left: 1.2rem;
+}
+
+.card-panel-markdown a {
+  color: tokens.$color-accent;
+  text-decoration: underline;
+}
+
+.card-panel-markdown pre {
+  background: tokens.$color-surface;
+  border-radius: tokens.$radius-card;
+  padding: tokens.$space-xs;
+  overflow-x: auto;
+  margin: 0 0 tokens.$space-xs;
+}
+
+.card-panel-markdown code {
+  font-family: 'Space Grotesk', 'Futura', sans-serif;
+  background: tokens.$color-surface;
+  padding: 0 0.2rem;
+  border-radius: 2px;
+}
+
+.card-panel-markdown blockquote {
+  margin: 0 0 tokens.$space-xs;
+  padding-left: tokens.$space-sm;
+  border-left: 3px solid tokens.$color-border;
+  color: tokens.$color-text-muted;
+}
+
+.card-panel-markdown img {
+  max-width: 100%;
+  max-height: 320px;
+  display: block;
+  object-fit: contain;
+  margin: 0 0 tokens.$space-xs;
+}
+
 .card-panel-meta {
   display: flex;
   align-items: center;

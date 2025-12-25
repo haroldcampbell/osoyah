@@ -7,12 +7,14 @@ import {
   HostListener,
   inject,
   OnInit,
+  ViewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { BoardService } from '../services/board.service';
 import { BoardListComponent } from './list/board-list.component';
 import { BoardList, Card, CardComment } from '../models/board.model';
+import { MarkdownService } from '../services/markdown.service';
 
 @Component({
     selector: 'app-board',
@@ -22,8 +24,11 @@ import { BoardList, Card, CardComment } from '../models/board.model';
 })
 export class BoardComponent implements OnInit, AfterViewChecked {
   readonly boardService = inject(BoardService);
+  private readonly markdown = inject(MarkdownService);
   private readonly elementRef = inject(ElementRef<HTMLElement>);
+  @ViewChild('descriptionInput') descriptionInput?: ElementRef<HTMLTextAreaElement>;
   commentFocused = false;
+  descriptionEditing = false;
   private descriptionSaveTimeout?: number;
   private lastScrolledCardId: string | null = null;
 
@@ -44,6 +49,7 @@ export class BoardComponent implements OnInit, AfterViewChecked {
       return;
     }
     this.lastScrolledCardId = this.selectedCard.id;
+    this.descriptionEditing = false;
     this.scrollSelectedCardIntoView(this.selectedCard.id);
   }
 
@@ -91,6 +97,18 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     this.boardService.saveCardPanelDetails(card);
   }
 
+  handleDescriptionBlur(card: Card): void {
+    this.flushDescriptionSave(card);
+    this.descriptionEditing = false;
+  }
+
+  startDescriptionEdit(): void {
+    this.descriptionEditing = true;
+    setTimeout(() => {
+      this.descriptionInput?.nativeElement.focus();
+    });
+  }
+
   saveCardTitle(card: Card): void {
     this.boardService.saveCardPanelTitle(card);
   }
@@ -110,6 +128,7 @@ export class BoardComponent implements OnInit, AfterViewChecked {
   closePanel(): void {
     this.boardService.closeCardPanel();
     this.commentFocused = false;
+    this.descriptionEditing = false;
     if (this.descriptionSaveTimeout) {
       window.clearTimeout(this.descriptionSaveTimeout);
       this.descriptionSaveTimeout = undefined;
@@ -124,6 +143,10 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     if (!this.boardService.panelCommentDraft.trim()) {
       this.commentFocused = false;
     }
+  }
+
+  renderMarkdown(text: string): string {
+    return this.markdown.render(text);
   }
 
   private scrollSelectedCardIntoView(cardId: string): void {

@@ -37,15 +37,39 @@
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   overflow: hidden;
+  max-height: 3rem;
 }
 
 .card-description p,
-.card-description ul {
+.card-description ul,
+.card-description ol,
+.card-description h1,
+.card-description h2,
+.card-description h3,
+.card-description blockquote,
+.card-description pre {
   margin: 0;
 }
 
 .card-description ul {
   padding-left: 1rem;
+}
+
+.card-description ol {
+  padding-left: 1.1rem;
+}
+
+.card-description h1,
+.card-description h2,
+.card-description h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.card-description blockquote {
+  border-left: 2px solid tokens.$color-border;
+  padding-left: tokens.$space-xs;
+  color: tokens.$color-text-soft;
 }
 
 .card-description a {
@@ -58,6 +82,20 @@
   background: tokens.$color-surface;
   padding: 0 0.2rem;
   border-radius: 2px;
+}
+
+.card-description pre {
+  background: tokens.$color-surface;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.card-description img {
+  max-width: 100%;
+  max-height: 2.4rem;
+  object-fit: contain;
+  display: block;
 }
 
 .card-meta {

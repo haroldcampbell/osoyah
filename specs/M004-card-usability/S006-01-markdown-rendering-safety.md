@@ -20,6 +20,7 @@ Ensure Markdown renders consistently on cards and in the side panel without expo
 -   [ ] Markdown rendering uses a well-established library (no custom parser).
 -   [ ] Markdown rendering is safe (no raw HTML, malicious content blocked).
 -   [ ] Supported Markdown elements include headings (H1–H3), unordered/ordered lists, links, bold/italic, inline code, fenced code blocks, blockquotes, and images.
+-   [ ] Single-asterisk emphasis (`*text*`) renders as bold to match Slack/WhatsApp behavior.
 -   [ ] Card descriptions in the board list render Markdown (not raw text).
 -   [ ] In the side panel, the description renders processed Markdown when not editing; when editing, show raw Markdown text.
 -   [ ] Comment bodies render Markdown using the same renderer.

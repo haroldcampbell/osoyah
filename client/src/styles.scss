@@ -5,10 +5,30 @@ html,
 body {
   height: 100%;
 }
+
 body {
   margin: 0;
   font-family: Roboto, 'Open Sans', 'PT Serif Caption', 'Helvetica Neue', sans-serif;
   font-size: 12px;
+}
+
+.cdk-drag-preview {
+  border-radius: 14px;
+  box-shadow: 0 12px 12px rgba(0, 0, 0, 0.2) !important;
+  box-sizing: border-box;
+}
+
+.cdk-drag-placeholder {
+  border-radius: 6px;
+  box-shadow: none;
+  margin-left: -0.4rem;
+  padding: 0;
+  background: rgba(0, 0, 0, 0.2) !important;
+  overflow: hidden;
+}
+
+.cdk-drag-placeholder * {
+  visibility: hidden;
 }
 
 .card-panel-markdown {

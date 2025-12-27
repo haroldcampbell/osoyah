@@ -474,15 +474,6 @@
   color: tokens.$color-text-soft;
 }
 
-.cdk-drag-preview {
-  border-radius: 14px;
-  box-shadow: tokens.$shadow-drag;
-}
-
-.cdk-drag-placeholder {
-  opacity: 0.2;
-}
-
 @media (max-width: 800px) {
   .board-header {
     flex-direction: column;

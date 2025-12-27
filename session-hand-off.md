@@ -18,6 +18,7 @@
 
 ## Entries
 
+-   2025-12-27-01-drag-placeholder-cues.md - Global CDK drag placeholder/preview styling
 -   2025-12-25-03-s006-01-polish.md - S006-01 polish, panel/layout updates, global markdown styles
 -   2025-12-25-02-markdown-rendering.md - S006-01 markdown rendering implementation + E2E coverage
 -   2025-12-25-01-process-principles-move.md - Move principles into docs and slim process guide

@@ -11,7 +11,7 @@
 -   [x] M001-Foundation
 -   [x] M002-Core Kanban
 -   [x] M003-Component Refactor
--   [ ] M004-Card Usability
+-   [x] M004-Card Usability
 
 ## Ideas and future milestones
 

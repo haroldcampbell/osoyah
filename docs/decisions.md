@@ -35,6 +35,7 @@ Current active decisions, consolidated from session hand-offs. When a decision c
 -   Track progress via session hand-off entries in `session-hand-offs/`.
 -   Session hand-offs use `yyyy-mm-dd-nn-title.md` filenames for same-day ordering. DO NOT include milestone ID (e.g. m00x) as a part of the session hand-off filename or title.
 -   Prefer free SVG icons from established libraries (Font Awesome) instead of hand-drawn SVG paths.
+-   Commit messages include milestone + spec code as `(<milestone>-<spec>)` (e.g., `feat (M004-S006-02): drag placeholder cues`).
 
 ## Domain-driven design boundaries
 

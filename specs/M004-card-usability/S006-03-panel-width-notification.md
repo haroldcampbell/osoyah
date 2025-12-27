@@ -17,7 +17,6 @@ Improve readability for long descriptions and confirm autosave behavior without 
 
 ## Definition of Done
 
--   [ ] The card detail side panel width is doubled to accommodate larger content.
 -   [ ] A small floating notification confirms when card changes have been saved.
 -   [ ] Notification displays for title, description, and comment saves.
 -   [ ] Notification remains visible for 3–5 seconds and fades out.

@@ -27,6 +27,7 @@ export class BoardComponent implements OnInit, AfterViewChecked {
   private readonly markdown = inject(MarkdownService);
   private readonly elementRef = inject(ElementRef<HTMLElement>);
   @ViewChild('descriptionInput') descriptionInput?: ElementRef<HTMLTextAreaElement>;
+  @ViewChild('descriptionView') descriptionView?: ElementRef<HTMLElement>;
   commentFocused = false;
   descriptionEditing = false;
   private descriptionSaveTimeout?: number;
@@ -100,14 +101,32 @@ export class BoardComponent implements OnInit, AfterViewChecked {
   handleDescriptionBlur(card: Card): void {
     this.flushDescriptionSave(card);
     this.descriptionEditing = false;
+    if (this.descriptionInput?.nativeElement) {
+      this.descriptionInput.nativeElement.style.height = '';
+    }
   }
 
   startDescriptionEdit(): void {
     this.descriptionEditing = true;
     setTimeout(() => {
-      this.descriptionInput?.nativeElement.focus();
+      const input = this.descriptionInput?.nativeElement;
+      if (!input) {
+        return;
+      }
+      input.focus();
+      const viewHeight = this.descriptionView?.nativeElement.getBoundingClientRect().height;
+      const minHeight = 200;
+      const maxHeight = 360;
+      if (viewHeight) {
+        const height = Math.min(Math.max(viewHeight, minHeight), maxHeight);
+        input.style.height = `${height}px`;
+      } else {
+        input.style.height = `${minHeight}px`;
+      }
+      input.scrollTop = 0;
     });
   }
+
 
   saveCardTitle(card: Card): void {
     this.boardService.saveCardPanelTitle(card);

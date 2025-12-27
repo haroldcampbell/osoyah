@@ -82,11 +82,12 @@
 
             <div class="card-panel-body">
               <div class="card-panel-scroll">
-                <section class="card-panel-section">
-                  <label class="card-panel-label" for="card-panel-title">Title</label>
+                <section class="card-panel-section card-panel-section-title">
                   <input
                     id="card-panel-title"
                     type="text"
+                    aria-label="Card title"
+                    class="card-panel-title-input"
                     [(ngModel)]="boardService.panelCardTitle"
                     (input)="saveCardTitle(selectedCard)"
                   />
@@ -98,6 +99,7 @@
                     @if (boardService.panelCardDescription.trim()) {
                       <div
                         class="card-panel-description-view card-panel-markdown"
+                        #descriptionView
                         (click)="startDescriptionEdit()"
                         (keydown.enter)="startDescriptionEdit()"
                         (keydown.space)="startDescriptionEdit()"
@@ -180,6 +182,7 @@
                   id="card-panel-comment"
                   [rows]="commentExpanded ? 3 : 1"
                   [class.card-panel-comment-compact]="!commentExpanded"
+                  placeholder="Write a comment..."
                   [(ngModel)]="boardService.panelCommentDraft"
                   (focus)="handleCommentFocus()"
                   (blur)="handleCommentBlur()"

@@ -78,7 +78,7 @@
 }
 
 .card-description code {
-  font-family: 'Space Grotesk', 'Futura', sans-serif;
+  font-family: inherit;
   background: tokens.$color-surface;
   padding: 0 0.2rem;
   border-radius: 2px;
@@ -92,9 +92,8 @@
 }
 
 .card-description img {
-  max-width: 100%;
   max-height: 2.4rem;
-  object-fit: contain;
+  height: auto;
   display: block;
 }
 
@@ -109,6 +108,19 @@
 
 .card-meta-separator {
   color: tokens.$color-text-soft;
+}
+
+.card-meta-detail {
+  font-size: 0.85rem;
+  color: tokens.$color-text-soft;
+  display: inline-flex;
+  align-items: center;
+}
+
+.card-meta-detail-icon {
+  width: 14px;
+  height: 14px;
+  display: inline-block;
 }
 
 .card-body {

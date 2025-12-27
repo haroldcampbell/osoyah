@@ -25,7 +25,7 @@ Out-of-scope:
 - [x] S003-Inline Title Editing
 - [x] S004-Interaction Hygiene
 - [x] S005-Card Density Layout
-- [ ] S006-01-Markdown Rendering + Safety
+- [x] S006-01-Markdown Rendering + Safety
 - [ ] S006-02-Markdown Attachments
 - [ ] S006-03-Panel Width + Save Notification
 - [ ] S007-Comment Edit History

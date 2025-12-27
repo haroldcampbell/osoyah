@@ -18,6 +18,7 @@
 
 ## Entries
 
+-   2025-12-25-03-s006-01-polish.md - S006-01 polish, panel/layout updates, global markdown styles
 -   2025-12-25-02-markdown-rendering.md - S006-01 markdown rendering implementation + E2E coverage
 -   2025-12-25-01-process-principles-move.md - Move principles into docs and slim process guide
 -   2025-12-24-02-s005-panel-polish.md - S005 card density + side-panel polish, mock data, E2E updates

@@ -34,10 +34,23 @@
       />
     </div>
   }
-  @if (card.description.trim()) {
-    <div class="card-description" [innerHTML]="renderDescriptionPreview(card.description)"></div>
-  }
   <div class="card-meta" data-testid="card-meta">
+    @if (card.description.trim()) {
+      <span
+        class="card-meta-item card-meta-detail"
+        data-testid="card-meta-description"
+        aria-label="Details"
+        title="Details"
+      >
+        <img
+          class="card-meta-detail-icon"
+          src="assets/icons/file-lines.svg"
+          alt=""
+          aria-hidden="true"
+        />
+      </span>
+      <span class="card-meta-separator">•</span>
+    }
     <span class="card-meta-item" data-testid="card-meta-comments">
       {{ card.comments.length }} comment{{ card.comments.length === 1 ? '' : 's' }}
     </span>

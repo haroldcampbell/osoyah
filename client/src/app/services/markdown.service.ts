@@ -22,12 +22,12 @@ export class MarkdownService {
     'strong',
     'ul',
   ];
-  private readonly allowedAttrs = ['href', 'src', 'alt', 'title', 'target', 'rel'];
+  private readonly allowedAttrs = ['href', 'src', 'alt', 'title', 'target', 'rel', 'class'];
 
   constructor() {
     this.renderer.html = (): string => '';
     this.renderer.heading = function (this: Renderer, token: Tokens.Heading): string {
-      const safeLevel = Math.min(token.depth, 3);
+      const safeLevel = Math.min(token.depth, 4);
       const text = this.parser.parseInline(token.tokens);
       return `<h${safeLevel}>${text}</h${safeLevel}>`;
     };
@@ -36,6 +36,12 @@ export class MarkdownService {
       const safeHref = token.href ?? '';
       const safeTitle = token.title ? ` title="${token.title}"` : '';
       return `<a href="${safeHref}"${safeTitle} target="_blank" rel="noopener noreferrer">${text}</a>`;
+    };
+    this.renderer.image = function (this: Renderer, token: Tokens.Image): string {
+      const text = token.text ?? '';
+      const safeHref = token.href ?? '';
+      const safeTitle = token.title ? ` title="${token.title}"` : '';
+      return `<img class="card-panel-fullwidth" src="${safeHref}" alt="${text}"${safeTitle}>`;
     };
 
     marked.use({ renderer: this.renderer });
@@ -52,11 +58,13 @@ export class MarkdownService {
       return DOMPurify.sanitize(raw, {
         ALLOWED_TAGS: this.allowedTags,
         ALLOWED_ATTR: this.allowedAttrs,
+        ADD_ATTR: ['class'],
       });
     } catch {
       return DOMPurify.sanitize(trimmed, {
         ALLOWED_TAGS: this.allowedTags,
         ALLOWED_ATTR: this.allowedAttrs,
+        ADD_ATTR: ['class'],
       });
     }
   }

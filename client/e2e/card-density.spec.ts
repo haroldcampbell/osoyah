@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 
 // Spec: S005 Card Density Layout
 
-test('S005 shows metadata and markdown preview on cards', async ({ page }) => {
+test('S005 shows metadata and description indicator on cards', async ({ page }) => {
   await page.goto('/');
 
   const backlogList = page.locator('[data-testid="list"][data-list-title="Backlog"]');
@@ -20,5 +20,7 @@ test('S005 shows metadata and markdown preview on cards', async ({ page }) => {
 
   const reviewList = page.locator('[data-testid="list"][data-list-title="Review"]');
   const markdownCard = reviewList.locator('[data-testid="card"][data-card-id="card-5"]');
-  await expect(markdownCard.locator('.card-description strong')).toHaveText('responses');
+  await expect(
+    markdownCard.locator('[data-testid="card-meta-description"] .card-meta-detail-icon'),
+  ).toBeVisible();
 });

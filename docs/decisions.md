@@ -14,6 +14,8 @@ Current active decisions, consolidated from session hand-offs. When a decision c
 -   Use Playwright for E2E tests.
 -   Use Angular CDK drag-and-drop for list/card ordering.
 -   Maintain board state in-memory on the client until backend persistence is added.
+-   Styles for markdown injected via `innerHTML` must live in global styles (component-scoped styles do not apply).
+-   Markdown rendering uses `marked` + `DOMPurify`.
 
 ## Testing
 

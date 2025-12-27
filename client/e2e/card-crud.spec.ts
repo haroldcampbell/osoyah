@@ -40,7 +40,7 @@ test('S002 adds a card, updates description, and deletes it from the panel', asy
   await panel.locator('.card-panel-description-empty').click();
   await panel.locator('#card-panel-description').fill('Share with the team.');
   await panel.locator('.card-panel-title').click();
-  await expect(newCardById.locator('.card-description')).toContainText('Share with the team.');
+  await expect(newCardById.locator('[data-testid="card-meta-description"]')).toBeVisible();
 
   page.once('dialog', (dialog) => dialog.accept());
   await panel.getByTestId('card-panel-menu').click();

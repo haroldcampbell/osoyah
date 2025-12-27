@@ -1,4 +1,4 @@
-# S008-Drag Placeholder Cues: Clear Drop Targets
+# S006-02-Drag Placeholder Cues: Clear Drop Targets
 
 Conform to `docs/principles.md`.
 

@@ -47,27 +47,33 @@ Violating any of the above is considered a critical failure.
 
 ## Workflow Rules (Mandatory)
 
+1. **Session start**
+
+    - Read `docs/process.md` first and follow its instructions before any other work
+
 1. **Spec-first**
 
-    - All work must be driven by files in `/specs/`
+    - All development work must be driven by files in `/specs/`
     - Do not implement features that are not explicitly described in a spec
+    - Specs are not required to make changes to ./docs/
 
-2. **One spec at a time**
+1. **One spec at a time**
 
     - Implement exactly one spec per iteration
     - Do not combine multiple specs into a single change
+    - The exception to this rule requires explicit instructions to enter 'multi-spec' development. Seek explicit approval.
 
-3. **Minimal diffs**
+1. **Minimal diffs**
 
     - Prefer small, focused changes
     - Do not refactor unrelated code
 
-4. **Acceptance tests**
+1. **Acceptance tests**
 
     - Run the acceptance test(s) specified in the spec
     - If tests fail, fix before committing
 
-5. **Commit discipline**
+1. **Commit discipline**
     - Commit after each successful spec
     - Commit messages should be short and descriptive:
         - `v3: scroll hydration with termination`

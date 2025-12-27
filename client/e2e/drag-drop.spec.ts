@@ -1,6 +1,6 @@
 import { expect, type Locator, test } from '@playwright/test';
 
-// Spec: S008 Drag Placeholder Cues (drag flow)
+// Spec: S006-02 Drag Placeholder Cues (drag flow)
 
 async function dragToCenter(
   page: {
@@ -33,7 +33,7 @@ async function dragToCenter(
   await page.mouse.up();
 }
 
-test('S008 supports dragging a card between lists', async ({ page }) => {
+test('S006-02 supports dragging a card between lists', async ({ page }) => {
   await page.goto('/');
 
   const backlogList = page.locator('[data-testid="list"][data-list-title="Backlog"]');
@@ -60,7 +60,7 @@ test('S008 supports dragging a card between lists', async ({ page }) => {
   ).toHaveCount(0);
 });
 
-test('S008 supports reordering lists', async ({ page }) => {
+test('S006-02 supports reordering lists', async ({ page }) => {
   await page.goto('/');
 
   const lists = page.locator('[data-testid="list"]');

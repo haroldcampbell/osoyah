@@ -26,15 +26,7 @@ Out-of-scope:
 - [x] S004-Interaction Hygiene
 - [x] S005-Card Density Layout
 - [x] S006-01-Markdown Rendering + Safety
-- [ ] S006-02-Markdown Attachments
-- [ ] S006-03-Panel Width + Save Notification
-- [ ] S007-Comment Edit History
-- [ ] S008-Drag Placeholder Cues
-- [ ] S009-[Nice-to-Have] Quick Actions
-- [ ] S010-[Nice-to-Have] Activity Indicators
-- [ ] S011-[Nice-to-Have] Keyboard Shortcuts
-- [ ] S012-[Nice-to-Have] Completeness Hints
-- [ ] S013-[Nice-to-Have] Card Footer Icons
+- [ ] S006-02-Drag Placeholder Cues
 
 ## Notes
 - Keep existing in-memory state and mock data patterns.

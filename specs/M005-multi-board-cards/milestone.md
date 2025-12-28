@@ -21,7 +21,10 @@ Out-of-scope:
 - [x] S001-Global Card Identity + Board Memberships
 - [x] S002-Add Existing Card to Board
 - [x] S003-Membership Indicators + Navigation
-- [ ] S004-Board Selection + CRUD
+- [x] S004-Board Selection + CRUD
+- [ ] S005-Board Management Panel
+- [ ] S006-Board Routing + Deep Links
+- [ ] S007-Title Length Validation
 
 ## Notes
 - Board lists remain the stage model for pipeline boards.

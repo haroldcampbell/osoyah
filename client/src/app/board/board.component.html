@@ -14,7 +14,88 @@
   @if (boardService.board && !boardService.loading) {
     <div class="board" data-testid="board">
       <div class="board-toolbar">
-        <div class="board-name" data-testid="board-name">{{ boardService.board.title }}</div>
+        <div class="board-name">
+          <button
+            type="button"
+            class="board-selector"
+            (click)="toggleBoardMenu($event)"
+            [attr.aria-expanded]="boardMenuOpen"
+            data-testid="board-selector"
+          >
+            <span class="board-selector-label" data-testid="board-name">
+              {{ boardService.board.title }}
+            </span>
+            <span class="board-selector-caret" aria-hidden="true"></span>
+          </button>
+          @if (boardMenuOpen) {
+            <div class="board-menu-panel" #boardMenuPanel>
+              <div class="board-menu" cdkMenu data-testid="board-menu">
+                <div class="board-menu-search">
+                  <input
+                    type="text"
+                    placeholder="Search boards"
+                    [(ngModel)]="boardSearchTerm"
+                    data-testid="board-search-input"
+                  />
+                </div>
+
+                <div class="board-menu-list">
+                  @if (filteredBoards.length === 0) {
+                    <div class="board-menu-empty" data-testid="board-search-empty">
+                      No boards match your search.
+                    </div>
+                  }
+                  @for (board of filteredBoards; track board.id) {
+                    <div class="board-menu-row" [attr.data-board-id]="board.id">
+                      <button
+                        type="button"
+                        class="board-menu-select"
+                        cdkMenuItem
+                        (click)="selectBoard(board)"
+                        [attr.data-testid]="'board-option-' + board.id"
+                      >
+                        <span class="board-menu-name" [attr.title]="board.title">
+                          {{ board.title }}
+                        </span>
+                        @if (boardService.board.id === board.id) {
+                          <span class="board-menu-current">Current</span>
+                        }
+                      </button>
+                    </div>
+                  }
+                </div>
+
+                <div class="board-menu-create">
+                  <label class="board-menu-label" for="board-create-input">New board</label>
+                  <div class="board-menu-create-row">
+                    <input
+                      id="board-create-input"
+                      type="text"
+                      placeholder="Board name"
+                      [(ngModel)]="newBoardTitle"
+                      (input)="createBoardError = ''"
+                      (keyup.enter)="createBoard()"
+                      data-testid="board-create-input"
+                    />
+                    <button
+                      type="button"
+                      class="board-menu-action"
+                      (click)="createBoard()"
+                      data-testid="board-create-button"
+                    >
+                      Create
+                    </button>
+                  </div>
+                  @if (createBoardError) {
+                    <div class="board-menu-error" data-testid="board-create-error">
+                      {{ createBoardError }}
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+        </div>
         <div class="add-list">
           <input
             type="text"
@@ -26,9 +107,53 @@
           <button type="button" (click)="boardService.addList()" data-testid="add-list-button">
             Add list
           </button>
+          <button
+            type="button"
+            class="board-settings-toggle"
+            (click)="toggleBoardSettings()"
+            data-testid="board-settings-toggle"
+          >
+            Settings
+          </button>
         </div>
       </div>
 
+      @if (boardSettingsOpen) {
+        <section class="board-settings" data-testid="board-settings">
+          <div class="board-settings-header">
+            <div class="board-settings-title">Board settings</div>
+            <button type="button" (click)="toggleBoardSettings()">Close</button>
+          </div>
+          <div class="board-settings-body">
+            <label class="board-settings-label" for="board-settings-title">Board name</label>
+            <input
+              id="board-settings-title"
+              type="text"
+              [(ngModel)]="boardSettingsTitle"
+              (input)="boardSettingsError = ''"
+              data-testid="board-settings-title"
+            />
+            <div class="board-settings-actions">
+              <button type="button" (click)="saveBoardSettings()" data-testid="board-settings-save">
+                Save
+              </button>
+              <button
+                type="button"
+                class="delete"
+                (click)="confirmDeleteCurrentBoard()"
+                data-testid="board-settings-delete"
+              >
+                Delete board
+              </button>
+            </div>
+            @if (boardSettingsError) {
+              <div class="board-menu-error" data-testid="board-settings-error">
+                {{ boardSettingsError }}
+              </div>
+            }
+          </div>
+        </section>
+      }
       <div class="board-layout" [class.board-layout-panel-open]="selectedCard">
         <div
           class="lists"

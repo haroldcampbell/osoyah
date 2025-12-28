@@ -87,6 +87,71 @@ export class BoardService {
     return board?.lists.find((list) => list.id === listId) ?? null;
   }
 
+  setActiveBoard(boardId: string): void {
+    const board = this.getBoard(boardId);
+    if (!board) {
+      return;
+    }
+    this.board = board;
+    this.closeCardPanel();
+  }
+
+  createBoard(title: string): { success: boolean; error?: string; board?: Board } {
+    const error = this.getBoardTitleError(title);
+    if (error) {
+      return { success: false, error };
+    }
+    const listId = this.createId('list');
+    const board: Board = {
+      id: this.createId('board'),
+      title: title.trim(),
+      lists: [
+        {
+          id: listId,
+          title: 'Tasks',
+          cardIds: [],
+        },
+      ],
+    };
+    this.boards.push(board);
+    this.board = board;
+    this.closeCardPanel();
+    return { success: true, board };
+  }
+
+  renameBoard(boardId: string, title: string): { success: boolean; error?: string } {
+    const board = this.getBoard(boardId);
+    if (!board) {
+      return { success: false, error: 'Board not found.' };
+    }
+    const error = this.getBoardTitleError(title);
+    if (error) {
+      return { success: false, error };
+    }
+    board.title = title.trim();
+    return { success: true };
+  }
+
+  deleteBoard(boardId: string): { success: boolean; error?: string } {
+    const boardIndex = this.boards.findIndex((board) => board.id === boardId);
+    if (boardIndex === -1) {
+      return { success: false, error: 'Board not found.' };
+    }
+    this.boards.splice(boardIndex, 1);
+    if (!this.boards.length) {
+      const emptyBoard = this.createEmptyBoard();
+      this.boards.push(emptyBoard);
+      this.board = emptyBoard;
+      this.closeCardPanel();
+      return { success: true };
+    }
+    if (this.board?.id === boardId) {
+      this.board = this.boards[0];
+      this.closeCardPanel();
+    }
+    return { success: true };
+  }
+
   isCardOnBoard(cardId: string, boardId: string): boolean {
     const board = this.getBoard(boardId);
     if (!board) {
@@ -326,6 +391,20 @@ export class BoardService {
       title: 'New Board',
       lists: [],
     };
+  }
+
+  getBoardTitleError(title: string): string | null {
+    const trimmed = title.trim();
+    if (!trimmed) {
+      return 'Board name cannot be blank.';
+    }
+    if (trimmed.length < 3) {
+      return 'Board name must be at least 3 characters.';
+    }
+    if (/^\d+$/.test(trimmed)) {
+      return 'Board name cannot be all numbers.';
+    }
+    return null;
   }
 
   private indexCards(cards: Card[]): Record<string, Card> {

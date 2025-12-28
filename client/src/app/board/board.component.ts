@@ -1,4 +1,5 @@
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { CdkMenuModule } from '@angular/cdk/menu';
 import { CommonModule } from '@angular/common';
 import {
   AfterViewChecked,
@@ -18,7 +19,7 @@ import { MarkdownService } from '../services/markdown.service';
 
 @Component({
     selector: 'app-board',
-    imports: [CommonModule, FormsModule, DragDropModule, BoardListComponent],
+    imports: [CommonModule, FormsModule, DragDropModule, CdkMenuModule, BoardListComponent],
     templateUrl: './board.component.html',
     styleUrl: './board.component.scss'
 })
@@ -28,12 +29,20 @@ export class BoardComponent implements OnInit, AfterViewChecked {
   private readonly elementRef = inject(ElementRef<HTMLElement>);
   @ViewChild('descriptionInput') descriptionInput?: ElementRef<HTMLTextAreaElement>;
   @ViewChild('descriptionView') descriptionView?: ElementRef<HTMLElement>;
+  @ViewChild('boardMenuPanel') boardMenuPanel?: ElementRef<HTMLElement>;
   commentFocused = false;
   descriptionEditing = false;
   attachBoardId = '';
   attachListId = '';
   attachStatus = '';
   attachError = false;
+  boardMenuOpen = false;
+  boardSearchTerm = '';
+  newBoardTitle = '';
+  createBoardError = '';
+  boardSettingsOpen = false;
+  boardSettingsTitle = '';
+  boardSettingsError = '';
   private descriptionSaveTimeout?: number;
   private lastScrolledCardId: string | null = null;
 
@@ -95,6 +104,14 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     return this.boardService.boards.filter((board) =>
       this.boardService.isCardOnBoard(card.id, board.id),
     );
+  }
+
+  get filteredBoards(): Board[] {
+    const term = this.boardSearchTerm.trim().toLowerCase();
+    if (!term) {
+      return this.boardService.boards;
+    }
+    return this.boardService.boards.filter((board) => board.title.toLowerCase().includes(term));
   }
 
   get canAttachCard(): boolean {
@@ -276,6 +293,51 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     this.resetAttachState(card);
   }
 
+  selectBoard(board: Board): void {
+    if (this.boardService.board?.id === board.id) {
+      return;
+    }
+    this.boardMenuOpen = false;
+    this.boardSettingsOpen = false;
+    this.boardSettingsError = '';
+    this.closePanel();
+    this.boardService.setActiveBoard(board.id);
+    this.boardSettingsTitle = board.title;
+    this.resetBoardMenuState();
+  }
+
+  createBoard(): void {
+    const result = this.boardService.createBoard(this.newBoardTitle);
+    if (!result.success) {
+      this.createBoardError = result.error ?? 'Unable to create board.';
+      return;
+    }
+    this.boardMenuOpen = false;
+    this.newBoardTitle = '';
+    this.createBoardError = '';
+    this.boardSearchTerm = '';
+  }
+
+  confirmDeleteCurrentBoard(): void {
+    const board = this.boardService.board;
+    if (!board) {
+      return;
+    }
+    if (!window.confirm(`Delete "${board.title}"?`)) {
+      return;
+    }
+    const result = this.boardService.deleteBoard(board.id);
+    if (!result.success) {
+      this.boardSettingsError = result.error ?? 'Unable to delete board.';
+      return;
+    }
+    this.boardMenuOpen = false;
+    this.boardSettingsOpen = false;
+    this.boardSettingsError = '';
+    this.closePanel();
+    this.boardSearchTerm = '';
+  }
+
   renderMarkdown(text: string): string {
     return this.markdown.render(text);
   }
@@ -297,6 +359,42 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     this.attachError = false;
   }
 
+  private resetBoardMenuState(): void {
+    this.boardSearchTerm = '';
+    this.newBoardTitle = '';
+    this.createBoardError = '';
+  }
+
+  toggleBoardSettings(): void {
+    this.boardSettingsOpen = !this.boardSettingsOpen;
+    if (this.boardSettingsOpen) {
+      this.boardSettingsTitle = this.boardService.board?.title ?? '';
+    } else {
+      this.boardSettingsError = '';
+    }
+  }
+
+  saveBoardSettings(): void {
+    const board = this.boardService.board;
+    if (!board) {
+      return;
+    }
+    const result = this.boardService.renameBoard(board.id, this.boardSettingsTitle);
+    if (!result.success) {
+      this.boardSettingsError = result.error ?? 'Unable to rename board.';
+      return;
+    }
+    this.boardSettingsError = '';
+  }
+
+  toggleBoardMenu(event: MouseEvent): void {
+    event.stopPropagation();
+    this.boardMenuOpen = !this.boardMenuOpen;
+    if (!this.boardMenuOpen) {
+      this.resetBoardMenuState();
+    }
+  }
+
   private scrollSelectedCardIntoView(cardId: string): void {
     const host = this.elementRef.nativeElement;
     const card = host.querySelector(`[data-testid="card"][data-card-id="${cardId}"]`);
@@ -313,5 +411,36 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     if (this.boardService.selectedCard) {
       this.closePanel();
     }
+    if (this.boardMenuOpen) {
+      this.boardMenuOpen = false;
+      this.resetBoardMenuState();
+    }
+    if (this.boardSettingsOpen) {
+      this.boardSettingsOpen = false;
+      this.boardSettingsError = '';
+    }
+    const activeElement = document.activeElement as HTMLElement | null;
+    if (activeElement?.classList.contains('board-selector')) {
+      activeElement.blur();
+    }
+  }
+
+  @HostListener('document:click', ['$event'])
+  handleDocumentClick(event: MouseEvent): void {
+    if (!this.boardMenuOpen) {
+      return;
+    }
+    const target = event.target as HTMLElement | null;
+    if (!target) {
+      return;
+    }
+    if (this.boardMenuPanel?.nativeElement.contains(target)) {
+      return;
+    }
+    if (target.closest('.board-selector')) {
+      return;
+    }
+    this.boardMenuOpen = false;
+    this.resetBoardMenuState();
   }
 }

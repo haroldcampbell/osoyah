@@ -15,9 +15,11 @@
 -   Read the last session hand-off.
 -   Before answering status or decision questions, read the latest entry in `session-hand-offs/` and `docs/decisions.md`.
 -   Ensure new session hand-off filenames do not include milestone IDs (e.g., avoid `M00X`).
+-   Strict naming rule: filenames must be `yyyy-mm-dd-nn-title.md` and must not include spec or milestone identifiers (e.g., `S00X`, `M00X`, `s002`, `m005`). If present, rename before proceeding.
 
 ## Entries
 
+-   2025-12-27-04-attach-flow.md - S002 attach flow + E2E updates, modal experiment note
 -   2025-12-27-03-multi-board-card-model.md - S001 global card identity + memberships data model update
 -   2025-12-27-02-milestone-planning-mockups.md - M005–M009 specs + Excalidraw mockups
 -   2025-12-27-01-drag-placeholder-cues.md - Global CDK drag placeholder/preview styling

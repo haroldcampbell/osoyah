@@ -317,6 +317,63 @@
   font-weight: 400;
 }
 
+.card-panel-attach {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  gap: tokens.$space-sm;
+  align-items: end;
+}
+
+.card-panel-field {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$space-xs;
+  font-size: 0.8rem;
+  color: tokens.$color-text-muted;
+}
+
+.card-panel-field select {
+  border: 1px solid tokens.$color-border;
+  border-radius: tokens.$radius-control;
+  padding: tokens.$input-padding-y tokens.$input-padding-x;
+  background: tokens.$color-card;
+  font-family: inherit;
+}
+
+.card-panel-field select:disabled {
+  background: tokens.$color-surface;
+  color: tokens.$color-text-soft;
+}
+
+.card-panel-attach-button {
+  border: none;
+  border-radius: tokens.$radius-button;
+  padding: tokens.$button-padding-y tokens.$button-padding-x;
+  background: tokens.$color-accent;
+  color: tokens.$color-card;
+  cursor: pointer;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.card-panel-attach-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.card-panel-attach-status {
+  font-size: 0.85rem;
+  color: tokens.$color-text-muted;
+}
+
+.card-panel-attach-status-muted {
+  color: tokens.$color-text-soft;
+}
+
+.card-panel-attach-status-error {
+  color: tokens.$color-state-error;
+}
+
 .card-panel-save {
   align-self: flex-end;
   border: none;
@@ -499,6 +556,14 @@
 
   .list {
     min-width: 220px;
+  }
+
+  .card-panel-attach {
+    grid-template-columns: 1fr;
+  }
+
+  .card-panel-attach-button {
+    width: 100%;
   }
 }
 .card-panel-section-title {

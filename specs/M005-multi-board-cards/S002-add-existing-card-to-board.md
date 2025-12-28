@@ -13,11 +13,11 @@ Make it fast to add an existing card to a board with no primary board concept.
 - New permissions or multi-user collaboration.
 
 ## Definition of Done
-- [ ] Users can add an existing card to a target board from the UI.
-- [ ] Card appears in the selected list on the target board without duplication.
-- [ ] Source board retains the card unless explicitly removed.
-- [ ] No primary board is implied in UI copy.
-- [ ] Acceptance tests pass.
+- [x] Users can add an existing card to a target board from the UI.
+- [x] Card appears in the selected list on the target board without duplication.
+- [x] Source board retains the card unless explicitly removed.
+- [x] No primary board is implied in UI copy.
+- [x] Acceptance tests pass.
 
 ## Acceptance tests (exact commands + expected artifacts/output)
 - `npm run lint` passes.
@@ -25,4 +25,6 @@ Make it fast to add an existing card to a board with no primary board concept.
 - `npm run e2e` passes.
 
 ## Notes (edge cases, hazards, perf constraints)
-- Define default list selection behavior for newly attached cards.
+- Allow list selection in the attach flow and default to the left-most list.
+- If a board has no lists, the card cannot be attached to that board.
+- Future: allow configuring a default list per board via settings.

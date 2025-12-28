@@ -16,6 +16,7 @@ export class BoardService {
   }, 60000);
 
   board: Board | null = null;
+  boards: Board[] = [];
   loading = true;
   error = '';
 
@@ -47,7 +48,14 @@ export class BoardService {
       .subscribe({
         next: (data) => {
           this.cardsById = this.indexCards(data.cards ?? []);
-          this.board = data.boards[0] ?? this.createEmptyBoard();
+          const boards = data.boards ?? [];
+          if (boards.length === 0) {
+            this.board = this.createEmptyBoard();
+            this.boards = [this.board];
+          } else {
+            this.boards = boards;
+            this.board = boards[0];
+          }
           this.closeCardPanel();
           this.loading = false;
         },
@@ -68,6 +76,51 @@ export class BoardService {
 
   isEditingCard(list: BoardList, card: Card): boolean {
     return this.editingCard?.listId === list.id && this.editingCard?.cardId === card.id;
+  }
+
+  getBoard(boardId: string): Board | null {
+    return this.boards.find((board) => board.id === boardId) ?? null;
+  }
+
+  getList(boardId: string, listId: string): BoardList | null {
+    const board = this.getBoard(boardId);
+    return board?.lists.find((list) => list.id === listId) ?? null;
+  }
+
+  isCardOnBoard(cardId: string, boardId: string): boolean {
+    const board = this.getBoard(boardId);
+    if (!board) {
+      return false;
+    }
+    return board.lists.some((list) => list.cardIds.includes(cardId));
+  }
+
+  addCardToBoard(
+    cardId: string,
+    boardId: string,
+    listId: string,
+  ): { success: boolean; error?: string } {
+    const card = this.getCard(cardId);
+    if (!card) {
+      return { success: false, error: 'Card not found.' };
+    }
+    const board = this.getBoard(boardId);
+    if (!board) {
+      return { success: false, error: 'Board not found.' };
+    }
+    if (board.lists.length === 0) {
+      return { success: false, error: 'Board has no lists.' };
+    }
+    if (this.isCardOnBoard(cardId, boardId)) {
+      return { success: false, error: 'Card already on this board.' };
+    }
+    const list = board.lists.find((item) => item.id === listId);
+    if (!list) {
+      return { success: false, error: 'List not found.' };
+    }
+
+    list.cardIds.push(card.id);
+    return { success: true };
   }
 
   getCard(cardId: string): Card | null {

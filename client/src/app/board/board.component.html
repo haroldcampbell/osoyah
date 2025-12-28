@@ -145,6 +145,60 @@
                 </section>
 
                 <section class="card-panel-section">
+                  <div class="card-panel-label">Add to board</div>
+                  <div class="card-panel-attach">
+                    <label class="card-panel-field">
+                      <span>Board</span>
+                      <select
+                        [(ngModel)]="attachBoardId"
+                        (ngModelChange)="handleAttachBoardChange($event)"
+                        data-testid="attach-board-select"
+                      >
+                        @for (board of boardService.boards; track board.id) {
+                          <option [value]="board.id">{{ board.title }}</option>
+                        }
+                      </select>
+                    </label>
+                    <label class="card-panel-field">
+                      <span>List</span>
+                      <select
+                        [(ngModel)]="attachListId"
+                        (ngModelChange)="handleAttachListChange($event)"
+                        [disabled]="attachBoardLists.length === 0"
+                        data-testid="attach-list-select"
+                      >
+                        @for (list of attachBoardLists; track list.id) {
+                          <option [value]="list.id">{{ list.title }}</option>
+                        }
+                      </select>
+                    </label>
+                    <button
+                      type="button"
+                      class="card-panel-attach-button"
+                      [disabled]="!canAttachCard"
+                      (click)="attachCardToBoard(selectedCard)"
+                      data-testid="attach-board-button"
+                    >
+                      Add to board
+                    </button>
+                  </div>
+                  @if (attachNotice) {
+                    <div class="card-panel-attach-status card-panel-attach-status-muted">
+                      {{ attachNotice }}
+                    </div>
+                  }
+                  @if (attachStatus) {
+                    <div
+                      class="card-panel-attach-status"
+                      [class.card-panel-attach-status-error]="attachError"
+                      data-testid="attach-status"
+                    >
+                      {{ attachStatus }}
+                    </div>
+                  }
+                </section>
+
+                <section class="card-panel-section">
                   <div class="card-panel-label">Comments</div>
                   <div class="card-panel-comments">
                     @for (comment of selectedCard.comments; track comment.id) {

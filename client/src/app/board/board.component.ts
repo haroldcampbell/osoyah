@@ -13,7 +13,7 @@ import { FormsModule } from '@angular/forms';
 
 import { BoardService } from '../services/board.service';
 import { BoardListComponent } from './list/board-list.component';
-import { BoardList, Card, CardComment } from '../models/board.model';
+import { Board, BoardList, Card, CardComment } from '../models/board.model';
 import { MarkdownService } from '../services/markdown.service';
 
 @Component({
@@ -30,6 +30,10 @@ export class BoardComponent implements OnInit, AfterViewChecked {
   @ViewChild('descriptionView') descriptionView?: ElementRef<HTMLElement>;
   commentFocused = false;
   descriptionEditing = false;
+  attachBoardId = '';
+  attachListId = '';
+  attachStatus = '';
+  attachError = false;
   private descriptionSaveTimeout?: number;
   private lastScrolledCardId: string | null = null;
 
@@ -51,6 +55,7 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     }
     this.lastScrolledCardId = this.selectedCard.id;
     this.descriptionEditing = false;
+    this.resetAttachState(this.selectedCard);
     this.scrollSelectedCardIntoView(this.selectedCard.id);
   }
 
@@ -72,6 +77,72 @@ export class BoardComponent implements OnInit, AfterViewChecked {
       return null;
     }
     return this.boardService.getCardFromList(list, selection.cardId);
+  }
+
+  get attachBoard(): Board | null {
+    return this.attachBoardId ? this.boardService.getBoard(this.attachBoardId) : null;
+  }
+
+  get attachBoardLists(): BoardList[] {
+    return this.attachBoard?.lists ?? [];
+  }
+
+  get canAttachCard(): boolean {
+    if (!this.selectedCard) {
+      return false;
+    }
+    if (!this.attachBoardId || !this.attachListId) {
+      return false;
+    }
+    if (this.boardService.isCardOnBoard(this.selectedCard.id, this.attachBoardId)) {
+      return false;
+    }
+    return true;
+  }
+
+  get attachNotice(): string {
+    const card = this.selectedCard;
+    if (!card || !this.attachBoard) {
+      return '';
+    }
+    if (this.attachStatus && !this.attachError) {
+      return '';
+    }
+    if (this.attachBoard.lists.length === 0) {
+      return 'This board has no lists yet.';
+    }
+    if (this.boardService.isCardOnBoard(card.id, this.attachBoard.id)) {
+      return 'Card already on this board.';
+    }
+    return '';
+  }
+
+  handleAttachBoardChange(boardId: string): void {
+    this.attachBoardId = boardId;
+    const firstListId = this.attachBoard?.lists[0]?.id ?? '';
+    this.attachListId = firstListId;
+    this.attachStatus = '';
+    this.attachError = false;
+  }
+
+  handleAttachListChange(listId: string): void {
+    this.attachListId = listId;
+    this.attachStatus = '';
+    this.attachError = false;
+  }
+
+  attachCardToBoard(card: Card): void {
+    const result = this.boardService.addCardToBoard(card.id, this.attachBoardId, this.attachListId);
+    if (!result.success) {
+      this.attachStatus = result.error ?? 'Unable to add card to board.';
+      this.attachError = true;
+      return;
+    }
+    const boardTitle = this.attachBoard?.title ?? 'Board';
+    const listTitle =
+      this.attachBoardLists.find((list) => list.id === this.attachListId)?.title ?? 'List';
+    this.attachStatus = `Added to ${boardTitle} / ${listTitle}.`;
+    this.attachError = false;
   }
 
   addComment(card: Card): void {
@@ -151,6 +222,10 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     this.boardService.closeCardPanel();
     this.commentFocused = false;
     this.descriptionEditing = false;
+    this.attachBoardId = '';
+    this.attachListId = '';
+    this.attachStatus = '';
+    this.attachError = false;
     if (this.descriptionSaveTimeout) {
       window.clearTimeout(this.descriptionSaveTimeout);
       this.descriptionSaveTimeout = undefined;
@@ -169,6 +244,23 @@ export class BoardComponent implements OnInit, AfterViewChecked {
 
   renderMarkdown(text: string): string {
     return this.markdown.render(text);
+  }
+
+  private resetAttachState(card: Card): void {
+    const boards = this.boardService.boards;
+    if (!boards.length) {
+      this.attachBoardId = '';
+      this.attachListId = '';
+      this.attachStatus = '';
+      this.attachError = false;
+      return;
+    }
+    const candidate =
+      boards.find((board) => !this.boardService.isCardOnBoard(card.id, board.id)) ?? boards[0];
+    this.attachBoardId = candidate.id;
+    this.attachListId = candidate.lists[0]?.id ?? '';
+    this.attachStatus = '';
+    this.attachError = false;
   }
 
   private scrollSelectedCardIntoView(cardId: string): void {

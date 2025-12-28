@@ -1,22 +1,8 @@
-import { expect, type Locator, test } from '@playwright/test';
+import { expect, test } from '@playwright/test';
+import { clickCardBackground } from './helpers';
 
 // Spec: S002 Card Detail Side Panel
 
-async function clickCardBackground(
-  page: { mouse: { click: (x: number, y: number) => Promise<void> } },
-  card: Locator,
-): Promise<void> {
-  const meta = card.locator('.card-meta');
-  if (await meta.count()) {
-    await meta.first().click();
-    return;
-  }
-  const box = await card.boundingBox();
-  if (!box) {
-    throw new Error('Card bounding box missing.');
-  }
-  await page.mouse.click(box.x + box.width / 2, box.y + box.height - 6);
-}
 
 test('S002 opens the card panel, manages comments, and closes it', async ({ page }) => {
   await page.goto('/');

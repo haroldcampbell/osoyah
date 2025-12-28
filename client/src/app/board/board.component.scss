@@ -317,6 +317,50 @@
   font-weight: 400;
 }
 
+.card-panel-memberships {
+  display: flex;
+  flex-wrap: wrap;
+  gap: tokens.$space-xs;
+}
+
+.card-panel-membership {
+  border: 1px solid tokens.$color-border;
+  border-radius: tokens.$radius-button;
+  background: tokens.$color-card;
+  padding: 0.35rem 0.6rem;
+  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: tokens.$space-xs;
+  cursor: pointer;
+  color: tokens.$color-text-primary;
+  white-space: nowrap;
+}
+
+.card-panel-membership:hover {
+  background: tokens.$color-surface;
+}
+
+.card-panel-membership:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+
+.card-panel-membership-current {
+  border-color: tokens.$color-accent;
+  color: tokens.$color-accent;
+}
+
+.card-panel-membership-tag {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: tokens.$color-accent;
+  color: tokens.$color-card;
+  padding: 0.1rem 0.35rem;
+  border-radius: 999px;
+}
+
 .card-panel-attach {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
@@ -564,6 +608,12 @@
 
   .card-panel-attach-button {
     width: 100%;
+  }
+
+  .card-panel-memberships {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: tokens.$space-xs;
   }
 }
 .card-panel-section-title {

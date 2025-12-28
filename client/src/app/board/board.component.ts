@@ -87,6 +87,16 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     return this.attachBoard?.lists ?? [];
   }
 
+  get membershipBoards(): Board[] {
+    const card = this.selectedCard;
+    if (!card) {
+      return [];
+    }
+    return this.boardService.boards.filter((board) =>
+      this.boardService.isCardOnBoard(card.id, board.id),
+    );
+  }
+
   get canAttachCard(): boolean {
     if (!this.selectedCard) {
       return false;
@@ -240,6 +250,30 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     if (!this.boardService.panelCommentDraft.trim()) {
       this.commentFocused = false;
     }
+  }
+
+  isCurrentBoard(boardId: string): boolean {
+    return this.boardService.board?.id === boardId;
+  }
+
+  navigateToBoard(boardId: string, card: Card): void {
+    if (this.isCurrentBoard(boardId)) {
+      return;
+    }
+    const board = this.boardService.getBoard(boardId);
+    if (!board) {
+      return;
+    }
+    const list = board.lists.find((item) => item.cardIds.includes(card.id));
+    this.boardService.board = board;
+    if (!list) {
+      this.closePanel();
+      return;
+    }
+    this.boardService.selectedCard = { listId: list.id, cardId: card.id };
+    this.lastScrolledCardId = null;
+    this.descriptionEditing = false;
+    this.resetAttachState(card);
   }
 
   renderMarkdown(text: string): string {

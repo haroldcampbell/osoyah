@@ -20,7 +20,7 @@ Out-of-scope:
 ## Specs
 - [x] S001-Global Card Identity + Board Memberships
 - [x] S002-Add Existing Card to Board
-- [ ] S003-Membership Indicators + Navigation
+- [x] S003-Membership Indicators + Navigation
 - [ ] S004-Board Selection + CRUD
 
 ## Notes

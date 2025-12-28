@@ -19,6 +19,7 @@
 
 ## Entries
 
+-   2025-12-28-01-membership-navigation.md - S003 membership indicators + navigation UI/E2E
 -   2025-12-27-04-attach-flow.md - S002 attach flow + E2E updates, modal experiment note
 -   2025-12-27-03-multi-board-card-model.md - S001 global card identity + memberships data model update
 -   2025-12-27-02-milestone-planning-mockups.md - M005–M009 specs + Excalidraw mockups

@@ -14,7 +14,7 @@
   @if (boardService.board && !boardService.loading) {
     <div class="board" data-testid="board">
       <div class="board-toolbar">
-        <div class="board-name">{{ boardService.board.title }}</div>
+        <div class="board-name" data-testid="board-name">{{ boardService.board.title }}</div>
         <div class="add-list">
           <input
             type="text"
@@ -141,6 +141,28 @@
                         )
                       }}
                     </span>
+                  </div>
+                </section>
+
+                <section class="card-panel-section">
+                  <div class="card-panel-label">On boards</div>
+                  <div class="card-panel-memberships" data-testid="membership-list">
+                    @for (board of membershipBoards; track board.id) {
+                      <button
+                        type="button"
+                        class="card-panel-membership"
+                        [class.card-panel-membership-current]="isCurrentBoard(board.id)"
+                        [disabled]="isCurrentBoard(board.id)"
+                        (click)="navigateToBoard(board.id, selectedCard)"
+                        data-testid="membership-board"
+                        [attr.data-board-id]="board.id"
+                      >
+                        <span class="card-panel-membership-name">{{ board.title }}</span>
+                        @if (isCurrentBoard(board.id)) {
+                          <span class="card-panel-membership-tag">Current</span>
+                        }
+                      </button>
+                    }
                   </div>
                 </section>
 

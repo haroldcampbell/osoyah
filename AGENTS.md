@@ -56,6 +56,7 @@ Violating any of the above is considered a critical failure.
     - All development work must be driven by files in `/specs/`
     - Do not implement features that are not explicitly described in a spec
     - Specs are not required to make changes to ./docs/
+    - A spec in Milestone can only be marked as done if and only if, the DoDs in the spec are checked as Done or marked "Won't do"
 
 1. **One spec at a time**
 

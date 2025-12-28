@@ -13,11 +13,17 @@ Allow a single card to be referenced across multiple boards while preserving cur
 - Cross-board hierarchy or roll-ups.
 
 ## Definition of Done
-- [ ] Cards have stable global IDs distinct from list-level ordering.
-- [ ] Board data supports multiple board memberships per card.
-- [ ] Existing single-board flows continue to work.
-- [ ] Mock data updated to exercise multi-board membership.
-- [ ] Acceptance tests pass.
+- [x] Cards have stable global IDs distinct from list-level ordering.
+- [x] Board data supports multiple board memberships per card.
+- [x] Existing single-board flows continue to work.
+- [x] Mock data updated to exercise multi-board membership.
+- [x] Data shape sketch documented in `docs/architecture.md`.
+- [x] Acceptance tests pass.
+
+## Documentation
+- Add a concise data shape sketch to `docs/architecture.md` covering the new card identity + board membership model.
+- Include the minimal fields and relationships needed for cards, boards, lists, and memberships.
+- Note how list ordering remains local to a board/list even when cards appear on multiple boards.
 
 ## Acceptance tests (exact commands + expected artifacts/output)
 - `npm run lint` passes.

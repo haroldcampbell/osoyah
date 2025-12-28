@@ -30,6 +30,7 @@ and focuses on how we work session-to-session.
 -   The user runs `npm run test` and `npm run e2e` externally; logs are stored in
     `client/logs/` for review.
 -   Any new testing method should explicitly write logs under `client/logs/`.
+-   Recommend splitting E2E specs when files exceed ~200 lines, cover multiple specs, or need divergent setup flows.
 
 ## Hand-Offs and Decisions
 

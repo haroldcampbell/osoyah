@@ -58,7 +58,7 @@ export class BoardListComponent implements AfterViewChecked {
   }
 
   requestRemoveList(): void {
-    if (!window.confirm(`Remove "${this.list.title}" and all cards?`)) {
+    if (!window.confirm(`Remove "${this.list.title}" from this board?`)) {
       return;
     }
 

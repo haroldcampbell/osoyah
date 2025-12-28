@@ -16,11 +16,16 @@ export interface CardComment {
 export interface BoardList {
   id: string;
   title: string;
-  cards: Card[];
+  cardIds: string[];
 }
 
 export interface Board {
   id: string;
   title: string;
   lists: BoardList[];
+}
+
+export interface BoardsResponse {
+  boards: Board[];
+  cards: Card[];
 }

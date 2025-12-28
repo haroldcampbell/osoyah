@@ -19,10 +19,15 @@ describe('BoardListComponent', () => {
   let fixture: ComponentFixture<BoardListComponent>;
   let boardService: BoardService;
 
+  const mockCards = [
+    makeCard('card-1', 'Card One', 'First'),
+    makeCard('card-2', 'Card Two', ''),
+  ];
+
   const mockList: BoardList = {
     id: 'list-1',
     title: 'Backlog',
-    cards: [makeCard('card-1', 'Card One', 'First'), makeCard('card-2', 'Card Two', '')],
+    cardIds: ['card-1', 'card-2'],
   };
 
   beforeEach(async () => {
@@ -32,6 +37,10 @@ describe('BoardListComponent', () => {
 
     fixture = TestBed.createComponent(BoardListComponent);
     boardService = TestBed.inject(BoardService);
+    boardService.cardsById = {
+      'card-1': mockCards[0],
+      'card-2': mockCards[1],
+    };
     boardService.board = { id: 'board-1', title: 'Test Board', lists: [mockList] };
     fixture.componentInstance.list = mockList;
     fixture.detectChanges();
@@ -50,7 +59,10 @@ describe('BoardListComponent', () => {
     const button = fixture.debugElement.query(By.css('[data-testid="add-card-button"]'));
     button.nativeElement.click();
 
-    expect(mockList.cards.some((card) => card.title === 'New card')).toBe(true);
+    const newCardId = mockList.cardIds.find(
+      (cardId) => boardService.getCard(cardId)?.title === 'New card',
+    );
+    expect(newCardId).toBeDefined();
   });
 
   it('emits removeList when confirmed', () => {

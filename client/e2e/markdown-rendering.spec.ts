@@ -85,9 +85,13 @@ test('S006-01 renders markdown in side panel comments', async ({ page }) => {
   const panel = page.locator('[data-testid="card-panel"]');
   await expect(panel).toBeVisible();
 
-  await panel.locator('#card-panel-comment').fill('A *bold* comment with `code`');
+  const commentInput = panel.locator('#card-panel-comment');
+  await commentInput.scrollIntoViewIfNeeded();
+  await expect(commentInput).toBeVisible();
+  await commentInput.fill('A *bold* comment with `code`');
   await panel.getByRole('button', { name: 'Post comment' }).click();
   const comment = panel.locator('.card-panel-comment').last();
+  await expect(comment).toBeVisible();
   await expect(comment.locator('strong')).toHaveText('bold');
   await expect(comment.locator('code')).toHaveText('code');
 });

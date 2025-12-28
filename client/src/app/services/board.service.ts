@@ -1,13 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
-import { map, Observable, take } from 'rxjs';
+import { Observable, take } from 'rxjs';
 
-import { Board, BoardList, Card, CardComment } from '../models/board.model';
-
-interface BoardsResponse {
-  boards: Board[];
-}
+import { Board, BoardList, Card, CardComment, BoardsResponse } from '../models/board.model';
 
 @Injectable({ providedIn: 'root' })
 export class BoardService {
@@ -25,6 +21,7 @@ export class BoardService {
 
   newListTitle = '';
   newCardTitles: Record<string, string> = {};
+  cardsById: Record<string, Card> = {};
 
   editingListId: string | null = null;
   editingListTitle = '';
@@ -38,18 +35,19 @@ export class BoardService {
   panelCardDescription = '';
   panelCommentDraft = '';
 
-  getBoards(): Observable<Board[]> {
-    return this.http.get<BoardsResponse>(this.dataUrl).pipe(map((data) => data.boards));
+  getBoardData(): Observable<BoardsResponse> {
+    return this.http.get<BoardsResponse>(this.dataUrl);
   }
 
   loadBoard(): void {
     this.loading = true;
     this.error = '';
-    this.getBoards()
+    this.getBoardData()
       .pipe(take(1))
       .subscribe({
-        next: (boards) => {
-          this.board = boards[0] ?? this.createEmptyBoard();
+        next: (data) => {
+          this.cardsById = this.indexCards(data.cards ?? []);
+          this.board = data.boards[0] ?? this.createEmptyBoard();
           this.closeCardPanel();
           this.loading = false;
         },
@@ -72,6 +70,17 @@ export class BoardService {
     return this.editingCard?.listId === list.id && this.editingCard?.cardId === card.id;
   }
 
+  getCard(cardId: string): Card | null {
+    return this.cardsById[cardId] ?? null;
+  }
+
+  getCardFromList(list: BoardList, cardId: string): Card | null {
+    if (!list.cardIds.includes(cardId)) {
+      return null;
+    }
+    return this.getCard(cardId);
+  }
+
   addList(): void {
     if (!this.board) {
       return;
@@ -85,7 +94,7 @@ export class BoardService {
     this.board.lists.push({
       id: this.createId('list'),
       title,
-      cards: [],
+      cardIds: [],
     });
     this.newListTitle = '';
   }
@@ -131,14 +140,16 @@ export class BoardService {
     }
 
     const now = new Date().toISOString();
-    list.cards.push({
+    const card: Card = {
       id: this.createId('card'),
       title,
       description: '',
       createdAt: now,
       updatedAt: now,
       comments: [],
-    });
+    };
+    this.cardsById[card.id] = card;
+    list.cardIds.push(card.id);
     this.newCardTitles[list.id] = '';
   }
 
@@ -172,7 +183,7 @@ export class BoardService {
   }
 
   removeCard(list: BoardList, card: Card): void {
-    list.cards = list.cards.filter((item) => item.id !== card.id);
+    list.cardIds = list.cardIds.filter((item) => item !== card.id);
     if (this.selectedCard?.cardId === card.id) {
       this.closeCardPanel();
     }
@@ -242,7 +253,7 @@ export class BoardService {
     moveItemInArray(this.board.lists, event.previousIndex, event.currentIndex);
   }
 
-  dropCard(event: CdkDragDrop<Card[]>): void {
+  dropCard(event: CdkDragDrop<string[]>): void {
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
       return;
@@ -262,6 +273,13 @@ export class BoardService {
       title: 'New Board',
       lists: [],
     };
+  }
+
+  private indexCards(cards: Card[]): Record<string, Card> {
+    return cards.reduce<Record<string, Card>>((acc, card) => {
+      acc[card.id] = card;
+      return acc;
+    }, {});
   }
 
   private createId(prefix: string): string {

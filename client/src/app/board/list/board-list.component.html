@@ -45,23 +45,25 @@
   cdkDropList
   [id]="list.id"
   [cdkDropListConnectedTo]="boardService.cardDropListIds"
-  [cdkDropListData]="list.cards"
+  [cdkDropListData]="list.cardIds"
   (cdkDropListDropped)="boardService.dropCard($event)"
   data-testid="card-dropzone"
   [attr.data-list-id]="list.id"
 >
-  @for (card of list.cards; track card.id) {
-    <app-board-card
-      cdkDrag
-      data-testid="card"
-      [attr.data-card-id]="card.id"
-      [class.card-selected]="boardService.selectedCard?.cardId === card.id"
-      [card]="card"
-      [list]="list"
-    ></app-board-card>
+  @for (cardId of list.cardIds; track cardId) {
+    @if (boardService.getCard(cardId); as card) {
+      <app-board-card
+        cdkDrag
+        data-testid="card"
+        [attr.data-card-id]="card.id"
+        [class.card-selected]="boardService.selectedCard?.cardId === card.id"
+        [card]="card"
+        [list]="list"
+      ></app-board-card>
+    }
   }
 
-  @if (list.cards.length === 0) {
+  @if (list.cardIds.length === 0) {
     <div class="empty-cards">No cards yet.</div>
   }
 </div>

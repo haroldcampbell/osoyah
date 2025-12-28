@@ -18,6 +18,7 @@
 
 ## Entries
 
+-   2025-12-27-03-multi-board-card-model.md - S001 global card identity + memberships data model update
 -   2025-12-27-02-milestone-planning-mockups.md - M005–M009 specs + Excalidraw mockups
 -   2025-12-27-01-drag-placeholder-cues.md - Global CDK drag placeholder/preview styling
 -   2025-12-25-03-s006-01-polish.md - S006-01 polish, panel/layout updates, global markdown styles

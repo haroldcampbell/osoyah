@@ -19,7 +19,7 @@ describe('BoardCardComponent', () => {
     updatedAt: '2025-01-01T00:00:00Z',
     comments: [],
   };
-  const mockList: BoardList = { id: 'list-1', title: 'Backlog', cards: [mockCard] };
+  const mockList: BoardList = { id: 'list-1', title: 'Backlog', cardIds: ['card-1'] };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -29,6 +29,7 @@ describe('BoardCardComponent', () => {
     fixture = TestBed.createComponent(BoardCardComponent);
     component = fixture.componentInstance;
     boardService = TestBed.inject(BoardService);
+    boardService.cardsById = { 'card-1': mockCard };
     boardService.board = { id: 'board-1', title: 'Test Board', lists: [mockList] };
     component.card = mockCard;
     component.list = mockList;

@@ -7,324 +7,376 @@
         {
           "id": "list-1",
           "title": "Backlog",
-          "cards": [
-            {
-              "id": "card-1",
-              "title": "Define MVP",
-              "description": "Outline the minimum viable feature set.",
-              "createdAt": "2025-01-01T09:00:00Z",
-              "updatedAt": "2025-01-04T13:00:00Z",
-              "comments": [
-                {
-                  "id": "comment-6",
-                  "message": "This is blocked by the latest review.",
-                  "createdAt": "2025-01-03T09:00:00Z"
-                },
-                {
-                  "id": "comment-7",
-                  "message": "Confirm requirements before moving forward.",
-                  "createdAt": "2025-01-03T12:00:00Z"
-                },
-                {
-                  "id": "comment-21",
-                  "message": "Clarify which features are must-haves.",
-                  "createdAt": "2025-01-04T09:00:00Z"
-                },
-                {
-                  "id": "comment-22",
-                  "message": "Add a quick timeline estimate.",
-                  "createdAt": "2025-01-04T11:00:00Z"
-                },
-                {
-                  "id": "comment-23",
-                  "message": "Share with design for feedback.",
-                  "createdAt": "2025-01-04T13:00:00Z"
-                }
-              ]
-            },
-            {
-              "id": "card-2",
-              "title": "Wireframe core flows",
-              "description": "Sketch board, list, and card interactions.",
-              "createdAt": "2025-01-02T10:30:00Z",
-              "updatedAt": "2025-01-03T18:00:00Z",
-              "comments": [
-                {
-                  "id": "comment-8",
-                  "message": "Add screenshots when ready.",
-                  "createdAt": "2025-01-03T15:00:00Z"
-                },
-                {
-                  "id": "comment-9",
-                  "message": "Double-check edge cases before release.",
-                  "createdAt": "2025-01-03T18:00:00Z"
-                }
-              ]
-            },
-            {
-              "id": "card-14",
-              "title": "Markdown reference card",
-              "description": "# Heading level 1\n\nHere is some context.\n\n## Heading level 2\n\nParagraph with *bold*, _italic_, ***bold + italic***, and `inline code`.\n\n- Bullet item one\n- Bullet item two with a [link](https://example.com \"Example title\")\n  - Nested bullet with `code`\n\n> Blockquote sample\n>\n> Second paragraph in the same quote.\n\n```\ncode block example\nconst value = 42;\n```\n\n```js\n// fenced code with language\nconst greeting = 'hello';\n```\n\n1. Numbered item one\n2. Numbered item two\n   1. Nested ordered item\n\n![Alt text](https://placehold.co/600x400 \"Image title\")\n\n### Another header\n\n> Nested blockquote\n> Deeper explanation here.\n> Another line\n\nFinal paragraph to wrap up the reference.",
-              "createdAt": "2025-01-02T12:00:00Z",
-              "updatedAt": "2025-01-03T12:00:00Z",
-              "comments": []
-            }
+          "cardIds": [
+            "card-1",
+            "card-2",
+            "card-14"
           ]
         },
         {
           "id": "list-2",
           "title": "In Progress",
-          "cards": [
-            {
-              "id": "card-3",
-              "title": "Set up CI",
-              "description": "Add basic lint and test checks.",
-              "createdAt": "2025-01-03T14:15:00Z",
-              "updatedAt": "2025-01-04T00:00:00Z",
-              "comments": [
-                {
-                  "id": "comment-10",
-                  "message": "Sync with the team on this.",
-                  "createdAt": "2025-01-03T21:00:00Z"
-                },
-                {
-                  "id": "comment-11",
-                  "message": "This is blocked by the latest review.",
-                  "createdAt": "2025-01-04T00:00:00Z"
-                }
-              ]
-            }
+          "cardIds": [
+            "card-3"
           ]
         },
         {
           "id": "list-3",
           "title": "Done",
-          "cards": [
-            {
-              "id": "card-4",
-              "title": "Initialize repo",
-              "description": "Bootstrap project structure and docs.",
-              "createdAt": "2025-01-04T16:45:00Z",
-              "updatedAt": "2025-01-04T16:45:00Z",
-              "comments": [
-                {
-                  "id": "comment-12",
-                  "message": "Confirm requirements before moving forward.",
-                  "createdAt": "2025-01-04T03:00:00Z"
-                },
-                {
-                  "id": "comment-13",
-                  "message": "Add screenshots when ready.",
-                  "createdAt": "2025-01-04T06:00:00Z"
-                }
-              ]
-            }
+          "cardIds": [
+            "card-4"
           ]
         },
         {
           "id": "list-4",
           "title": "Review",
-          "cards": [
-            {
-              "id": "card-5",
-              "title": "Confirm API contracts",
-              "description": "Check **responses** and list any gaps.",
-              "createdAt": "2025-01-02T09:00:00Z",
-              "updatedAt": "2025-01-04T17:00:00Z",
-              "comments": [
-                {
-                  "id": "comment-1",
-                  "message": "Need to confirm pagination details.",
-                  "createdAt": "2025-01-02T11:00:00Z"
-                },
-                {
-                  "id": "comment-14",
-                  "message": "Double-check edge cases before release.",
-                  "createdAt": "2025-01-04T09:00:00Z"
-                },
-                {
-                  "id": "comment-24",
-                  "message": "Need to capture error handling too.",
-                  "createdAt": "2025-01-04T15:00:00Z"
-                },
-                {
-                  "id": "comment-25",
-                  "message": "Include rate limit details.",
-                  "createdAt": "2025-01-04T17:00:00Z"
-                }
-              ]
-            },
-            {
-              "id": "card-6",
-              "title": "Stakeholder walkthrough",
-              "description": "Prep slides for the weekly review.",
-              "createdAt": "2025-01-02T13:00:00Z",
-              "updatedAt": "2025-01-04T15:00:00Z",
-              "comments": [
-                {
-                  "id": "comment-15",
-                  "message": "Sync with the team on this.",
-                  "createdAt": "2025-01-04T12:00:00Z"
-                },
-                {
-                  "id": "comment-16",
-                  "message": "This is blocked by the latest review.",
-                  "createdAt": "2025-01-04T15:00:00Z"
-                }
-              ]
-            }
+          "cardIds": [
+            "card-5",
+            "card-6"
           ]
         },
         {
           "id": "list-5",
           "title": "QA",
-          "cards": [
-            {
-              "id": "card-7",
-              "title": "Regression pass",
-              "description": "Focus on list drag/drop and cards.",
-              "createdAt": "2025-01-03T09:00:00Z",
-              "updatedAt": "2025-01-03T10:00:00Z",
-              "comments": [
-                {
-                  "id": "comment-2",
-                  "message": "Verify placeholder cues too.",
-                  "createdAt": "2025-01-03T10:00:00Z"
-                },
-                {
-                  "id": "comment-3",
-                  "message": "Remember mobile viewport.",
-                  "createdAt": "2025-01-03T11:00:00Z"
-                }
-              ]
-            },
-            {
-              "id": "card-8",
-              "title": "Keyboard smoke test",
-              "description": "Check focus order and shortcuts.",
-              "createdAt": "2025-01-03T12:00:00Z",
-              "updatedAt": "2025-01-04T21:00:00Z",
-              "comments": [
-                {
-                  "id": "comment-17",
-                  "message": "Confirm requirements before moving forward.",
-                  "createdAt": "2025-01-04T18:00:00Z"
-                },
-                {
-                  "id": "comment-18",
-                  "message": "Add screenshots when ready.",
-                  "createdAt": "2025-01-04T21:00:00Z"
-                }
-              ]
-            }
+          "cardIds": [
+            "card-7",
+            "card-8"
           ]
         },
         {
           "id": "list-6",
           "title": "Blocked",
-          "cards": [
-            {
-              "id": "card-9",
-              "title": "Finalize scope",
-              "description": "Waiting on product **sign-off**.",
-              "createdAt": "2025-01-04T09:00:00Z",
-              "updatedAt": "2025-01-05T00:00:00Z",
-              "comments": [
-                {
-                  "id": "comment-4",
-                  "message": "Need decision by Friday.",
-                  "createdAt": "2025-01-04T10:00:00Z"
-                },
-                {
-                  "id": "comment-19",
-                  "message": "Double-check edge cases before release.",
-                  "createdAt": "2025-01-05T00:00:00Z"
-                }
-              ]
-            },
-            {
-              "id": "card-10",
-              "title": "Legal review",
-              "description": "Awaiting approval for terms.",
-              "createdAt": "2025-01-04T13:00:00Z",
-              "updatedAt": "2025-01-05T06:00:00Z",
-              "comments": [
-                {
-                  "id": "comment-20",
-                  "message": "Sync with the team on this.",
-                  "createdAt": "2025-01-05T03:00:00Z"
-                },
-                {
-                  "id": "comment-21",
-                  "message": "This is blocked by the latest review.",
-                  "createdAt": "2025-01-05T06:00:00Z"
-                }
-              ]
-            },
-            {
-              "id": "card-11",
-              "title": "Design polish",
-              "description": "Final pass on spacing + type scale.",
-              "createdAt": "2025-01-04T16:00:00Z",
-              "updatedAt": "2025-01-05T12:00:00Z",
-              "comments": [
-                {
-                  "id": "comment-22",
-                  "message": "Confirm requirements before moving forward.",
-                  "createdAt": "2025-01-05T09:00:00Z"
-                },
-                {
-                  "id": "comment-23",
-                  "message": "Add screenshots when ready.",
-                  "createdAt": "2025-01-05T12:00:00Z"
-                }
-              ]
-            }
+          "cardIds": [
+            "card-9",
+            "card-10",
+            "card-11"
           ]
         },
         {
           "id": "list-7",
           "title": "Ideas",
-          "cards": [
-            {
-              "id": "card-12",
-              "title": "Template gallery",
-              "description": "Gather examples of great boards.",
-              "createdAt": "2025-01-05T09:00:00Z",
-              "updatedAt": "2025-01-05T18:00:00Z",
-              "comments": [
-                {
-                  "id": "comment-24",
-                  "message": "Double-check edge cases before release.",
-                  "createdAt": "2025-01-05T15:00:00Z"
-                },
-                {
-                  "id": "comment-25",
-                  "message": "Sync with the team on this.",
-                  "createdAt": "2025-01-05T18:00:00Z"
-                }
-              ]
-            },
-            {
-              "id": "card-13",
-              "title": "Team rituals",
-              "description": "List weekly workflows and owners.",
-              "createdAt": "2025-01-05T11:00:00Z",
-              "updatedAt": "2025-01-06T00:00:00Z",
-              "comments": [
-                {
-                  "id": "comment-26",
-                  "message": "This is blocked by the latest review.",
-                  "createdAt": "2025-01-05T21:00:00Z"
-                },
-                {
-                  "id": "comment-27",
-                  "message": "Confirm requirements before moving forward.",
-                  "createdAt": "2025-01-06T00:00:00Z"
-                }
-              ]
-            }
+          "cardIds": [
+            "card-12",
+            "card-13"
           ]
+        }
+      ]
+    },
+    {
+      "id": "board-2",
+      "title": "Sales Pipeline",
+      "lists": [
+        {
+          "id": "list-8",
+          "title": "Leads",
+          "cardIds": [
+            "card-12",
+            "card-1"
+          ]
+        },
+        {
+          "id": "list-9",
+          "title": "Discovery",
+          "cardIds": [
+            "card-2",
+            "card-5"
+          ]
+        },
+        {
+          "id": "list-10",
+          "title": "Negotiation",
+          "cardIds": [
+            "card-3"
+          ]
+        },
+        {
+          "id": "list-11",
+          "title": "Closed",
+          "cardIds": [
+            "card-4"
+          ]
+        }
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "card-1",
+      "title": "Define MVP",
+      "description": "Outline the minimum viable feature set.",
+      "createdAt": "2025-01-01T09:00:00Z",
+      "updatedAt": "2025-01-04T13:00:00Z",
+      "comments": [
+        {
+          "id": "comment-6",
+          "message": "This is blocked by the latest review.",
+          "createdAt": "2025-01-03T09:00:00Z"
+        },
+        {
+          "id": "comment-7",
+          "message": "Confirm requirements before moving forward.",
+          "createdAt": "2025-01-03T12:00:00Z"
+        },
+        {
+          "id": "comment-21",
+          "message": "Clarify which features are must-haves.",
+          "createdAt": "2025-01-04T09:00:00Z"
+        },
+        {
+          "id": "comment-22",
+          "message": "Add a quick timeline estimate.",
+          "createdAt": "2025-01-04T11:00:00Z"
+        },
+        {
+          "id": "comment-23",
+          "message": "Share with design for feedback.",
+          "createdAt": "2025-01-04T13:00:00Z"
+        }
+      ]
+    },
+    {
+      "id": "card-2",
+      "title": "Wireframe core flows",
+      "description": "Sketch board, list, and card interactions.",
+      "createdAt": "2025-01-02T10:30:00Z",
+      "updatedAt": "2025-01-03T18:00:00Z",
+      "comments": [
+        {
+          "id": "comment-8",
+          "message": "Add screenshots when ready.",
+          "createdAt": "2025-01-03T15:00:00Z"
+        },
+        {
+          "id": "comment-9",
+          "message": "Double-check edge cases before release.",
+          "createdAt": "2025-01-03T18:00:00Z"
+        }
+      ]
+    },
+    {
+      "id": "card-14",
+      "title": "Markdown reference card",
+      "description": "# Heading level 1\n\nHere is some context.\n\n## Heading level 2\n\nParagraph with *bold*, _italic_, ***bold + italic***, and `inline code`.\n\n- Bullet item one\n- Bullet item two with a [link](https://example.com \"Example title\")\n  - Nested bullet with `code`\n\n> Blockquote sample\n>\n> Second paragraph in the same quote.\n\n```\ncode block example\nconst value = 42;\n```\n\n```js\n// fenced code with language\nconst greeting = 'hello';\n```\n\n1. Numbered item one\n2. Numbered item two\n   1. Nested ordered item\n\n![Alt text](https://placehold.co/600x400 \"Image title\")\n\n### Another header\n\n> Nested blockquote\n> Deeper explanation here.\n> Another line\n\nFinal paragraph to wrap up the reference.",
+      "createdAt": "2025-01-02T12:00:00Z",
+      "updatedAt": "2025-01-03T12:00:00Z",
+      "comments": []
+    },
+    {
+      "id": "card-3",
+      "title": "Set up CI",
+      "description": "Add basic lint and test checks.",
+      "createdAt": "2025-01-03T14:15:00Z",
+      "updatedAt": "2025-01-04T00:00:00Z",
+      "comments": [
+        {
+          "id": "comment-10",
+          "message": "Sync with the team on this.",
+          "createdAt": "2025-01-03T21:00:00Z"
+        },
+        {
+          "id": "comment-11",
+          "message": "This is blocked by the latest review.",
+          "createdAt": "2025-01-04T00:00:00Z"
+        }
+      ]
+    },
+    {
+      "id": "card-4",
+      "title": "Initialize repo",
+      "description": "Bootstrap project structure and docs.",
+      "createdAt": "2025-01-04T16:45:00Z",
+      "updatedAt": "2025-01-04T16:45:00Z",
+      "comments": [
+        {
+          "id": "comment-12",
+          "message": "Confirm requirements before moving forward.",
+          "createdAt": "2025-01-04T03:00:00Z"
+        },
+        {
+          "id": "comment-13",
+          "message": "Add screenshots when ready.",
+          "createdAt": "2025-01-04T06:00:00Z"
+        }
+      ]
+    },
+    {
+      "id": "card-5",
+      "title": "Confirm API contracts",
+      "description": "Check **responses** and list any gaps.",
+      "createdAt": "2025-01-02T09:00:00Z",
+      "updatedAt": "2025-01-04T17:00:00Z",
+      "comments": [
+        {
+          "id": "comment-1",
+          "message": "Need to confirm pagination details.",
+          "createdAt": "2025-01-02T11:00:00Z"
+        },
+        {
+          "id": "comment-14",
+          "message": "Double-check edge cases before release.",
+          "createdAt": "2025-01-04T09:00:00Z"
+        },
+        {
+          "id": "comment-24",
+          "message": "Need to capture error handling too.",
+          "createdAt": "2025-01-04T15:00:00Z"
+        },
+        {
+          "id": "comment-25",
+          "message": "Include rate limit details.",
+          "createdAt": "2025-01-04T17:00:00Z"
+        }
+      ]
+    },
+    {
+      "id": "card-6",
+      "title": "Stakeholder walkthrough",
+      "description": "Prep slides for the weekly review.",
+      "createdAt": "2025-01-02T13:00:00Z",
+      "updatedAt": "2025-01-04T15:00:00Z",
+      "comments": [
+        {
+          "id": "comment-15",
+          "message": "Sync with the team on this.",
+          "createdAt": "2025-01-04T12:00:00Z"
+        },
+        {
+          "id": "comment-16",
+          "message": "This is blocked by the latest review.",
+          "createdAt": "2025-01-04T15:00:00Z"
+        }
+      ]
+    },
+    {
+      "id": "card-7",
+      "title": "Regression pass",
+      "description": "Focus on list drag/drop and cards.",
+      "createdAt": "2025-01-03T09:00:00Z",
+      "updatedAt": "2025-01-03T10:00:00Z",
+      "comments": [
+        {
+          "id": "comment-2",
+          "message": "Verify placeholder cues too.",
+          "createdAt": "2025-01-03T10:00:00Z"
+        },
+        {
+          "id": "comment-3",
+          "message": "Remember mobile viewport.",
+          "createdAt": "2025-01-03T11:00:00Z"
+        }
+      ]
+    },
+    {
+      "id": "card-8",
+      "title": "Keyboard smoke test",
+      "description": "Check focus order and shortcuts.",
+      "createdAt": "2025-01-03T12:00:00Z",
+      "updatedAt": "2025-01-04T21:00:00Z",
+      "comments": [
+        {
+          "id": "comment-17",
+          "message": "Confirm requirements before moving forward.",
+          "createdAt": "2025-01-04T18:00:00Z"
+        },
+        {
+          "id": "comment-18",
+          "message": "Add screenshots when ready.",
+          "createdAt": "2025-01-04T21:00:00Z"
+        }
+      ]
+    },
+    {
+      "id": "card-9",
+      "title": "Finalize scope",
+      "description": "Waiting on product **sign-off**.",
+      "createdAt": "2025-01-04T09:00:00Z",
+      "updatedAt": "2025-01-05T00:00:00Z",
+      "comments": [
+        {
+          "id": "comment-4",
+          "message": "Need decision by Friday.",
+          "createdAt": "2025-01-04T10:00:00Z"
+        },
+        {
+          "id": "comment-19",
+          "message": "Double-check edge cases before release.",
+          "createdAt": "2025-01-05T00:00:00Z"
+        }
+      ]
+    },
+    {
+      "id": "card-10",
+      "title": "Legal review",
+      "description": "Awaiting approval for terms.",
+      "createdAt": "2025-01-04T13:00:00Z",
+      "updatedAt": "2025-01-05T06:00:00Z",
+      "comments": [
+        {
+          "id": "comment-20",
+          "message": "Sync with the team on this.",
+          "createdAt": "2025-01-05T03:00:00Z"
+        },
+        {
+          "id": "comment-21",
+          "message": "This is blocked by the latest review.",
+          "createdAt": "2025-01-05T06:00:00Z"
+        }
+      ]
+    },
+    {
+      "id": "card-11",
+      "title": "Design polish",
+      "description": "Final pass on spacing + type scale.",
+      "createdAt": "2025-01-04T16:00:00Z",
+      "updatedAt": "2025-01-05T12:00:00Z",
+      "comments": [
+        {
+          "id": "comment-22",
+          "message": "Confirm requirements before moving forward.",
+          "createdAt": "2025-01-05T09:00:00Z"
+        },
+        {
+          "id": "comment-23",
+          "message": "Add screenshots when ready.",
+          "createdAt": "2025-01-05T12:00:00Z"
+        }
+      ]
+    },
+    {
+      "id": "card-12",
+      "title": "Template gallery",
+      "description": "Gather examples of great boards.",
+      "createdAt": "2025-01-05T09:00:00Z",
+      "updatedAt": "2025-01-05T18:00:00Z",
+      "comments": [
+        {
+          "id": "comment-24",
+          "message": "Double-check edge cases before release.",
+          "createdAt": "2025-01-05T15:00:00Z"
+        },
+        {
+          "id": "comment-25",
+          "message": "Sync with the team on this.",
+          "createdAt": "2025-01-05T18:00:00Z"
+        }
+      ]
+    },
+    {
+      "id": "card-13",
+      "title": "Team rituals",
+      "description": "List weekly workflows and owners.",
+      "createdAt": "2025-01-05T11:00:00Z",
+      "updatedAt": "2025-01-06T00:00:00Z",
+      "comments": [
+        {
+          "id": "comment-26",
+          "message": "This is blocked by the latest review.",
+          "createdAt": "2025-01-05T21:00:00Z"
+        },
+        {
+          "id": "comment-27",
+          "message": "Confirm requirements before moving forward.",
+          "createdAt": "2025-01-06T00:00:00Z"
         }
       ]
     }

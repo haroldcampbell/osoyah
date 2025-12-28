@@ -16,6 +16,12 @@ const makeCard = (id: string, title: string, description: string): Card => ({
   comments: [],
 });
 
+const mockCards = [
+  makeCard('card-1', 'Card One', 'First'),
+  makeCard('card-2', 'Card Two', 'Second'),
+  makeCard('card-3', 'Card Three', 'Third'),
+];
+
 const mockBoard: Board = {
   id: 'board-1',
   title: 'Test Board',
@@ -23,12 +29,12 @@ const mockBoard: Board = {
     {
       id: 'list-1',
       title: 'Backlog',
-      cards: [makeCard('card-1', 'Card One', 'First'), makeCard('card-2', 'Card Two', 'Second')],
+      cardIds: ['card-1', 'card-2'],
     },
     {
       id: 'list-2',
       title: 'Doing',
-      cards: [makeCard('card-3', 'Card Three', 'Third')],
+      cardIds: ['card-3'],
     },
   ],
 };
@@ -52,7 +58,7 @@ describe('BoardComponent', () => {
     const fixture = TestBed.createComponent(BoardComponent);
     fixture.detectChanges();
     const request = httpMock.expectOne('assets/data.json');
-    request.flush({ boards: [mockBoard] });
+    request.flush({ boards: [mockBoard], cards: mockCards });
     fixture.detectChanges();
     return fixture.componentInstance;
   };
@@ -61,7 +67,7 @@ describe('BoardComponent', () => {
     const fixture = TestBed.createComponent(BoardComponent);
     fixture.detectChanges();
     const request = httpMock.expectOne('assets/data.json');
-    request.flush({ boards: [mockBoard] });
+    request.flush({ boards: [mockBoard], cards: mockCards });
     fixture.detectChanges();
 
     const listTitles = fixture.debugElement.queryAll(By.css('[data-testid="list-title"]'));
@@ -92,7 +98,10 @@ describe('BoardComponent', () => {
     component.boardService.newCardTitles[list.id] = 'New card';
     component.boardService.addCard(list);
 
-    expect(list.cards.some((card) => card.title === 'New card')).toBe(true);
+    const newCardId = list.cardIds.find(
+      (cardId) => component.boardService.getCard(cardId)?.title === 'New card',
+    );
+    expect(newCardId).toBeDefined();
   });
 
   it('reorders lists via drag and drop', () => {
@@ -122,13 +131,13 @@ describe('BoardComponent', () => {
     const event = {
       previousIndex: 0,
       currentIndex: 1,
-      previousContainer: { data: sourceList.cards },
-      container: { data: targetList.cards },
-    } as CdkDragDrop<Card[]>;
+      previousContainer: { data: sourceList.cardIds },
+      container: { data: targetList.cardIds },
+    } as CdkDragDrop<string[]>;
 
     component.boardService.dropCard(event);
 
-    expect(sourceList.cards.some((card) => card.id === 'card-1')).toBe(false);
-    expect(targetList.cards.some((card) => card.id === 'card-1')).toBe(true);
+    expect(sourceList.cardIds.includes('card-1')).toBe(false);
+    expect(targetList.cardIds.includes('card-1')).toBe(true);
   });
 });

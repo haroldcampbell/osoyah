@@ -68,7 +68,10 @@ export class BoardComponent implements OnInit, AfterViewChecked {
       return null;
     }
     const selection = this.boardService.selectedCard;
-    return list.cards.find((card) => card.id === selection?.cardId) ?? null;
+    if (!selection) {
+      return null;
+    }
+    return this.boardService.getCardFromList(list, selection.cardId);
   }
 
   addComment(card: Card): void {

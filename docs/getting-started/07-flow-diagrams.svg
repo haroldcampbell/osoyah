@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1590" height="978" viewBox="0 0 1590 978">
+  <g id="Group_11" data-name="Group 11" transform="translate(-184 -31)">
+    <g id="Rectangle_1" data-name="Rectangle 1" transform="translate(184 31)" fill="#fff" stroke="#707070" stroke-width="1">
+      <rect width="1590" height="978" stroke="none"/>
+      <rect x="0.5" y="0.5" width="1589" height="977" fill="none"/>
+    </g>
+    <g id="Group_10" data-name="Group 10" transform="translate(28 12)">
+      <text id="Spec-Driven_Cycles" data-name="Spec-Driven Cycles" transform="translate(212 77)" fill="#1d1d1f" font-size="30" font-family="Helvetica-Bold, Helvetica" font-weight="700"><tspan x="0" y="0">Spec-Driven Cycles</tspan></text>
+      <g id="Group_8" data-name="Group 8" transform="translate(-495 455)">
+        <text id="Hand-off_loop" data-name="Hand-off loop" transform="translate(1207 185)" fill="#1d1d1f" font-size="21" font-family="Helvetica-Bold, Helvetica" font-weight="700"><tspan x="0" y="0">Hand-off loop</tspan></text>
+        <circle id="Ellipse_12" data-name="Ellipse 12" cx="26" cy="26" r="26" transform="translate(1411 225)" fill="#fefcf9" stroke="#1d1d1f" stroke-width="1"/>
+        <circle id="Ellipse_13" data-name="Ellipse 13" cx="26" cy="26" r="26" transform="translate(1521 309)" fill="#fefcf9" stroke="#1d1d1f" stroke-width="1"/>
+        <circle id="Ellipse_14" data-name="Ellipse 14" cx="26" cy="26" r="26" transform="translate(1401 429)" fill="#fefcf9" stroke="#1d1d1f" stroke-width="1"/>
+        <circle id="Ellipse_15" data-name="Ellipse 15" cx="26" cy="26" r="26" transform="translate(1281 309)" fill="#fefcf9" stroke="#1d1d1f" stroke-width="1"/>
+        <text id="Write_hand-off" data-name="Write hand-off" transform="translate(1387 504)" fill="#1d1d1f" font-size="14" font-family="Helvetica"><tspan x="0" y="0">Write hand-off</tspan></text>
+        <text id="Update_repo_Code_specs_processes_etc._" data-name="Update repo 
+(Code, specs, processes, etc.)" transform="translate(1592 332)" fill="#1d1d1f" font-size="14" font-family="Helvetica"><tspan x="0" y="0">Update repo </tspan><tspan x="0" y="17">(Code, specs, processes, etc.)</tspan></text>
+        <text id="Commit" transform="translate(1227 343)" fill="#1d1d1f" font-size="14" font-family="Helvetica"><tspan x="0" y="0">Commit</tspan></text>
+        <text id="Next_spec" data-name="Next spec" transform="translate(1406 216)" fill="#1d1d1f" font-size="14" font-family="Helvetica"><tspan x="0" y="0">Next spec</tspan></text>
+        <path id="Path_12" data-name="Path 12" d="M886,230h68" transform="translate(567 105)" fill="none" stroke="#1d1d1f" stroke-width="1.2"/>
+        <path id="Path_13" data-name="Path 13" d="M970.047,253.634C944.047,303.634,930,330,886,344" transform="translate(577 121)" fill="none" stroke="#1d1d1f" stroke-width="1.2"/>
+        <path id="Path_14" data-name="Path 14" d="M830,349c-43.929-12.339-73.214-58.61-82-91" transform="translate(567 105)" fill="none" stroke="#1d1d1f" stroke-width="1.2"/>
+        <path id="Path_15" data-name="Path 15" d="M714,230c22.665-30,57.535-40,101.123-30" transform="translate(570.74 321.856) rotate(-19)" fill="none" stroke="#1d1d1f" stroke-width="1.2"/>
+        <path id="Polygon_6" data-name="Polygon 6" d="M7.5,0,15,11H0Z" transform="matrix(-0.07, 0.998, -0.998, -0.07, 1521, 327.902)"/>
+        <path id="Polygon_7" data-name="Polygon 7" d="M7.5,0,15,11H0Z" transform="translate(1463.858 471.918) rotate(-113)"/>
+        <path id="Polygon_8" data-name="Polygon 8" d="M7.5,0,15,11H0Z" transform="translate(1307.161 364.046) rotate(-18)"/>
+        <path id="Polygon_9" data-name="Polygon 9" d="M7.5,0,15,11H0Z" transform="matrix(0.225, 0.974, -0.974, 0.225, 1406.839, 237.414)"/>
+      </g>
+      <g id="Group_9" data-name="Group 9">
+        <text id="Spec_iteration" data-name="Spec iteration" transform="translate(381 174)" fill="#1d1d1f" font-size="21" font-family="Helvetica-Bold, Helvetica" font-weight="700"><tspan x="0" y="0">Spec iteration</tspan></text>
+        <circle id="Ellipse_1" data-name="Ellipse 1" cx="28" cy="28" r="28" transform="translate(613 296)" fill="#fefcf9" stroke="#1d1d1f" stroke-width="1"/>
+        <circle id="Ellipse_2" data-name="Ellipse 2" cx="28" cy="28" r="28" transform="translate(743 296)" fill="#fefcf9" stroke="#1d1d1f" stroke-width="1"/>
+        <circle id="Ellipse_3" data-name="Ellipse 3" cx="28" cy="28" r="28" transform="translate(613 426)" fill="#fefcf9" stroke="#1d1d1f" stroke-width="1"/>
+        <circle id="Ellipse_4" data-name="Ellipse 4" cx="28" cy="28" r="28" transform="translate(483 296)" fill="#fefcf9" stroke="#1d1d1f" stroke-width="1"/>
+        <circle id="Ellipse_5" data-name="Ellipse 5" cx="28" cy="28" r="28" transform="translate(613 166)" fill="#fefcf9" stroke="#1d1d1f" stroke-width="1"/>
+        <text id="Pick_next_spec" data-name="Pick next spec" transform="translate(596 151)" fill="#1d1d1f" font-size="14" font-family="Helvetica"><tspan x="0" y="0">Pick next spec</tspan></text>
+        <text id="Implement" transform="translate(818 322)" fill="#1d1d1f" font-size="14" font-family="Helvetica"><tspan x="0" y="0">Implement</tspan></text>
+        <text id="Run_tests" data-name="Run tests" transform="translate(611 493)" fill="#1d1d1f" font-size="14" font-family="Helvetica"><tspan x="0" y="0">Run tests</tspan></text>
+        <text id="Review_scope_DoD" data-name="Review scope
+ + DoD" transform="translate(369 332)" fill="#1d1d1f" font-size="14" font-family="Helvetica"><tspan x="0" y="0">Review scope</tspan><tspan x="0" y="17" xml:space="preserve"> + DoD</tspan></text>
+        <text id="Update_DoD_hand-off" data-name="Update DoD + hand-off" transform="translate(565 375)" fill="#1d1d1f" font-size="14" font-family="Helvetica"><tspan x="0" y="0">Update DoD + hand-off</tspan></text>
+        <path id="Path_1" data-name="Path 1" d="M310.982,91.223C381.752,114,387.752,127.573,405,195.066" transform="translate(366 94.934)" fill="none" stroke="#1d1d1f" stroke-width="1.2"/>
+        <path id="Path_2" data-name="Path 2" d="M419,230c-5.562,53.762-40.328,84.483-89,93.7" transform="translate(352 133.634)" fill="none" stroke="#1d1d1f" stroke-width="1.2"/>
+        <path id="Path_3" data-name="Path 3" d="M259.109,363.333c-60-18-71.975-39.448-89.975-101.448" transform="translate(341 94)" fill="none" stroke="#1d1d1f" stroke-width="1.2"/>
+        <path id="Path_4" data-name="Path 4" d="M166.606,199.782c8-70,23.769-86.879,93.769-98.879" transform="translate(341 94)" fill="none" stroke="#1d1d1f" stroke-width="1.2"/>
+        <path id="Path_5" data-name="Path 5" d="M282.723,188.552c-39.824-37.942-56.163-47.679-99.663-24.286" transform="translate(329 126.611)" fill="none" stroke="#1d1d1f" stroke-width="1.2"/>
+        <path id="Polygon_1" data-name="Polygon 1" d="M7.5,0,15,11H0Z" transform="matrix(0.259, 0.966, -0.966, 0.259, 604.747, 186.235)"/>
+        <path id="Polygon_2" data-name="Polygon 2" d="M7.5,0,15,11H0Z" transform="matrix(-0.966, 0.259, -0.259, -0.966, 779.668, 292.118)"/>
+        <path id="Polygon_3" data-name="Polygon 3" d="M7.5,0,15,11H0Z" transform="matrix(-0.259, -0.966, 0.966, -0.259, 675.375, 466.001)"/>
+        <path id="Polygon_4" data-name="Polygon 4" d="M7.5,0,15,11H0Z" transform="matrix(0.966, -0.259, 0.259, 0.966, 502.664, 355.882)"/>
+        <path id="Polygon_5" data-name="Polygon 5" d="M7.5,0,15,11H0Z" transform="translate(618.6 312.013) rotate(150)"/>
+      </g>
+      <g id="Group_7" data-name="Group 7" transform="translate(725 -462)">
+        <text id="User_agent_loop" data-name="User + agent loop" transform="translate(315 639)" fill="#1d1d1f" font-size="21" font-family="Helvetica-Bold, Helvetica" font-weight="700"><tspan x="0" y="0">User + agent loop</tspan></text>
+        <circle id="Ellipse_6" data-name="Ellipse 6" cx="28" cy="28" r="28" transform="translate(626 762)" fill="#fefcf9" stroke="#1d1d1f" stroke-width="1"/>
+        <circle id="Ellipse_7" data-name="Ellipse 7" cx="28" cy="28" r="28" transform="translate(792 759)" fill="#fefcf9" stroke="#1d1d1f" stroke-width="1"/>
+        <circle id="Ellipse_8" data-name="Ellipse 8" cx="28" cy="28" r="28" transform="translate(644 920)" fill="#fefcf9" stroke="#1d1d1f" stroke-width="1"/>
+        <circle id="Ellipse_9" data-name="Ellipse 9" cx="28" cy="28" r="28" transform="translate(476 771)" fill="#fefcf9" stroke="#1d1d1f" stroke-width="1"/>
+        <circle id="Ellipse_10" data-name="Ellipse 10" cx="28" cy="28" r="28" transform="translate(626 605)" fill="#fefcf9" stroke="#1d1d1f" stroke-width="1"/>
+        <circle id="Ellipse_11" data-name="Ellipse 11" cx="28" cy="28" r="28" transform="translate(833 613)" fill="#fefcf9" stroke="#1d1d1f" stroke-width="1"/>
+        <text id="User_selects_spec" data-name="User selects spec" transform="translate(599 676)" fill="#1d1d1f" font-size="14" font-family="Helvetica"><tspan x="0" y="0">User selects spec</tspan></text>
+        <text id="Agent_clarifies" data-name="Agent
+clarifies" transform="translate(422 803)" fill="#1d1d1f" font-size="14" font-family="Helvetica"><tspan x="0" y="0">Agent</tspan><tspan x="0" y="17">clarifies</tspan></text>
+        <text id="User_confirms" data-name="User confirms" transform="translate(639 999)" fill="#1d1d1f" font-size="14" font-family="Helvetica"><tspan x="0" y="0">User confirms</tspan></text>
+        <text id="Agent_implements" data-name="Agent
+implements" transform="translate(859 782)" fill="#1d1d1f" font-size="14" font-family="Helvetica"><tspan x="0" y="0">Agent</tspan><tspan x="0" y="17">implements</tspan></text>
+        <text id="User_runs_tests" data-name="User
+runs tests" transform="translate(905 635)" fill="#1d1d1f" font-size="14" font-family="Helvetica"><tspan x="0" y="0">User</tspan><tspan x="0" y="17">runs tests</tspan></text>
+        <text id="Agent_finalizes" data-name="Agent finalizes" transform="translate(611 835)" fill="#1d1d1f" font-size="14" font-family="Helvetica"><tspan x="0" y="0">Agent finalizes</tspan></text>
+        <path id="Path_11" data-name="Path 11" d="M479.072,465.457C449.072,465.457,380,560,340,585" transform="translate(354 190)" fill="none" stroke="#1d1d1f" stroke-width="1.2"/>
+        <g id="Group_3" data-name="Group 3" transform="matrix(-0.174, -0.985, 0.985, -0.174, 704.747, 970.491)">
+          <path id="Path_7" data-name="Path 7" d="M123.195,107.945C110.95,12.676,50,12,0,0" transform="translate(126.424 130.645) rotate(-171)" fill="none" stroke="#1d1d1f" stroke-width="1.2"/>
+          <path id="Polygon_11" data-name="Polygon 11" d="M7.5,0,15,11H0Z" transform="matrix(-0.588, 0.809, -0.809, -0.588, 132.83, 127.487)"/>
+        </g>
+        <g id="Group_2" data-name="Group 2" transform="matrix(0.07, 0.998, -0.998, 0.07, 634.78, 822.199)">
+          <path id="Path_8" data-name="Path 8" d="M182,745c60-16.2,100-61.2,118-117" transform="translate(-182 -621)" fill="none" stroke="#1d1d1f" stroke-width="1.2"/>
+          <path id="Polygon_12" data-name="Polygon 12" d="M7.5,0,15,11H0Z" transform="translate(114.404 0) rotate(31)"/>
+        </g>
+        <g id="Group_1" data-name="Group 1" transform="translate(501.266 775.433) rotate(-98)">
+          <path id="Path_9" data-name="Path 9" d="M0,0C8,80,68,120,128,122" transform="matrix(-0.995, -0.105, 0.105, -0.995, 127.299, 142.344)" fill="none" stroke="#1d1d1f" stroke-width="1.2"/>
+          <path id="Polygon_13" data-name="Polygon 13" d="M7.5,0,15,11H0Z" transform="translate(7.026 14.004) rotate(-69)"/>
+        </g>
+        <g id="Group_5" data-name="Group 5" transform="translate(921.801 697.104) rotate(115)">
+          <path id="Path_10" data-name="Path 10" d="M11.112,69.2c20.9-6.343,63.913-28.479,72.513-51.69" transform="matrix(-0.891, -0.454, 0.454, -0.891, 71.969, 120.277)" fill="none" stroke="#1d1d1f" stroke-width="1.2"/>
+          <path id="Polygon_14" data-name="Polygon 14" d="M7.5,0,15,11H0Z" transform="matrix(-0.259, -0.966, 0.966, -0.259, 3.882, 73.795)"/>
+        </g>
+        <path id="Polygon_15" data-name="Polygon 15" d="M7.5,0,15,11H0Z" transform="matrix(-0.53, -0.848, 0.848, -0.53, 691.949, 784.275)"/>
+        <g id="Group_6" data-name="Group 6">
+          <path id="Path_16" data-name="Path 16" d="M142,600c8-80,7.788-74.1,7.788-74.1" transform="matrix(0.995, -0.105, 0.105, 0.995, 447.788, 177.146)" fill="none" stroke="#1d1d1f" stroke-width="1.2"/>
+          <path id="Polygon_16" data-name="Polygon 16" d="M7.5,0,15,11H0Z" transform="matrix(0.999, -0.052, 0.052, 0.999, 644, 683.785)"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

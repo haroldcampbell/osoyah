@@ -19,6 +19,7 @@
 
 ## Entries
 
+-   2025-12-28-03-board-management-panel.md - S005 board management panel, sorting, pinned/archived, compact layout
 -   2025-12-28-02-board-selector-crud.md - S004 board selector + CRUD, settings panel, S006/S007 spec drafts
 -   2025-12-28-01-membership-navigation.md - S003 membership indicators + navigation UI/E2E
 -   2025-12-27-04-attach-flow.md - S002 attach flow + E2E updates, modal experiment note

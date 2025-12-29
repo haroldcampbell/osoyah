@@ -17,6 +17,10 @@ export class BoardService {
 
   board: Board | null = null;
   boards: Board[] = [];
+  boardOrder: string[] = [];
+  pinnedOrder: string[] = [];
+  archivedOrder: string[] = [];
+  lastActiveAt: Record<string, number> = {};
   loading = true;
   error = '';
 
@@ -54,7 +58,11 @@ export class BoardService {
             this.boards = [this.board];
           } else {
             this.boards = boards;
-            this.board = boards[0];
+            this.board = boards.find((board) => !board.archived) ?? boards[0];
+          }
+          this.initializeBoardOrders();
+          if (this.board) {
+            this.recordBoardActivity(this.board.id);
           }
           this.closeCardPanel();
           this.loading = false;
@@ -94,6 +102,7 @@ export class BoardService {
     }
     this.board = board;
     this.closeCardPanel();
+    this.recordBoardActivity(boardId);
   }
 
   createBoard(title: string): { success: boolean; error?: string; board?: Board } {
@@ -112,9 +121,13 @@ export class BoardService {
           cardIds: [],
         },
       ],
+      pinned: false,
+      archived: false,
     };
     this.boards.push(board);
+    this.boardOrder.unshift(board.id);
     this.board = board;
+    this.recordBoardActivity(board.id);
     this.closeCardPanel();
     return { success: true, board };
   }
@@ -137,19 +150,87 @@ export class BoardService {
     if (boardIndex === -1) {
       return { success: false, error: 'Board not found.' };
     }
+    this.removeBoardFromOrders(boardId);
+    delete this.lastActiveAt[boardId];
     this.boards.splice(boardIndex, 1);
     if (!this.boards.length) {
       const emptyBoard = this.createEmptyBoard();
       this.boards.push(emptyBoard);
       this.board = emptyBoard;
+      this.initializeBoardOrders();
       this.closeCardPanel();
       return { success: true };
     }
     if (this.board?.id === boardId) {
-      this.board = this.boards[0];
+      this.board = this.getNextActiveBoard();
       this.closeCardPanel();
     }
     return { success: true };
+  }
+
+  setBoardOrder(order: string[]): void {
+    const available = this.boards
+      .filter((board) => !board.archived && !board.pinned)
+      .map((board) => board.id);
+    const normalized = order.filter((boardId) => available.includes(boardId));
+    const missing = available.filter((boardId) => !normalized.includes(boardId));
+    this.boardOrder = [...normalized, ...missing];
+  }
+
+  setPinnedOrder(order: string[]): void {
+    const available = this.boards
+      .filter((board) => !board.archived && board.pinned)
+      .map((board) => board.id);
+    const normalized = order.filter((boardId) => available.includes(boardId));
+    const missing = available.filter((boardId) => !normalized.includes(boardId));
+    this.pinnedOrder = [...normalized, ...missing];
+  }
+
+  pinBoard(boardId: string): void {
+    const board = this.getBoard(boardId);
+    if (!board || board.archived) {
+      return;
+    }
+    board.pinned = true;
+    this.removeBoardFromOrders(boardId);
+    this.pinnedOrder.unshift(boardId);
+  }
+
+  unpinBoard(boardId: string): void {
+    const board = this.getBoard(boardId);
+    if (!board) {
+      return;
+    }
+    board.pinned = false;
+    this.pinnedOrder = this.pinnedOrder.filter((id) => id !== boardId);
+    if (!board.archived) {
+      this.boardOrder.unshift(boardId);
+    }
+  }
+
+  archiveBoard(boardId: string): void {
+    const board = this.getBoard(boardId);
+    if (!board || board.archived) {
+      return;
+    }
+    board.archived = true;
+    board.pinned = false;
+    this.removeBoardFromOrders(boardId);
+    this.archivedOrder.unshift(boardId);
+    if (this.board?.id === boardId) {
+      this.board = this.getNextActiveBoard();
+      this.closeCardPanel();
+    }
+  }
+
+  restoreBoard(boardId: string): void {
+    const board = this.getBoard(boardId);
+    if (!board) {
+      return;
+    }
+    board.archived = false;
+    this.archivedOrder = this.archivedOrder.filter((id) => id !== boardId);
+    this.boardOrder.unshift(boardId);
   }
 
   isCardOnBoard(cardId: string, boardId: string): boolean {
@@ -390,7 +471,41 @@ export class BoardService {
       id: 'board-empty',
       title: 'New Board',
       lists: [],
+      pinned: false,
+      archived: false,
     };
+  }
+
+  private initializeBoardOrders(): void {
+    this.boardOrder = [];
+    this.pinnedOrder = [];
+    this.archivedOrder = [];
+    this.boards.forEach((board) => {
+      this.lastActiveAt[board.id] = this.lastActiveAt[board.id] ?? 0;
+      if (board.archived) {
+        this.archivedOrder.push(board.id);
+        return;
+      }
+      if (board.pinned) {
+        this.pinnedOrder.push(board.id);
+        return;
+      }
+      this.boardOrder.push(board.id);
+    });
+  }
+
+  private removeBoardFromOrders(boardId: string): void {
+    this.boardOrder = this.boardOrder.filter((id) => id !== boardId);
+    this.pinnedOrder = this.pinnedOrder.filter((id) => id !== boardId);
+    this.archivedOrder = this.archivedOrder.filter((id) => id !== boardId);
+  }
+
+  private getNextActiveBoard(): Board | null {
+    return this.boards.find((board) => !board.archived) ?? this.boards[0] ?? null;
+  }
+
+  recordBoardActivity(boardId: string): void {
+    this.lastActiveAt[boardId] = Date.now();
   }
 
   getBoardTitleError(title: string): string | null {

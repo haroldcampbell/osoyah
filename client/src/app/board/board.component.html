@@ -1,6 +1,18 @@
 <section class="board-shell">
   <header class="board-header">
-    <div class="board-title" data-testid="board-title">Kanban</div>
+    <div class="board-header-left">
+      <button
+        type="button"
+        class="board-panel-trigger"
+        (click)="toggleBoardPanel()"
+        aria-label="Open board panel"
+        [attr.aria-expanded]="boardPanelOpen"
+        data-testid="board-panel-trigger"
+      >
+        <span class="board-panel-trigger-icon" aria-hidden="true"></span>
+      </button>
+      <div class="board-title" data-testid="board-title">Kanban</div>
+    </div>
     <p class="board-subtitle">Minimal board for focused flow.</p>
   </header>
 
@@ -107,54 +119,244 @@
           <button type="button" (click)="boardService.addList()" data-testid="add-list-button">
             Add list
           </button>
-          <button
-            type="button"
-            class="board-settings-toggle"
-            (click)="toggleBoardSettings()"
-            data-testid="board-settings-toggle"
-          >
-            Settings
-          </button>
+          <div class="board-settings-wrap">
+            <button
+              type="button"
+              class="board-settings-toggle"
+              (click)="toggleBoardSettings()"
+              data-testid="board-settings-toggle"
+            >
+              Settings
+            </button>
+            @if (boardSettingsOpen) {
+              <section class="board-settings" data-testid="board-settings">
+                <div class="board-settings-header">
+                  <div class="board-settings-title">Board settings</div>
+                  <button type="button" (click)="toggleBoardSettings()">Close</button>
+                </div>
+                <div class="board-settings-body">
+                  <label class="board-settings-label" for="board-settings-title">Board name</label>
+                  <input
+                    id="board-settings-title"
+                    type="text"
+                    [(ngModel)]="boardSettingsTitle"
+                    (input)="boardSettingsError = ''"
+                    data-testid="board-settings-title"
+                  />
+                  <div class="board-settings-actions">
+                    <button
+                      type="button"
+                      (click)="saveBoardSettings()"
+                      data-testid="board-settings-save"
+                    >
+                      Save
+                    </button>
+                  </div>
+                  <div class="board-settings-danger">
+                    <div class="board-settings-warning">
+                      Deleting a board is permanent and cannot be undone.
+                    </div>
+                    <button
+                      type="button"
+                      class="delete"
+                      (click)="confirmDeleteCurrentBoard()"
+                      data-testid="board-settings-delete"
+                    >
+                      Delete board
+                    </button>
+                  </div>
+                  @if (boardSettingsError) {
+                    <div class="board-menu-error" data-testid="board-settings-error">
+                      {{ boardSettingsError }}
+                    </div>
+                  }
+                </div>
+              </section>
+            }
+          </div>
         </div>
       </div>
 
-      @if (boardSettingsOpen) {
-        <section class="board-settings" data-testid="board-settings">
-          <div class="board-settings-header">
-            <div class="board-settings-title">Board settings</div>
-            <button type="button" (click)="toggleBoardSettings()">Close</button>
-          </div>
-          <div class="board-settings-body">
-            <label class="board-settings-label" for="board-settings-title">Board name</label>
-            <input
-              id="board-settings-title"
-              type="text"
-              [(ngModel)]="boardSettingsTitle"
-              (input)="boardSettingsError = ''"
-              data-testid="board-settings-title"
-            />
-            <div class="board-settings-actions">
-              <button type="button" (click)="saveBoardSettings()" data-testid="board-settings-save">
-                Save
+
+      @if (boardPanelOpen) {
+        <aside class="board-panel" data-testid="board-panel">
+          <header class="board-panel-header">
+            <div class="board-panel-title">
+              {{ boardPanelArchivedView ? 'Archived boards' : 'Boards' }}
+            </div>
+            <div class="board-panel-header-actions">
+              <button
+                type="button"
+                class="board-panel-header-button"
+                (click)="toggleArchivedView()"
+                data-testid="board-panel-archive-toggle"
+              >
+                {{ boardPanelArchivedView ? 'All boards' : 'Archived' }}
               </button>
               <button
                 type="button"
-                class="delete"
-                (click)="confirmDeleteCurrentBoard()"
-                data-testid="board-settings-delete"
+                class="board-panel-close"
+                (click)="closeBoardPanel()"
+                aria-label="Close board panel"
+                data-testid="board-panel-close"
               >
-                Delete board
+                <span class="board-panel-close-icon" aria-hidden="true"></span>
               </button>
             </div>
-            @if (boardSettingsError) {
-              <div class="board-menu-error" data-testid="board-settings-error">
-                {{ boardSettingsError }}
-              </div>
+          </header>
+
+          <div class="board-panel-controls">
+            <label class="board-panel-label" for="board-panel-sort">Sort</label>
+            <select
+              id="board-panel-sort"
+              [(ngModel)]="boardPanelSortMode"
+              (ngModelChange)="setBoardSortMode($event)"
+            >
+              <option value="manual">Manual</option>
+              <option value="name">Name (A-Z)</option>
+              <option value="name-desc">Name (Z-A)</option>
+              <option value="recent">Recent</option>
+            </select>
+          </div>
+
+          <div class="board-panel-body board-panel-compact">
+            @if (boardPanelArchivedView) {
+              @if (archivedBoards.length === 0) {
+                <div class="board-panel-empty">No archived boards yet.</div>
+              } @else {
+                <details class="board-panel-section board-panel-section-collapsible" open>
+                  <summary class="board-panel-section-title">
+                    <span class="board-panel-section-count">{{ archivedBoards.length }}</span>
+                    <span class="board-panel-section-label">Archived</span>
+                  </summary>
+                  <div class="board-panel-list">
+                    @for (board of archivedBoards; track board.id) {
+                      <div
+                        class="board-panel-row"
+                        [class.current]="boardService.board.id === board.id"
+                      >
+                        <button
+                          type="button"
+                          class="board-panel-board"
+                          (click)="selectBoardFromPanel(board)"
+                        >
+                          <span class="board-panel-name" [attr.title]="board.title">
+                            {{ board.title }}
+                          </span>
+                          <span class="board-panel-badges">
+                            <span class="board-panel-badge archived">Archived</span>
+                          </span>
+                        </button>
+                        <details class="board-panel-menu">
+                          <summary class="board-panel-menu-trigger" aria-label="Board actions">
+                            <span aria-hidden="true">⋮</span>
+                          </summary>
+                          <div class="board-panel-menu-popover">
+                            <button type="button" (click)="restoreBoard(board)">Restore</button>
+                          </div>
+                        </details>
+                      </div>
+                    }
+                  </div>
+                </details>
+              }
+            } @else {
+              @if (pinnedBoards.length) {
+                <details class="board-panel-section board-panel-section-collapsible" open>
+                  <summary class="board-panel-section-title">
+                    <span class="board-panel-section-count">{{ pinnedBoards.length }}</span>
+                    <span class="board-panel-section-label">Pinned</span>
+                  </summary>
+                  <div
+                    class="board-panel-list"
+                    cdkDropList
+                    [cdkDropListData]="pinnedBoards"
+                    (cdkDropListDropped)="handlePinnedDrop($event)"
+                  >
+                    @for (board of pinnedBoards; track board.id) {
+                      <div
+                        class="board-panel-row pinned"
+                        cdkDrag
+                        [class.current]="boardService.board.id === board.id"
+                      >
+                        <span class="board-panel-grip" cdkDragHandle aria-hidden="true"></span>
+                        <button
+                          type="button"
+                          class="board-panel-board"
+                          (click)="selectBoardFromPanel(board)"
+                        >
+                          <span class="board-panel-name" [attr.title]="board.title">
+                            {{ board.title }}
+                          </span>
+                          <span class="board-panel-badges">
+                          </span>
+                        </button>
+                        <details class="board-panel-menu">
+                          <summary class="board-panel-menu-trigger" aria-label="Board actions">
+                            <span aria-hidden="true">⋮</span>
+                          </summary>
+                          <div class="board-panel-menu-popover">
+                            <button type="button" (click)="unpinBoard(board)">Unpin</button>
+                          </div>
+                        </details>
+                      </div>
+                    }
+                  </div>
+                </details>
+              }
+
+              <details class="board-panel-section board-panel-section-collapsible" open>
+                <summary class="board-panel-section-title">
+                  <span class="board-panel-section-count">{{ visibleBoards.length }}</span>
+                  <span class="board-panel-section-label">Boards</span>
+                </summary>
+                <div
+                  class="board-panel-list"
+                  cdkDropList
+                  [cdkDropListData]="visibleBoards"
+                  (cdkDropListDropped)="handleBoardDrop($event)"
+                >
+                  @for (board of visibleBoards; track board.id) {
+                    <div
+                      class="board-panel-row"
+                      cdkDrag
+                      [class.current]="boardService.board.id === board.id"
+                    >
+                      <span class="board-panel-grip" cdkDragHandle aria-hidden="true"></span>
+                      <button
+                        type="button"
+                        class="board-panel-board"
+                        (click)="selectBoardFromPanel(board)"
+                      >
+                        <span class="board-panel-name" [attr.title]="board.title">
+                          {{ board.title }}
+                        </span>
+                        <span class="board-panel-badges">
+                        </span>
+                        </button>
+                        <details class="board-panel-menu">
+                          <summary class="board-panel-menu-trigger" aria-label="Board actions">
+                            <span aria-hidden="true">⋮</span>
+                          </summary>
+                          <div class="board-panel-menu-popover">
+                            <button type="button" (click)="pinBoard(board)">Pin</button>
+                            <button type="button" (click)="archiveBoard(board)">Archive</button>
+                          </div>
+                        </details>
+                      </div>
+                    }
+                  </div>
+              </details>
             }
           </div>
-        </section>
+        </aside>
       }
-      <div class="board-layout" [class.board-layout-panel-open]="selectedCard">
+
+      <div
+        class="board-layout"
+        [class.board-layout-panel-open]="selectedCard"
+        [class.board-layout-board-panel-open]="boardPanelOpen"
+      >
         <div
           class="lists"
           cdkDropList
@@ -285,6 +487,9 @@
                         <span class="card-panel-membership-name">{{ board.title }}</span>
                         @if (isCurrentBoard(board.id)) {
                           <span class="card-panel-membership-tag">Current</span>
+                        }
+                        @if (board.archived) {
+                          <span class="card-panel-membership-tag archived">Archived</span>
                         }
                       </button>
                     }

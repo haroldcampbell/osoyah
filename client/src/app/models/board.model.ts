@@ -23,6 +23,8 @@ export interface Board {
   id: string;
   title: string;
   lists: BoardList[];
+  pinned?: boolean;
+  archived?: boolean;
 }
 
 export interface BoardsResponse {

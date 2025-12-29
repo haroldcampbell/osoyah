@@ -22,9 +22,10 @@ Out-of-scope:
 - [x] S002-Add Existing Card to Board
 - [x] S003-Membership Indicators + Navigation
 - [x] S004-Board Selection + CRUD
-- [ ] S005-Board Management Panel
+- [x] S005-Board Management Panel
 - [ ] S006-Board Routing + Deep Links
 - [ ] S007-Title Length Validation
+- [ ] S008-Board Layout Polish
 
 ## Notes
 - Board lists remain the stage model for pipeline boards.

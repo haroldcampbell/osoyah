@@ -1,4 +1,4 @@
-import { DragDropModule } from '@angular/cdk/drag-drop';
+import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { CdkMenuModule } from '@angular/cdk/menu';
 import { CommonModule } from '@angular/common';
 import {
@@ -43,6 +43,9 @@ export class BoardComponent implements OnInit, AfterViewChecked {
   boardSettingsOpen = false;
   boardSettingsTitle = '';
   boardSettingsError = '';
+  boardPanelOpen = false;
+  boardPanelSortMode: 'manual' | 'name' | 'name-desc' | 'recent' = 'manual';
+  boardPanelArchivedView = false;
   private descriptionSaveTimeout?: number;
   private lastScrolledCardId: string | null = null;
 
@@ -58,6 +61,10 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     if (!this.selectedCard) {
       this.lastScrolledCardId = null;
       return;
+    }
+    if (this.boardPanelOpen) {
+      this.boardPanelOpen = false;
+      this.boardPanelArchivedView = false;
     }
     if (this.lastScrolledCardId === this.selectedCard.id) {
       return;
@@ -104,6 +111,24 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     return this.boardService.boards.filter((board) =>
       this.boardService.isCardOnBoard(card.id, board.id),
     );
+  }
+
+  get pinnedBoards(): Board[] {
+    return this.boardService.pinnedOrder
+      .map((id) => this.boardService.getBoard(id))
+      .filter((board): board is Board => !!board && !board.archived);
+  }
+
+  get visibleBoards(): Board[] {
+    return this.boardService.boardOrder
+      .map((id) => this.boardService.getBoard(id))
+      .filter((board): board is Board => !!board && !board.archived && !board.pinned);
+  }
+
+  get archivedBoards(): Board[] {
+    return this.boardService.archivedOrder
+      .map((id) => this.boardService.getBoard(id))
+      .filter((board): board is Board => !!board && board.archived === true);
   }
 
   get filteredBoards(): Board[] {
@@ -283,6 +308,7 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     }
     const list = board.lists.find((item) => item.cardIds.includes(card.id));
     this.boardService.board = board;
+    this.boardService.recordBoardActivity(boardId);
     if (!list) {
       this.closePanel();
       return;
@@ -291,6 +317,97 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     this.lastScrolledCardId = null;
     this.descriptionEditing = false;
     this.resetAttachState(card);
+  }
+
+  toggleBoardPanel(): void {
+    this.boardPanelOpen = !this.boardPanelOpen;
+    if (this.boardPanelOpen) {
+      this.boardMenuOpen = false;
+      this.boardSettingsOpen = false;
+      this.boardPanelArchivedView = false;
+      this.boardService.closeCardPanel();
+    }
+  }
+
+  closeBoardPanel(): void {
+    this.boardPanelOpen = false;
+    this.boardPanelArchivedView = false;
+  }
+
+  toggleArchivedView(): void {
+    this.boardPanelArchivedView = !this.boardPanelArchivedView;
+  }
+
+  setBoardSortMode(mode: 'manual' | 'name' | 'name-desc' | 'recent'): void {
+    this.boardPanelSortMode = mode;
+    if (mode === 'manual') {
+      return;
+    }
+    const sorted = (boards: Board[]): Board[] =>
+      [...boards].sort((left, right) => {
+        if (mode === 'name' || mode === 'name-desc') {
+          return left.title.localeCompare(right.title);
+        }
+        const leftStamp = this.boardService.lastActiveAt[left.id] ?? 0;
+        const rightStamp = this.boardService.lastActiveAt[right.id] ?? 0;
+        if (rightStamp !== leftStamp) {
+          return rightStamp - leftStamp;
+        }
+        return left.title.localeCompare(right.title);
+      });
+    const orderedVisible = sorted(this.visibleBoards);
+    const orderedPinned = sorted(this.pinnedBoards);
+    if (mode === 'name-desc') {
+      orderedVisible.reverse();
+      orderedPinned.reverse();
+    }
+    this.boardService.setBoardOrder(orderedVisible.map((board) => board.id));
+    this.boardService.setPinnedOrder(orderedPinned.map((board) => board.id));
+  }
+
+  private applyCurrentBoardSort(): void {
+    if (this.boardPanelSortMode !== 'manual') {
+      this.setBoardSortMode(this.boardPanelSortMode);
+    }
+  }
+
+  selectBoardFromPanel(board: Board): void {
+    this.boardService.setActiveBoard(board.id);
+    this.boardSettingsTitle = board.title;
+  }
+
+  handleBoardDrop(event: CdkDragDrop<Board[]>): void {
+    const order = [...this.visibleBoards.map((board) => board.id)];
+    moveItemInArray(order, event.previousIndex, event.currentIndex);
+    this.boardService.setBoardOrder(order);
+    this.boardPanelSortMode = 'manual';
+  }
+
+  handlePinnedDrop(event: CdkDragDrop<Board[]>): void {
+    const order = [...this.pinnedBoards.map((board) => board.id)];
+    moveItemInArray(order, event.previousIndex, event.currentIndex);
+    this.boardService.setPinnedOrder(order);
+    this.boardPanelSortMode = 'manual';
+  }
+
+  pinBoard(board: Board): void {
+    this.boardService.pinBoard(board.id);
+    this.applyCurrentBoardSort();
+  }
+
+  unpinBoard(board: Board): void {
+    this.boardService.unpinBoard(board.id);
+    this.applyCurrentBoardSort();
+  }
+
+  archiveBoard(board: Board): void {
+    this.boardService.archiveBoard(board.id);
+    this.applyCurrentBoardSort();
+  }
+
+  restoreBoard(board: Board): void {
+    this.boardService.restoreBoard(board.id);
+    this.applyCurrentBoardSort();
   }
 
   selectBoard(board: Board): void {
@@ -316,6 +433,9 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     this.newBoardTitle = '';
     this.createBoardError = '';
     this.boardSearchTerm = '';
+    if (this.boardPanelSortMode !== 'manual') {
+      this.setBoardSortMode(this.boardPanelSortMode);
+    }
   }
 
   confirmDeleteCurrentBoard(): void {
@@ -418,6 +538,10 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     if (this.boardSettingsOpen) {
       this.boardSettingsOpen = false;
       this.boardSettingsError = '';
+    }
+    if (this.boardPanelOpen) {
+      this.boardPanelOpen = false;
+      this.boardPanelArchivedView = false;
     }
     const activeElement = document.activeElement as HTMLElement | null;
     if (activeElement?.classList.contains('board-selector')) {

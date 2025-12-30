@@ -45,3 +45,6 @@ pnpm-debug.log*
 client/playwright-report/
 client/test-results/
 client/logs/
+
+# Private business research
+/business/

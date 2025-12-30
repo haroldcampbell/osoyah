@@ -48,6 +48,7 @@ test('S004 creates, renames, and deletes boards with validation', async ({ page 
 
 	await createInput.fill('Launch Plan');
 	await menu.locator('[data-testid="board-create-button"]').click();
+	await expect(page).toHaveURL(/\/boards\/[^/]+/);
 	await expect(page.locator('[data-testid="board-name"]')).toContainText('Launch Plan');
 
 	const settingsToggle = page.locator('[data-testid="board-settings-toggle"]');

@@ -21,6 +21,7 @@ test('S002 adds a card, updates description, and deletes it from the panel', asy
 	const newCardById = backlogList.locator(`[data-testid="card"][data-card-id="${newCardId}"]`);
 
 	await clickCardBackground(page, newCardById);
+	await expect(page).toHaveURL(/\/boards\/[^/]+\/cards\/[^/]+/);
 	const panel = page.locator('[data-testid="card-panel"]');
 	await expect(panel).toBeVisible();
 	await panel.locator('.card-panel-description-empty').click();

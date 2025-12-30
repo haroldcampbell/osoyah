@@ -1,6 +1,8 @@
-import { TestBed } from '@angular/core/testing';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { ActivatedRoute, convertToParamMap, ParamMap, provideRouter, Router } from '@angular/router';
+import { BehaviorSubject } from 'rxjs';
 
 import { BoardComponent } from './board.component';
 import { BoardService } from '../services/board.service';
@@ -39,15 +41,35 @@ const mockBoard: Board = {
   ],
 };
 
+const mockBoardTwo: Board = {
+  id: 'board-2',
+  title: 'Second Board',
+  lists: [
+    {
+      id: 'list-3',
+      title: 'Todo',
+      cardIds: ['card-3'],
+    },
+  ],
+};
+
 describe('BoardComponent', () => {
   let httpMock: HttpTestingController;
+  let paramMapSubject: BehaviorSubject<ParamMap>;
+  let routerSpy: jasmine.Spy;
 
   beforeEach(async () => {
+    paramMapSubject = new BehaviorSubject<ParamMap>(convertToParamMap({}));
     await TestBed.configureTestingModule({
       imports: [BoardComponent, HttpClientTestingModule],
+      providers: [
+        provideRouter([]),
+        { provide: ActivatedRoute, useValue: { paramMap: paramMapSubject.asObservable() } },
+      ],
     }).compileComponents();
 
     httpMock = TestBed.inject(HttpTestingController);
+    routerSpy = spyOn(TestBed.inject(Router), 'navigate').and.returnValue(Promise.resolve(true));
   });
 
   afterEach(() => {
@@ -140,4 +162,80 @@ describe('BoardComponent', () => {
     expect(sourceList.cardIds.includes('card-1')).toBe(false);
     expect(targetList.cardIds.includes('card-1')).toBe(true);
   });
+
+  it('loads board from route params', fakeAsync(() => {
+    paramMapSubject.next(convertToParamMap({ boardId: 'board-1' }));
+    const fixture = TestBed.createComponent(BoardComponent);
+    fixture.detectChanges();
+    const request = httpMock.expectOne('assets/data.json');
+    request.flush({ boards: [mockBoard, mockBoardTwo], cards: mockCards });
+    tick();
+    fixture.detectChanges();
+
+    const component = fixture.componentInstance;
+    expect(component.boardNotFound).toBe(false);
+    expect(component.boardService.board?.id).toBe('board-1');
+  }));
+
+  it('opens card panel from route params', fakeAsync(() => {
+    paramMapSubject.next(convertToParamMap({ boardId: 'board-1', cardId: 'card-2' }));
+    const fixture = TestBed.createComponent(BoardComponent);
+    fixture.detectChanges();
+    const request = httpMock.expectOne('assets/data.json');
+    request.flush({ boards: [mockBoard], cards: mockCards });
+    tick();
+    fixture.detectChanges();
+
+    const component = fixture.componentInstance;
+    expect(component.cardNotFound).toBe(false);
+    expect(component.selectedCard?.id).toBe('card-2');
+  }));
+
+  it('shows board not found state for invalid board IDs', fakeAsync(() => {
+    paramMapSubject.next(convertToParamMap({ boardId: 'board-404' }));
+    const fixture = TestBed.createComponent(BoardComponent);
+    fixture.detectChanges();
+    const request = httpMock.expectOne('assets/data.json');
+    request.flush({ boards: [mockBoard], cards: mockCards });
+    tick();
+    fixture.detectChanges();
+
+    const component = fixture.componentInstance;
+    expect(component.boardNotFound).toBe(true);
+    expect(component.missingBoardId).toBe('board-404');
+    expect(routerSpy).not.toHaveBeenCalledWith(['/boards', 'board-1']);
+  }));
+
+  it('shows card not found state for invalid card IDs', fakeAsync(() => {
+    paramMapSubject.next(convertToParamMap({ boardId: 'board-1', cardId: 'card-404' }));
+    const fixture = TestBed.createComponent(BoardComponent);
+    fixture.detectChanges();
+    const request = httpMock.expectOne('assets/data.json');
+    request.flush({ boards: [mockBoard], cards: mockCards });
+    tick();
+    fixture.detectChanges();
+
+    const component = fixture.componentInstance;
+    expect(component.cardNotFound).toBe(true);
+    expect(component.missingCardId).toBe('card-404');
+    expect(component.selectedCard).toBeNull();
+  }));
+
+  it('updates board and card when route params change', fakeAsync(() => {
+    paramMapSubject.next(convertToParamMap({ boardId: 'board-1' }));
+    const fixture = TestBed.createComponent(BoardComponent);
+    fixture.detectChanges();
+    const request = httpMock.expectOne('assets/data.json');
+    request.flush({ boards: [mockBoard, mockBoardTwo], cards: mockCards });
+    tick();
+    fixture.detectChanges();
+
+    paramMapSubject.next(convertToParamMap({ boardId: 'board-2', cardId: 'card-3' }));
+    tick();
+    fixture.detectChanges();
+
+    const component = fixture.componentInstance;
+    expect(component.boardService.board?.id).toBe('board-2');
+    expect(component.selectedCard?.id).toBe('card-3');
+  }));
 });

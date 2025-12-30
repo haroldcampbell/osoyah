@@ -22,8 +22,27 @@
   @if (boardService.error) {
     <div class="board-state error">{{ boardService.error }}</div>
   }
+  @if (boardNotFound) {
+    <div class="board-not-found-wrap">
+      <div class="board-alert board-alert-plain error" data-testid="board-not-found">
+        <h2 class="board-alert-title board-alert-title-large">Board not found.</h2>
+        <div class="board-alert-detail">
+          The board ID "{{ missingBoardId }}" does not exist.
+        </div>
+      </div>
+      <div class="board-not-found-actions" data-testid="board-not-found-actions">
+        Return to
+        <a class="board-link" routerLink="/boards">Boards</a>
+        |
+        Create a
+        <button type="button" class="board-not-found-button" (click)="createBoardFromNotFound()">
+          New board
+        </button>
+      </div>
+    </div>
+  }
 
-  @if (boardService.board && !boardService.loading) {
+  @if (boardService.board && !boardService.loading && !boardNotFound) {
     <div class="board" data-testid="board">
       <div class="board-toolbar">
         <div class="board-name">
@@ -69,7 +88,7 @@
                         <span class="board-menu-name" [attr.title]="board.title">
                           {{ board.title }}
                         </span>
-                        @if (boardService.board.id === board.id) {
+                        @if (isCurrentBoard(board.id)) {
                           <span class="board-menu-current">Current</span>
                         }
                       </button>
@@ -233,7 +252,7 @@
                     @for (board of archivedBoards; track board.id) {
                       <div
                         class="board-panel-row"
-                        [class.current]="boardService.board.id === board.id"
+                        [class.current]="isCurrentBoard(board.id)"
                       >
                         <button
                           type="button"
@@ -277,7 +296,7 @@
                       <div
                         class="board-panel-row pinned"
                         cdkDrag
-                        [class.current]="boardService.board.id === board.id"
+                        [class.current]="isCurrentBoard(board.id)"
                       >
                         <span class="board-panel-grip" cdkDragHandle aria-hidden="true"></span>
                         <button
@@ -320,7 +339,7 @@
                     <div
                       class="board-panel-row"
                       cdkDrag
-                      [class.current]="boardService.board.id === board.id"
+                      [class.current]="isCurrentBoard(board.id)"
                     >
                       <span class="board-panel-grip" cdkDragHandle aria-hidden="true"></span>
                       <button
@@ -352,6 +371,26 @@
         </aside>
       }
 
+      @if (cardNotFound) {
+        <div class="board-alert warning board-alert-wide" data-testid="card-not-found">
+          <div class="board-alert-header">
+            <div>
+              <div class="board-alert-title">Card not found.</div>
+              <div class="board-alert-detail">
+                The card ID "{{ missingCardId }}" does not exist on this board.
+              </div>
+            </div>
+            <button
+              type="button"
+              class="board-alert-close"
+              aria-label="Dismiss card not found notice"
+              (click)="closePanel()"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      }
       <div
         class="board-layout"
         [class.board-layout-panel-open]="selectedCard"
@@ -602,5 +641,48 @@
         }
       </div>
     </div>
+  }
+
+  @if (createBoardModalOpen) {
+    <button
+      type="button"
+      class="board-modal-backdrop"
+      aria-label="Close create board dialog"
+      (click)="closeCreateBoardModal()"
+    ></button>
+    <section class="board-modal" role="dialog" aria-modal="true">
+      <header class="board-modal-header">
+        <div class="board-modal-title">Create board</div>
+        <button
+          type="button"
+          class="board-modal-close"
+          aria-label="Close create board dialog"
+          (click)="closeCreateBoardModal()"
+        >
+          ×
+        </button>
+      </header>
+      <div class="board-modal-body">
+        <label class="board-modal-label" for="create-board-title">Board name</label>
+        <input
+          id="create-board-title"
+          type="text"
+          [(ngModel)]="createBoardModalTitle"
+          (input)="createBoardModalError = ''"
+          placeholder="Board name"
+        />
+        @if (createBoardModalError) {
+          <div class="board-modal-error">{{ createBoardModalError }}</div>
+        }
+      </div>
+      <footer class="board-modal-actions">
+        <button type="button" class="board-modal-secondary" (click)="closeCreateBoardModal()">
+          Cancel
+        </button>
+        <button type="button" class="board-modal-primary" (click)="saveCreateBoardModal()">
+          Save
+        </button>
+      </footer>
+    </section>
   }
 </section>

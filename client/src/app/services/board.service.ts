@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
-import { Observable, take } from 'rxjs';
+import { BehaviorSubject, Observable, take } from 'rxjs';
 
 import { Board, BoardList, Card, CardComment, BoardsResponse } from '../models/board.model';
 
@@ -10,6 +10,9 @@ export class BoardService {
   private readonly dataUrl = 'assets/data.json';
   private readonly http = inject(HttpClient);
   private idCounter = 0;
+  private hasLoaded = false;
+  private readonly boardLoadedSubject = new BehaviorSubject(false);
+  readonly boardLoaded$ = this.boardLoadedSubject.asObservable();
   now = new Date();
   private readonly clockId = window.setInterval(() => {
     this.now = new Date();
@@ -45,8 +48,15 @@ export class BoardService {
   }
 
   loadBoard(): void {
+    if (this.hasLoaded) {
+      this.loading = false;
+      this.error = '';
+      this.boardLoadedSubject.next(true);
+      return;
+    }
     this.loading = true;
     this.error = '';
+    this.boardLoadedSubject.next(false);
     this.getBoardData()
       .pipe(take(1))
       .subscribe({
@@ -66,10 +76,13 @@ export class BoardService {
           }
           this.closeCardPanel();
           this.loading = false;
+          this.hasLoaded = true;
+          this.boardLoadedSubject.next(true);
         },
         error: () => {
           this.error = 'Unable to load board data.';
           this.loading = false;
+          this.boardLoadedSubject.next(true);
         },
       });
   }

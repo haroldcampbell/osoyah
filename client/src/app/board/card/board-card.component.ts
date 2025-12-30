@@ -9,6 +9,7 @@ import {
   inject,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 import { BoardList, Card } from '../../models/board.model';
 import { BoardService } from '../../services/board.service';
@@ -28,6 +29,7 @@ export class BoardCardComponent implements AfterViewChecked {
   @Input({ required: true }) list!: BoardList;
   readonly boardService = inject(BoardService);
   private readonly markdown = inject(MarkdownService);
+  private readonly router = inject(Router);
   @ViewChild('titleInput') titleInput?: ElementRef<HTMLInputElement>;
   private needsFocus = false;
 
@@ -54,7 +56,11 @@ export class BoardCardComponent implements AfterViewChecked {
     if (this.isEditing || this.boardService.editingCard) {
       return;
     }
-    this.boardService.openCardPanel(this.list, this.card);
+    const boardId = this.boardService.board?.id;
+    if (!boardId) {
+      return;
+    }
+    this.router.navigate(['/boards', boardId, 'cards', this.card.id]);
   }
 
   @HostListener('click')

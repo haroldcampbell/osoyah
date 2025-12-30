@@ -19,6 +19,7 @@
 
 ## Entries
 
+-   2025-12-30-01-board-routing.md - Board routing + deep links implementation
 -   2025-12-29-01-product-differentiation-specs.md - Differentiation notes + idea specs + dependencies
 -   2025-12-28-03-board-management-panel.md - S005 board management panel, sorting, pinned/archived, compact layout
 -   2025-12-28-02-board-selector-crud.md - S004 board selector + CRUD, settings panel, S006/S007 spec drafts

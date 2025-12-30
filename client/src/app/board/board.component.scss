@@ -105,6 +105,193 @@
   color: tokens.$color-state-error;
 }
 
+.board-alert {
+  margin: 0 tokens.$space-md tokens.$space-md;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  border: 1px solid rgba(156, 44, 44, 0.25);
+  background: #fff3f3;
+  color: tokens.$color-state-error;
+}
+
+.board-alert-plain {
+  border: none;
+}
+
+.board-not-found-wrap {
+  padding: 50px 0;
+}
+
+.board-alert-wide {
+  margin: 0 0 tokens.$space-md;
+}
+
+.board-alert-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: tokens.$space-md;
+}
+
+.board-alert-close {
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  font-size: 1.1rem;
+  line-height: 1;
+  padding: 0.15rem 0.35rem;
+  border-radius: tokens.$radius-button;
+  color: inherit;
+}
+
+.board-alert-close:hover,
+.board-alert-close:focus-visible {
+  border-color: tokens.$color-border;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.board-alert.warning {
+  border-color: rgba(156, 104, 22, 0.25);
+  background: #fff6e5;
+  color: #8a5a12;
+}
+
+.board-alert-title {
+  font-weight: 600;
+}
+
+.board-alert-title-large {
+  font-size: 1.6rem;
+  margin: 0;
+}
+
+.board-alert-detail {
+  margin-top: 0.25rem;
+  color: tokens.$color-text-muted;
+  font-size: 0.9rem;
+}
+
+.board-not-found-actions {
+  margin: tokens.$space-lg tokens.$space-md tokens.$space-md;
+  text-align: center;
+  color: tokens.$color-text-muted;
+  font-size: 0.95rem;
+}
+
+.board-link {
+  color: tokens.$color-text-primary;
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+.board-not-found-button {
+  border: 1px solid tokens.$color-border;
+  border-radius: tokens.$radius-button;
+  padding: 0.2rem 0.7rem;
+  background: tokens.$color-card;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.board-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  border: none;
+  padding: 0;
+  background: rgba(20, 20, 20, 0.35);
+  z-index: 5;
+  cursor: pointer;
+}
+
+.board-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: min(420px, calc(100% - 2rem));
+  transform: translate(-50%, -50%);
+  background: tokens.$color-card;
+  border-radius: tokens.$radius-board;
+  box-shadow: tokens.$shadow-board;
+  z-index: 6;
+  padding: tokens.$space-md;
+}
+
+.board-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: tokens.$space-sm;
+}
+
+.board-modal-title {
+  font-weight: 600;
+}
+
+.board-modal-close {
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  font-size: 1.2rem;
+  line-height: 1;
+  padding: 0.1rem 0.35rem;
+  border-radius: tokens.$radius-button;
+}
+
+.board-modal-close:hover,
+.board-modal-close:focus-visible {
+  border-color: tokens.$color-border;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.board-modal-body {
+  display: grid;
+  gap: tokens.$space-xs;
+}
+
+.board-modal-label {
+  font-size: 0.85rem;
+  color: tokens.$color-text-muted;
+}
+
+.board-modal-body input {
+  border: 1px solid tokens.$color-border;
+  border-radius: tokens.$radius-control;
+  padding: tokens.$input-padding-y tokens.$input-padding-x;
+  font: inherit;
+}
+
+.board-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: tokens.$space-sm;
+  margin-top: tokens.$space-md;
+}
+
+.board-modal-primary,
+.board-modal-secondary {
+  border: 1px solid tokens.$color-border;
+  border-radius: tokens.$radius-button;
+  padding: 0.35rem 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.board-modal-primary {
+  background: tokens.$color-accent;
+  color: #fff;
+  border-color: tokens.$color-accent;
+}
+
+.board-modal-secondary {
+  background: tokens.$color-card;
+}
+
+.board-modal-error {
+  color: tokens.$color-state-error;
+  font-size: 0.85rem;
+}
+
+
 .board {
   background: tokens.$color-surface;
   border-radius: tokens.$radius-board;
@@ -838,6 +1025,7 @@
   z-index: 3;
   box-sizing: border-box;
 }
+
 
 .card-panel-header {
   display: flex;

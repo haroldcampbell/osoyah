@@ -23,9 +23,10 @@ Out-of-scope:
 - [x] S003-Membership Indicators + Navigation
 - [x] S004-Board Selection + CRUD
 - [x] S005-Board Management Panel
-- [ ] S006-Board Routing + Deep Links
+- [x] S006-Board Routing + Deep Links
 - [ ] S007-Title Length Validation
 - [ ] S008-Board Layout Polish
+- [ ] S009-Board Gallery Home
 
 ## Notes
 - Board lists remain the stage model for pipeline boards.

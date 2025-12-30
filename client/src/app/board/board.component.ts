@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import {
   AfterViewChecked,
   Component,
+  DestroyRef,
   ElementRef,
   HostListener,
   inject,
@@ -11,6 +12,9 @@ import {
   ViewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { combineLatest } from 'rxjs';
 
 import { BoardService } from '../services/board.service';
 import { BoardListComponent } from './list/board-list.component';
@@ -19,7 +23,7 @@ import { MarkdownService } from '../services/markdown.service';
 
 @Component({
     selector: 'app-board',
-    imports: [CommonModule, FormsModule, DragDropModule, CdkMenuModule, BoardListComponent],
+    imports: [CommonModule, FormsModule, DragDropModule, CdkMenuModule, BoardListComponent, RouterLink],
     templateUrl: './board.component.html',
     styleUrl: './board.component.scss'
 })
@@ -27,6 +31,9 @@ export class BoardComponent implements OnInit, AfterViewChecked {
   readonly boardService = inject(BoardService);
   private readonly markdown = inject(MarkdownService);
   private readonly elementRef = inject(ElementRef<HTMLElement>);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  private readonly destroyRef = inject(DestroyRef);
   @ViewChild('descriptionInput') descriptionInput?: ElementRef<HTMLTextAreaElement>;
   @ViewChild('descriptionView') descriptionView?: ElementRef<HTMLElement>;
   @ViewChild('boardMenuPanel') boardMenuPanel?: ElementRef<HTMLElement>;
@@ -46,6 +53,15 @@ export class BoardComponent implements OnInit, AfterViewChecked {
   boardPanelOpen = false;
   boardPanelSortMode: 'manual' | 'name' | 'name-desc' | 'recent' = 'manual';
   boardPanelArchivedView = false;
+  boardNotFound = false;
+  cardNotFound = false;
+  missingBoardId = '';
+  missingCardId = '';
+  createBoardModalOpen = false;
+  createBoardModalTitle = '';
+  createBoardModalError = '';
+  private activeBoardId = '';
+  private activeCardId = '';
   private descriptionSaveTimeout?: number;
   private lastScrolledCardId: string | null = null;
 
@@ -55,6 +71,16 @@ export class BoardComponent implements OnInit, AfterViewChecked {
 
   ngOnInit(): void {
     this.boardService.loadBoard();
+    combineLatest([this.boardService.boardLoaded$, this.route.paramMap])
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(([loaded, params]) => {
+        if (!loaded || this.boardService.error) {
+          return;
+        }
+        window.setTimeout(() => {
+          this.handleRoute(params.get('boardId'), params.get('cardId'));
+        }, 0);
+      });
   }
 
   ngAfterViewChecked(): void {
@@ -62,17 +88,23 @@ export class BoardComponent implements OnInit, AfterViewChecked {
       this.lastScrolledCardId = null;
       return;
     }
-    if (this.boardPanelOpen) {
-      this.boardPanelOpen = false;
-      this.boardPanelArchivedView = false;
-    }
     if (this.lastScrolledCardId === this.selectedCard.id) {
       return;
     }
-    this.lastScrolledCardId = this.selectedCard.id;
-    this.descriptionEditing = false;
-    this.resetAttachState(this.selectedCard);
-    this.scrollSelectedCardIntoView(this.selectedCard.id);
+    const activeCard = this.selectedCard;
+    this.lastScrolledCardId = activeCard.id;
+    window.setTimeout(() => {
+      if (!this.selectedCard) {
+        return;
+      }
+      if (this.boardPanelOpen) {
+        this.boardPanelOpen = false;
+        this.boardPanelArchivedView = false;
+      }
+      this.descriptionEditing = false;
+      this.resetAttachState(activeCard);
+      this.scrollSelectedCardIntoView(this.lastScrolledCardId ?? '');
+    }, 0);
   }
 
   get selectedList(): BoardList | null {
@@ -267,10 +299,10 @@ export class BoardComponent implements OnInit, AfterViewChecked {
       return;
     }
     this.boardService.removeCard(list, card);
-    this.closePanel();
+    this.closePanel(false);
   }
 
-  closePanel(): void {
+  closePanel(navigate = true): void {
     this.boardService.closeCardPanel();
     this.commentFocused = false;
     this.descriptionEditing = false;
@@ -281,6 +313,11 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     if (this.descriptionSaveTimeout) {
       window.clearTimeout(this.descriptionSaveTimeout);
       this.descriptionSaveTimeout = undefined;
+    }
+    this.cardNotFound = false;
+    this.missingCardId = '';
+    if (navigate) {
+      this.navigateToBoardRoute(this.boardService.board?.id ?? '');
     }
   }
 
@@ -295,6 +332,9 @@ export class BoardComponent implements OnInit, AfterViewChecked {
   }
 
   isCurrentBoard(boardId: string): boolean {
+    if (this.activeBoardId) {
+      return this.activeBoardId === boardId;
+    }
     return this.boardService.board?.id === boardId;
   }
 
@@ -302,21 +342,7 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     if (this.isCurrentBoard(boardId)) {
       return;
     }
-    const board = this.boardService.getBoard(boardId);
-    if (!board) {
-      return;
-    }
-    const list = board.lists.find((item) => item.cardIds.includes(card.id));
-    this.boardService.board = board;
-    this.boardService.recordBoardActivity(boardId);
-    if (!list) {
-      this.closePanel();
-      return;
-    }
-    this.boardService.selectedCard = { listId: list.id, cardId: card.id };
-    this.lastScrolledCardId = null;
-    this.descriptionEditing = false;
-    this.resetAttachState(card);
+    this.navigateToCardRoute(boardId, card.id);
   }
 
   toggleBoardPanel(): void {
@@ -325,7 +351,7 @@ export class BoardComponent implements OnInit, AfterViewChecked {
       this.boardMenuOpen = false;
       this.boardSettingsOpen = false;
       this.boardPanelArchivedView = false;
-      this.boardService.closeCardPanel();
+      this.closePanel();
     }
   }
 
@@ -372,7 +398,7 @@ export class BoardComponent implements OnInit, AfterViewChecked {
   }
 
   selectBoardFromPanel(board: Board): void {
-    this.boardService.setActiveBoard(board.id);
+    this.navigateToBoardRoute(board.id);
     this.boardSettingsTitle = board.title;
   }
 
@@ -411,14 +437,14 @@ export class BoardComponent implements OnInit, AfterViewChecked {
   }
 
   selectBoard(board: Board): void {
-    if (this.boardService.board?.id === board.id) {
+    if (this.activeBoardId === board.id && !this.activeCardId && !this.boardNotFound) {
       return;
     }
     this.boardMenuOpen = false;
     this.boardSettingsOpen = false;
     this.boardSettingsError = '';
-    this.closePanel();
-    this.boardService.setActiveBoard(board.id);
+    this.closePanel(false);
+    this.navigateToBoardRoute(board.id);
     this.boardSettingsTitle = board.title;
     this.resetBoardMenuState();
   }
@@ -429,6 +455,9 @@ export class BoardComponent implements OnInit, AfterViewChecked {
       this.createBoardError = result.error ?? 'Unable to create board.';
       return;
     }
+    if (result.board) {
+      this.navigateToBoardRoute(result.board.id);
+    }
     this.boardMenuOpen = false;
     this.newBoardTitle = '';
     this.createBoardError = '';
@@ -436,6 +465,30 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     if (this.boardPanelSortMode !== 'manual') {
       this.setBoardSortMode(this.boardPanelSortMode);
     }
+  }
+
+  openCreateBoardModal(): void {
+    this.createBoardModalOpen = true;
+    this.createBoardModalTitle = '';
+    this.createBoardModalError = '';
+  }
+
+  closeCreateBoardModal(): void {
+    this.createBoardModalOpen = false;
+    this.createBoardModalTitle = '';
+    this.createBoardModalError = '';
+  }
+
+  saveCreateBoardModal(): void {
+    const result = this.boardService.createBoard(this.createBoardModalTitle);
+    if (!result.success || !result.board) {
+      this.createBoardModalError = result.error ?? 'Unable to create board.';
+      return;
+    }
+    this.createBoardModalOpen = false;
+    this.createBoardModalTitle = '';
+    this.createBoardModalError = '';
+    this.navigateToBoardRoute(result.board.id);
   }
 
   confirmDeleteCurrentBoard(): void {
@@ -456,6 +509,9 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     this.boardSettingsError = '';
     this.closePanel();
     this.boardSearchTerm = '';
+    if (this.boardService.board) {
+      this.navigateToBoardRoute(this.boardService.board.id);
+    }
   }
 
   renderMarkdown(text: string): string {
@@ -483,6 +539,74 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     this.boardSearchTerm = '';
     this.newBoardTitle = '';
     this.createBoardError = '';
+  }
+
+  navigateToBoardRoute(boardId: string): void {
+    if (!boardId) {
+      return;
+    }
+    if (this.activeBoardId === boardId && !this.activeCardId) {
+      return;
+    }
+    this.router.navigate(['/boards', boardId]);
+  }
+
+  private navigateToCardRoute(boardId: string, cardId: string): void {
+    if (!boardId || !cardId) {
+      return;
+    }
+    if (this.activeBoardId === boardId && this.activeCardId === cardId) {
+      return;
+    }
+    this.router.navigate(['/boards', boardId, 'cards', cardId]);
+  }
+
+  private handleRoute(boardId: string | null, cardId: string | null): void {
+    this.activeBoardId = boardId ?? '';
+    this.activeCardId = cardId ?? '';
+    this.boardNotFound = false;
+    this.cardNotFound = false;
+    this.missingBoardId = '';
+    this.missingCardId = '';
+
+    if (!boardId) {
+      return;
+    }
+
+    const board = this.boardService.getBoard(boardId);
+    if (!board) {
+      this.boardNotFound = true;
+      this.missingBoardId = boardId;
+      this.boardService.closeCardPanel();
+      return;
+    }
+
+    if (this.boardService.board?.id !== board.id) {
+      this.boardService.setActiveBoard(board.id);
+      this.boardSettingsTitle = board.title;
+    } else {
+      this.boardService.recordBoardActivity(board.id);
+    }
+
+    if (!cardId) {
+      this.boardService.closeCardPanel();
+      return;
+    }
+
+    const list = board.lists.find((item) => item.cardIds.includes(cardId));
+    const card = list ? this.boardService.getCard(cardId) : null;
+    if (!list || !card) {
+      this.boardService.closeCardPanel();
+      this.cardNotFound = true;
+      this.missingCardId = cardId;
+      return;
+    }
+
+    this.boardService.openCardPanel(list, card);
+  }
+
+  createBoardFromNotFound(): void {
+    this.openCreateBoardModal();
   }
 
   toggleBoardSettings(): void {

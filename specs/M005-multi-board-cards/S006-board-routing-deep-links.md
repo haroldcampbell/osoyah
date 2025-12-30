@@ -18,15 +18,15 @@ Allow users to navigate to `/boards/<board-id>` and `/boards/<board-id>/cards/<c
 
 ## Definition of Done
 
-- [ ] Navigating to `/boards/<board-id>` loads the matching board and updates the selector state.
-- [ ] Navigating to `/boards/<board-id>/cards/<card-id>` loads the board and opens the matching card panel.
-- [ ] Selecting a different board updates the URL to `/boards/<board-id>`.
-- [ ] Opening a card updates the URL to `/boards/<board-id>/cards/<card-id>`.
-- [ ] Closing the card panel returns the URL to `/boards/<board-id>`.
-- [ ] Invalid board IDs show a 404 state with an error banner.
-- [ ] Invalid card IDs under a valid board show a 404 state with an error banner.
-- [ ] Existing single-board flows continue to work.
-- [ ] Acceptance tests pass.
+- [x] Navigating to `/boards/<board-id>` loads the matching board and updates the selector state.
+- [x] Navigating to `/boards/<board-id>/cards/<card-id>` loads the board and opens the matching card panel.
+- [x] Selecting a different board updates the URL to `/boards/<board-id>`.
+- [x] Opening a card updates the URL to `/boards/<board-id>/cards/<card-id>`.
+- [x] Closing the card panel returns the URL to `/boards/<board-id>`.
+- [x] Invalid board IDs show a 404 state with an error banner.
+- [x] Invalid card IDs under a valid board show a 404 state with an error banner.
+- [x] Existing single-board flows continue to work.
+- [x] Acceptance tests pass.
 
 ## Acceptance tests (exact commands + expected artifacts/output)
 

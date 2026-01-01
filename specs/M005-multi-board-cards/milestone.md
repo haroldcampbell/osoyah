@@ -27,6 +27,7 @@ Out-of-scope:
 - [x] S007-Title Length Validation
 - [x] S008-Board Layout Polish
 - [x] S009-Board Gallery Home
+- [ ] S010-SCSS Nesting Refactor Exploration
 
 ## Notes
 - Board lists remain the stage model for pipeline boards.

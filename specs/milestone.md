@@ -24,3 +24,5 @@ These are a list of ideas that may eventually become milestones. They are stored
 
 -   M-future-000-Responsive
 -   M-future-001-Image Storage API
+-   M-future-002-Custom Fields + Rollups
+-   M-future-003-Board Documents

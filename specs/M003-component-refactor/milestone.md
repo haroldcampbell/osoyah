@@ -22,6 +22,7 @@ Out-of-scope:
 - S002-Shared SCSS Tokens
 - S003-Component Tests
 - S004-E2E Regression
+- S005-Standalone Components
 
 ## Notes
 - Preserve mock data loading and in-memory state management.

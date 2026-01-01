@@ -3,6 +3,7 @@ import { CdkMenuModule } from '@angular/cdk/menu';
 import { CommonModule } from '@angular/common';
 import {
   AfterViewChecked,
+  AfterViewInit,
   Component,
   DestroyRef,
   ElementRef,
@@ -27,7 +28,7 @@ import { MarkdownService } from '../services/markdown.service';
     templateUrl: './board.component.html',
     styleUrl: './board.component.scss'
 })
-export class BoardComponent implements OnInit, AfterViewChecked {
+export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
   readonly boardService = inject(BoardService);
   private readonly markdown = inject(MarkdownService);
   private readonly elementRef = inject(ElementRef<HTMLElement>);
@@ -39,6 +40,9 @@ export class BoardComponent implements OnInit, AfterViewChecked {
   @ViewChild('boardMenuPanel') boardMenuPanel?: ElementRef<HTMLElement>;
   @ViewChild('panelTitleInput') panelTitleInput?: ElementRef<HTMLInputElement>;
   @ViewChild('boardSettingsTitleInput') boardSettingsTitleInput?: ElementRef<HTMLInputElement>;
+  @ViewChild('boardLists') boardLists?: ElementRef<HTMLElement>;
+  @ViewChild('boardScrollTrack') boardScrollTrack?: ElementRef<HTMLDivElement>;
+  @ViewChild('boardScrollSpacer') boardScrollSpacer?: ElementRef<HTMLDivElement>;
   commentFocused = false;
   descriptionEditing = false;
   attachBoardId = '';
@@ -69,6 +73,10 @@ export class BoardComponent implements OnInit, AfterViewChecked {
   private activeCardId = '';
   private descriptionSaveTimeout?: number;
   private lastScrolledCardId: string | null = null;
+  private boardScrollbarReady = false;
+  private boardScrollbarSyncing = false;
+  private boardScrollbarWidth = 0;
+  private boardScrollbarUpdate?: () => void;
 
   get commentExpanded(): boolean {
     return this.commentFocused || this.boardService.panelCommentDraft.trim().length > 0;
@@ -89,6 +97,7 @@ export class BoardComponent implements OnInit, AfterViewChecked {
   }
 
   ngAfterViewChecked(): void {
+    this.updateBoardScrollbar();
     if (!this.selectedCard) {
       this.lastScrolledCardId = null;
       return;
@@ -111,6 +120,10 @@ export class BoardComponent implements OnInit, AfterViewChecked {
       this.resetAttachState(activeCard);
       this.scrollSelectedCardIntoView(this.lastScrolledCardId ?? '');
     }, 0);
+  }
+
+  ngAfterViewInit(): void {
+    this.updateBoardScrollbar();
   }
 
   get selectedList(): BoardList | null {
@@ -691,6 +704,60 @@ export class BoardComponent implements OnInit, AfterViewChecked {
       return;
     }
     card.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  }
+
+  private updateBoardScrollbar(): void {
+    if (!this.boardScrollbarReady) {
+      this.ensureBoardScrollbar();
+      return;
+    }
+    this.boardScrollbarUpdate?.();
+  }
+
+  private ensureBoardScrollbar(): void {
+    const lists = this.boardLists?.nativeElement;
+    const track = this.boardScrollTrack?.nativeElement;
+    const spacer = this.boardScrollSpacer?.nativeElement;
+    if (!lists || !track || !spacer) {
+      return;
+    }
+    const handleListScroll = () => {
+      if (this.boardScrollbarSyncing) {
+        return;
+      }
+      this.boardScrollbarSyncing = true;
+      track.scrollLeft = lists.scrollLeft;
+      this.boardScrollbarSyncing = false;
+    };
+    const handleTrackScroll = () => {
+      if (this.boardScrollbarSyncing) {
+        return;
+      }
+      this.boardScrollbarSyncing = true;
+      lists.scrollLeft = track.scrollLeft;
+      this.boardScrollbarSyncing = false;
+    };
+    lists.addEventListener('scroll', handleListScroll, { passive: true });
+    track.addEventListener('scroll', handleTrackScroll, { passive: true });
+
+    const updateSpacer = () => {
+      const width = lists.scrollWidth;
+      if (width !== this.boardScrollbarWidth) {
+        this.boardScrollbarWidth = width;
+        spacer.style.width = `${width}px`;
+      }
+      if (track.scrollLeft !== lists.scrollLeft) {
+        track.scrollLeft = lists.scrollLeft;
+      }
+    };
+    this.boardScrollbarUpdate = updateSpacer;
+    updateSpacer();
+    this.boardScrollbarReady = true;
+
+    this.destroyRef.onDestroy(() => {
+      lists.removeEventListener('scroll', handleListScroll);
+      track.removeEventListener('scroll', handleTrackScroll);
+    });
   }
 
   @HostListener('document:keydown.escape')

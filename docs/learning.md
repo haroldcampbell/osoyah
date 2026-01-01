@@ -16,3 +16,11 @@ Running list of communication/process learnings captured after sessions.
 - Use a one-sentence intent + acceptance example: e.g., “Backdrop should dim the page at 20% opacity; visually similar to the card edit overlay.”
 - When UI text/placement matters, include the exact desired layout: e.g., “Banner only contains message; actions appear centered below: `Return to Boards | Create New board`.”
 - For behavior changes: specify precedence: e.g., “Escape should cancel editing and keep the panel open; never close the panel while editing.”
+
+## 2026-01-01
+
+### Where the friction showed up
+- Acceptance test logs: clarifying where test outputs live slowed handoff.
+
+### How to communicate more precisely (reduce iteration)
+- Note the exact log output location in spec templates (e.g., `client/logs/` with sample filenames).

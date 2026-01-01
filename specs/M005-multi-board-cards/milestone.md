@@ -25,7 +25,7 @@ Out-of-scope:
 - [x] S005-Board Management Panel
 - [x] S006-Board Routing + Deep Links
 - [x] S007-Title Length Validation
-- [ ] S008-Board Layout Polish
+- [x] S008-Board Layout Polish
 - [ ] S009-Board Gallery Home
 
 ## Notes

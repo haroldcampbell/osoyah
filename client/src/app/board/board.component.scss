@@ -3,7 +3,7 @@
 :host {
   display: block;
   color: tokens.$color-text-primary;
-  background: radial-gradient(circle at top, #f7f1e7 0%, #f1efe8 35%, #e7ebe7 100%);
+  background: #fff;
   min-height: 100vh;
   --card-panel-width: 800px;
   --board-panel-width: 360px;
@@ -21,14 +21,14 @@
   align-items: center;
   justify-content: space-between;
   gap: tokens.$space-md;
-  margin: 0 0 tokens.$space-md;
-  padding: 0.6rem tokens.$space-md;
+  margin: 0;
+  padding: 0.5rem tokens.$space-md;
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-  background: #f4efe6;
+  background: #eee5d1;
 }
 
 .board-title {
-  font-size: 2rem;
+  font-size: 1rem;
   font-weight: 600;
   letter-spacing: -0.04em;
 }
@@ -36,7 +36,7 @@
 .board-header-left {
   display: flex;
   align-items: center;
-  gap: tokens.$space-sm;
+  // gap: tokens.$space-sm;
 }
 
 .board-panel-trigger {
@@ -91,7 +91,7 @@
 .board-subtitle {
   margin: 0;
   color: tokens.$color-text-muted;
-  font-size: 0.95rem;
+  font-size: 0.8rem;
 }
 
 .board-state {
@@ -293,11 +293,10 @@
 
 
 .board {
-  background: tokens.$color-surface;
-  border-radius: tokens.$radius-board;
-  padding: tokens.$space-lg;
-  box-shadow: tokens.$shadow-board;
-  margin: 0 tokens.$space-md tokens.$space-lg;
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
 }
 
 .board-toolbar {
@@ -305,13 +304,29 @@
   align-items: center;
   justify-content: space-between;
   gap: tokens.$space-lg;
-  margin-bottom: tokens.$space-lg;
+  padding: tokens.$space-sm tokens.$space-md;
+  margin-bottom: tokens.$space-md;
+  position: relative;
+  background-color: #f3efe8;
+}
+
+.board-toolbar::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 100vw;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.1);
+  transform: translateX(-50%);
+  pointer-events: none;
 }
 
 .board-layout {
   display: flex;
   gap: tokens.$space-lg;
   align-items: flex-start;
+  padding: 1rem tokens.$space-md 0 tokens.$space-md;
 }
 
 .board-layout-panel-open {
@@ -326,18 +341,18 @@
   position: relative;
   display: inline-flex;
   align-items: center;
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   font-weight: 600;
 }
 
 .board-selector {
   display: inline-flex;
   align-items: center;
-  gap: tokens.$space-xs;
+  gap: tokens.$space-sm;
   border: 1px solid transparent;
   border-radius: 8px;
   padding: 0.35rem 0.9rem;
-  background: tokens.$color-card;
+  background-color: transparent;
   color: tokens.$color-text-primary;
   cursor: pointer;
   font-size: inherit;
@@ -755,11 +770,12 @@
   outline: 2px solid tokens.$color-text-primary;
   outline-offset: 2px;
   border-color: tokens.$color-border;
+  background: tokens.$color-card;
 }
 
 .board-selector-caret {
-  width: 8px;
-  height: 8px;
+  width: 5px;
+  height: 5px;
   border-right: 2px solid tokens.$color-text-muted;
   border-bottom: 2px solid tokens.$color-text-muted;
   transform: rotate(45deg);
@@ -1055,6 +1071,33 @@
   overflow-x: auto;
   padding-bottom: tokens.$space-md;
   flex: 1 1 auto;
+  scrollbar-width: none;
+}
+
+.lists::-webkit-scrollbar {
+  display: none;
+}
+
+.board-scrollbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 16px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  z-index: 4;
+  background: transparent;
+}
+
+.board-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(60, 60, 60, 0.35);
+  border-radius: 999px;
+}
+
+.board-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.08);
+
 }
 
 .card-panel {

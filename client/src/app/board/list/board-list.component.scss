@@ -1,7 +1,7 @@
 @use '../../../styles/tokens' as tokens;
 
 :host {
-  background: tokens.$color-surface-muted;
+  background: #eee5d1;
   border-radius: tokens.$radius-list;
   padding: tokens.$space-md;
   width: 280px;

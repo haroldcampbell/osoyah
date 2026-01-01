@@ -413,6 +413,7 @@
       >
         <div
           class="lists"
+          #boardLists
           cdkDropList
           cdkDropListOrientation="horizontal"
           [cdkDropListData]="boardService.board.lists"
@@ -663,6 +664,9 @@
             </div>
           </aside>
         }
+      </div>
+      <div class="board-scrollbar" #boardScrollTrack aria-hidden="true">
+        <div class="board-scrollbar-spacer" #boardScrollSpacer></div>
       </div>
     </div>
   }

@@ -36,3 +36,4 @@ and focuses on how we work session-to-session.
 
 -   Add a session entry in `session-hand-offs/` using `yyyy-mm-dd-nn-title.md`.
 -   Update `docs/decisions.md` when decisions change.
+-   After drafting a hand-off, review potential learnings and ask the user which items to save in `docs/learning.md`. If confirmed, append a dated entry.

@@ -75,11 +75,17 @@ Violating any of the above is considered a critical failure.
     - If tests fail, fix before committing
 
 1. **Commit discipline**
-    - Commit after each successful spec
-    - Commit messages should be short and descriptive:
+
+    - Agent generated commit messages should be short and descriptive:
         - `v3: scroll hydration with termination`
-        - `feat: cbz export`
+        - `feat (M00X-S00Y): cbz export`
         - `fix: ignore logo image`
+    - User requests for Agent to commit should result git commit message. Agent should NOT make commits.
+    - User to commit after each successful spec
+
+1. **Learnings capture**
+    - After drafting a session hand-off, review potential learnings and ask the user which items to save in `docs/learning.md`.
+    - If confirmed, append a dated entry to `docs/learning.md`.
 
 ---
 

@@ -16,6 +16,7 @@ Current active decisions, consolidated from session hand-offs. When a decision c
 -   Maintain board state in-memory on the client until backend persistence is added.
 -   Styles for markdown injected via `innerHTML` must live in global styles (component-scoped styles do not apply).
 -   Markdown rendering uses `marked` + `DOMPurify`.
+-   Editable inputs inside panels can use negative horizontal margins to align with panel edges; prefer symmetric offsets (e.g., `margin: 0 -0.5rem`) for clarity.
 
 ## Testing
 

@@ -14,6 +14,7 @@
 -   Review and follow the AGENTS.md
 -   Read the last session hand-off.
 -   Before answering status or decision questions, read the latest entry in `session-hand-offs/` and `docs/decisions.md`.
+-   After drafting a hand-off, review potential learnings and ask the user which items to save in `docs/learning.md`. If confirmed, append a dated entry.
 -   Ensure new session hand-off filenames do not include milestone IDs (e.g., avoid `M00X`).
 -   Strict naming rule: filenames must be `yyyy-mm-dd-nn-title.md` and must not include spec or milestone identifiers (e.g., `S00X`, `M00X`, `s002`, `m005`). If present, rename before proceeding.
 

@@ -34,7 +34,7 @@
 // }
 
 // test('S001 renders cards from the global store and preserves IDs on drag', async ({ page }) => {
-// 	await page.goto('/');
+// 	await page.goto('/boards/board-1');
 
 // 	const backlogList = page.locator('[data-testid="list"][data-list-title="Backlog"]');
 // 	const inProgressList = page.locator('[data-testid="list"][data-list-title="In Progress"]');

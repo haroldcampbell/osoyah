@@ -30,7 +30,12 @@ describe('BoardCardComponent', () => {
     component = fixture.componentInstance;
     boardService = TestBed.inject(BoardService);
     boardService.cardsById = { 'card-1': mockCard };
-    boardService.board = { id: 'board-1', title: 'Test Board', lists: [mockList] };
+    boardService.board = {
+      id: 'board-1',
+      title: 'Test Board',
+      createdAt: '2025-01-01T09:00:00Z',
+      lists: [mockList],
+    };
     component.card = mockCard;
     component.list = mockList;
     fixture.detectChanges();

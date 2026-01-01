@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 // Spec: S005 Card Density Layout
 
 test('S005 shows metadata and description indicator on cards', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/boards/board-1');
 
   const backlogList = page.locator('[data-testid="list"][data-list-title="Backlog"]');
   const card = backlogList.locator('[data-testid="card"][data-card-id="card-1"]');

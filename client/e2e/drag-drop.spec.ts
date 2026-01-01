@@ -34,7 +34,7 @@ async function dragToCenter(
 }
 
 test('S006-02 supports dragging a card between lists', async ({ page }) => {
-	await page.goto('/');
+	await page.goto('/boards/board-1');
 
 	const backlogList = page.locator('[data-testid="list"][data-list-title="Backlog"]');
 	const inProgressList = page.locator('[data-testid="list"][data-list-title="In Progress"]');
@@ -61,7 +61,7 @@ test('S006-02 supports dragging a card between lists', async ({ page }) => {
 });
 
 test('S006-02 supports reordering lists', async ({ page }) => {
-	await page.goto('/');
+	await page.goto('/boards/board-1');
 
 	const lists = page.locator('[data-testid="list"]');
 	const firstList = lists.nth(0);

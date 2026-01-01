@@ -5,7 +5,7 @@ import { clickCardBackground } from './helpers';
 
 
 test('S006-01 shows a details indicator on cards with descriptions', async ({ page }) => {
-	await page.goto('/');
+	await page.goto('/boards/board-1');
 	await expect(page.locator('[data-testid="board"]')).toBeVisible();
 
 	const backlogList = page.locator('[data-testid="list"][data-list-title="Backlog"]');
@@ -22,7 +22,7 @@ test('S006-01 shows a details indicator on cards with descriptions', async ({ pa
 });
 
 test('S006-01 renders markdown in the side panel description', async ({ page }) => {
-	await page.goto('/');
+	await page.goto('/boards/board-1');
 	await expect(page.locator('[data-testid="board"]')).toBeVisible();
 
 	const backlogList = page.locator('[data-testid="list"][data-list-title="Backlog"]');
@@ -70,7 +70,7 @@ test('S006-01 renders markdown in the side panel description', async ({ page }) 
 });
 
 test('S006-01 renders markdown in side panel comments', async ({ page }) => {
-	await page.goto('/');
+	await page.goto('/boards/board-1');
 	await expect(page.locator('[data-testid="board"]')).toBeVisible();
 
 	const backlogList = page.locator('[data-testid="list"][data-list-title="Backlog"]');

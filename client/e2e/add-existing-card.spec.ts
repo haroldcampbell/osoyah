@@ -4,7 +4,7 @@ import { clickCardBackground } from './helpers';
 // Spec: S002 Add Existing Card to Board
 
 test('S002 adds an existing card to another board', async ({ page }) => {
-	await page.goto('/');
+	await page.goto('/boards/board-1');
 	await expect(page.locator('[data-testid="board"]')).toBeVisible();
 
 	const reviewList = page.locator('[data-testid="list"][data-list-title="Review"]');

@@ -20,6 +20,7 @@
 
 ## Entries
 
+-   2026-01-01-02-board-gallery-home.md - S009 board gallery home + shared header + board settings description + future specs
 -   2026-01-01-01-board-layout-polish.md - S008 layout polish + fixed scrollbar + spacing/contrast updates
 -   2025-12-30-02-title-validation-ui.md - S007 validation + card edit modal + learnings capture
 -   2025-12-30-01-board-routing.md - Board routing + deep links implementation

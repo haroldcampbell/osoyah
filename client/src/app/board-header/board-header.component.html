@@ -1,0 +1,24 @@
+<header class="board-header">
+  <div class="board-header-left">
+    @if (showPanelTrigger) {
+      <button
+        type="button"
+        class="board-panel-trigger"
+        [attr.aria-label]="panelAriaLabel"
+        [attr.aria-expanded]="panelExpanded"
+        [attr.aria-disabled]="panelDisabled || null"
+        [disabled]="panelDisabled"
+        (click)="panelToggle.emit()"
+        data-testid="board-panel-trigger"
+      >
+        <span class="board-panel-trigger-icon" aria-hidden="true"></span>
+      </button>
+    }
+    @if (titleLink) {
+      <a class="board-title" [routerLink]="titleLink" data-testid="board-title">{{ title }}</a>
+    } @else {
+      <div class="board-title" data-testid="board-title">{{ title }}</div>
+    }
+  </div>
+  <p class="board-subtitle">{{ subtitle }}</p>
+</header>

@@ -5,7 +5,7 @@ import { clickCardBackground } from './helpers';
 
 
 test('S002 adds a card, updates description, and deletes it from the panel', async ({ page }) => {
-	await page.goto('/');
+	await page.goto('/boards/board-1');
 
 	const backlogList = page.locator('[data-testid="list"][data-list-title="Backlog"]');
 

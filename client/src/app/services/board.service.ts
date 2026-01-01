@@ -4,11 +4,13 @@ import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/dr
 import { BehaviorSubject, Observable, take } from 'rxjs';
 
 import { Board, BoardList, Card, CardComment, BoardsResponse } from '../models/board.model';
+import { BoardGalleryStateService } from './board-gallery-state.service';
 
 @Injectable({ providedIn: 'root' })
 export class BoardService {
   private readonly dataUrl = 'assets/data.json';
   private readonly http = inject(HttpClient);
+  private readonly boardGalleryState = inject(BoardGalleryStateService);
   private idCounter = 0;
   private hasLoaded = false;
   private readonly boardLoadedSubject = new BehaviorSubject(false);
@@ -47,7 +49,8 @@ export class BoardService {
     return this.http.get<BoardsResponse>(this.dataUrl);
   }
 
-  loadBoard(): void {
+  loadBoard(options: { recordActivity?: boolean } = {}): void {
+    const recordActivity = options.recordActivity ?? false;
     if (this.hasLoaded) {
       this.loading = false;
       this.error = '';
@@ -63,6 +66,13 @@ export class BoardService {
         next: (data) => {
           this.cardsById = this.indexCards(data.cards ?? []);
           const boards = data.boards ?? [];
+          const lastOpened = this.boardGalleryState.getLastOpenedMap();
+          this.lastActiveAt = { ...lastOpened };
+          boards.forEach((board) => {
+            if (!board.createdAt) {
+              board.createdAt = new Date().toISOString();
+            }
+          });
           if (boards.length === 0) {
             this.board = this.createEmptyBoard();
             this.boards = [this.board];
@@ -71,7 +81,7 @@ export class BoardService {
             this.board = boards.find((board) => !board.archived) ?? boards[0];
           }
           this.initializeBoardOrders();
-          if (this.board) {
+          if (this.board && recordActivity) {
             this.recordBoardActivity(this.board.id);
           }
           this.closeCardPanel();
@@ -124,9 +134,12 @@ export class BoardService {
       return { success: false, error };
     }
     const listId = this.createId('list');
+    const now = new Date().toISOString();
     const board: Board = {
       id: this.createId('board'),
       title: title.trim(),
+      createdAt: now,
+      description: '',
       lists: [
         {
           id: listId,
@@ -145,7 +158,11 @@ export class BoardService {
     return { success: true, board };
   }
 
-  renameBoard(boardId: string, title: string): { success: boolean; error?: string } {
+  updateBoardSettings(
+    boardId: string,
+    title: string,
+    description: string,
+  ): { success: boolean; error?: string } {
     const board = this.getBoard(boardId);
     if (!board) {
       return { success: false, error: 'Board not found.' };
@@ -154,7 +171,12 @@ export class BoardService {
     if (error) {
       return { success: false, error };
     }
+    const descriptionError = this.getBoardDescriptionError(description);
+    if (descriptionError) {
+      return { success: false, error: descriptionError };
+    }
     board.title = title.trim();
+    board.description = description.trim();
     return { success: true };
   }
 
@@ -164,6 +186,7 @@ export class BoardService {
       return { success: false, error: 'Board not found.' };
     }
     this.removeBoardFromOrders(boardId);
+    this.boardGalleryState.removeBoard(boardId);
     delete this.lastActiveAt[boardId];
     this.boards.splice(boardIndex, 1);
     if (!this.boards.length) {
@@ -494,6 +517,8 @@ export class BoardService {
     return {
       id: 'board-empty',
       title: 'New Board',
+      createdAt: new Date().toISOString(),
+      description: '',
       lists: [],
       pinned: false,
       archived: false,
@@ -529,7 +554,9 @@ export class BoardService {
   }
 
   recordBoardActivity(boardId: string): void {
-    this.lastActiveAt[boardId] = Date.now();
+    const timestamp = Date.now();
+    this.lastActiveAt[boardId] = timestamp;
+    this.boardGalleryState.setLastOpened(boardId, timestamp);
   }
 
   getBoardTitleError(title: string): string | null {
@@ -539,6 +566,14 @@ export class BoardService {
     }
     if (/^\d+$/.test(trimmed)) {
       return 'Board name cannot be all numbers.';
+    }
+    return null;
+  }
+
+  getBoardDescriptionError(description: string): string | null {
+    const trimmed = description.trim();
+    if (trimmed.length > 30) {
+      return 'Board description must be 30 characters or less.';
     }
     return null;
   }

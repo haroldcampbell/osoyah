@@ -5,7 +5,7 @@ import { clickCardBackground } from './helpers';
 
 
 test('S002 opens the card panel, manages comments, and closes it', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/boards/board-1');
 
   const backlogList = page.locator('[data-testid="list"][data-list-title="Backlog"]');
   const firstCard = backlogList.locator('[data-testid="card"]').first();

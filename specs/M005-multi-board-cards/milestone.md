@@ -26,7 +26,7 @@ Out-of-scope:
 - [x] S006-Board Routing + Deep Links
 - [x] S007-Title Length Validation
 - [x] S008-Board Layout Polish
-- [ ] S009-Board Gallery Home
+- [x] S009-Board Gallery Home
 
 ## Notes
 - Board lists remain the stage model for pipeline boards.

@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 // Spec: S004 Board Selection + CRUD
 
 test('S004 switches boards with search-based selector', async ({ page }) => {
-	await page.goto('/');
+	await page.goto('/boards/board-1');
 	await expect(page.locator('[data-testid="board"]')).toBeVisible();
 
 	const selector = page.locator('[data-testid="board-selector"]');
@@ -26,7 +26,7 @@ test('S004 switches boards with search-based selector', async ({ page }) => {
 });
 
 test('S004 creates, renames, and deletes boards with validation', async ({ page }) => {
-	await page.goto('/');
+	await page.goto('/boards/board-1');
 	await expect(page.locator('[data-testid="board"]')).toBeVisible();
 
 	const selector = page.locator('[data-testid="board-selector"]');

@@ -27,6 +27,7 @@ const mockCards = [
 const mockBoard: Board = {
   id: 'board-1',
   title: 'Test Board',
+  createdAt: '2025-01-01T09:00:00Z',
   lists: [
     {
       id: 'list-1',
@@ -44,6 +45,7 @@ const mockBoard: Board = {
 const mockBoardTwo: Board = {
   id: 'board-2',
   title: 'Second Board',
+  createdAt: '2025-01-02T09:00:00Z',
   lists: [
     {
       id: 'list-3',

@@ -4,7 +4,7 @@ import { clickCardBackground } from './helpers';
 // Spec: S003 Membership Indicators + Navigation
 
 test('S003 shows memberships and navigates between boards', async ({ page }) => {
-	await page.goto('/');
+	await page.goto('/boards/board-1');
 	await expect(page.locator('[data-testid="board"]')).toBeVisible();
 
 	const backlogList = page.locator('[data-testid="list"][data-list-title="Backlog"]');

@@ -16,83 +16,6 @@
   font-family: Roboto, 'Open Sans', 'PT Serif Caption', 'Helvetica Neue', sans-serif;
 }
 
-.board-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: tokens.$space-md;
-  margin: 0;
-  padding: 0.5rem tokens.$space-md;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-  background: #eee5d1;
-}
-
-.board-title {
-  font-size: 1rem;
-  font-weight: 600;
-  letter-spacing: -0.04em;
-}
-
-.board-header-left {
-  display: flex;
-  align-items: center;
-  // gap: tokens.$space-sm;
-}
-
-.board-panel-trigger {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  border: 1px solid transparent;
-  background: transparent;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.board-panel-trigger:hover,
-.board-panel-trigger:focus-visible {
-  border-color: tokens.$color-border;
-  background: tokens.$color-card;
-}
-
-.board-panel-trigger[aria-expanded='true'] {
-  border-color: tokens.$color-border;
-  background: tokens.$color-card;
-}
-
-.board-panel-trigger-icon {
-  width: 14px;
-  height: 2px;
-  background: tokens.$color-text-primary;
-  position: relative;
-  display: inline-block;
-}
-
-.board-panel-trigger-icon::before,
-.board-panel-trigger-icon::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  width: 14px;
-  height: 2px;
-  background: tokens.$color-text-primary;
-}
-
-.board-panel-trigger-icon::before {
-  top: -5px;
-}
-
-.board-panel-trigger-icon::after {
-  top: 5px;
-}
-
-.board-subtitle {
-  margin: 0;
-  color: tokens.$color-text-muted;
-  font-size: 0.8rem;
-}
 
 .board-state {
   padding: 2rem 0;
@@ -976,7 +899,9 @@
   align-items: center;
   justify-content: space-between;
   gap: tokens.$space-sm;
-  margin-bottom: tokens.$space-sm;
+  margin: 0 calc(-1 * tokens.$space-md) tokens.$space-sm;
+  padding: 0 tokens.$space-md tokens.$space-sm;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .add-list .board-settings-close {
@@ -1018,6 +943,21 @@
   color: tokens.$color-text-muted;
 }
 
+.board-settings-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$space-md;
+}
+
+.board-settings-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
 .add-list .board-settings-title-input {
   border: 1px solid transparent;
   border-radius: 8px;
@@ -1036,6 +976,11 @@
   margin-top: -0.35rem;
   color: tokens.$color-state-error;
   font-size: 0.85rem;
+}
+
+.board-settings-date {
+  font-size: 0.85rem;
+  color: tokens.$color-text-muted;
 }
 
 .board-settings-actions {

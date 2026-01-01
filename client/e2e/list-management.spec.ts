@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 // Spec: S003 Inline Title Editing + S004 Interaction Hygiene
 
 test('S003/S004 adds, renames, and removes a list', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/boards/board-1');
 
   await expect(page.locator('[data-testid="board"]')).toBeVisible();
   const lists = page.locator('[data-testid="list"]');

@@ -41,7 +41,12 @@ describe('BoardListComponent', () => {
       'card-1': mockCards[0],
       'card-2': mockCards[1],
     };
-    boardService.board = { id: 'board-1', title: 'Test Board', lists: [mockList] };
+    boardService.board = {
+      id: 'board-1',
+      title: 'Test Board',
+      createdAt: '2025-01-01T09:00:00Z',
+      lists: [mockList],
+    };
     fixture.componentInstance.list = mockList;
     fixture.detectChanges();
   });

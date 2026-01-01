@@ -1,0 +1,223 @@
+<section class="board-gallery">
+  <app-board-header
+    title="Kanban"
+    subtitle="Minimal board for focused flow."
+    [showPanelTrigger]="true"
+    [panelDisabled]="true"
+  ></app-board-header>
+
+  <header class="board-gallery-header">
+    <div class="board-gallery-title">Boards</div>
+    <div class="board-gallery-controls">
+      <label class="board-gallery-label" for="board-gallery-search">Search</label>
+      <input
+        id="board-gallery-search"
+        type="search"
+        placeholder="Search boards"
+        [(ngModel)]="searchTerm"
+        data-testid="board-gallery-search"
+      />
+      <label class="board-gallery-label" for="board-gallery-sort">Sort</label>
+      <select
+        id="board-gallery-sort"
+        [(ngModel)]="sortMode"
+        (ngModelChange)="updateSortMode()"
+        data-testid="board-gallery-sort"
+      >
+        @for (option of sortOptions; track option.value) {
+          <option [value]="option.value">{{ option.label }}</option>
+        }
+      </select>
+      <button
+        type="button"
+        class="board-gallery-create"
+        (click)="toggleCreateBoard()"
+        data-testid="board-gallery-create-toggle"
+      >
+        New board
+      </button>
+    </div>
+  </header>
+
+  @if (createBoardOpen) {
+    <div class="board-gallery-create-panel" data-testid="board-gallery-create-panel">
+      <label class="board-gallery-label" for="board-gallery-create-input">Board name</label>
+      <div class="board-gallery-create-row">
+        <input
+          id="board-gallery-create-input"
+          type="text"
+          placeholder="Board name"
+          [(ngModel)]="newBoardTitle"
+          (input)="createBoardError = ''"
+          (keyup.enter)="createBoard()"
+          data-testid="board-gallery-create-input"
+        />
+        <button
+          type="button"
+          class="board-gallery-create-action"
+          (click)="createBoard()"
+          data-testid="board-gallery-create-button"
+        >
+          Create
+        </button>
+        <button
+          type="button"
+          class="board-gallery-create-cancel"
+          (click)="toggleCreateBoard()"
+          data-testid="board-gallery-create-cancel"
+        >
+          Cancel
+        </button>
+      </div>
+      @if (createBoardError) {
+        <div class="board-gallery-create-error" data-testid="board-gallery-create-error">
+          {{ createBoardError }}
+        </div>
+      }
+    </div>
+  }
+
+  @if (boardService.loading) {
+    <div class="board-gallery-state">Loading boards...</div>
+  }
+  @if (boardService.error) {
+    <div class="board-gallery-state error">{{ boardService.error }}</div>
+  }
+
+  @if (!boardService.loading && !boardService.error) {
+    <section class="board-gallery-section" data-testid="board-gallery-recent">
+      <div class="board-gallery-section-header">
+        <h2>Recent</h2>
+        <span class="board-gallery-count">{{ recentBoards.length }}</span>
+      </div>
+      @if (recentBoards.length === 0) {
+        <div class="board-gallery-empty" data-testid="board-gallery-recent-empty">
+          {{ getEmptyMessage('recent') }}
+        </div>
+      } @else {
+        <div class="board-gallery-grid">
+          @for (board of recentBoards; track board.id) {
+            <div
+              class="board-gallery-card"
+              role="link"
+              tabindex="0"
+              (click)="openBoard(board)"
+              (keydown.enter)="openBoard(board)"
+              (keydown.space)="openBoard(board); $event.preventDefault()"
+              [attr.data-board-id]="board.id"
+              [attr.data-testid]="'board-gallery-card-' + board.id"
+            >
+              <div class="board-gallery-card-title">{{ board.title }}</div>
+              @if (board.description) {
+                <div
+                  class="board-gallery-card-description"
+                  [attr.title]="board.description"
+                >
+                  {{ formatDescription(board.description) }}
+                </div>
+              }
+              <button
+                type="button"
+                class="board-gallery-pin"
+                (click)="togglePin(board, $event)"
+                [attr.data-testid]="'board-gallery-pin-' + board.id"
+              >
+                {{ board.pinned ? 'Unpin' : 'Pin' }}
+              </button>
+            </div>
+          }
+        </div>
+      }
+    </section>
+
+    <section class="board-gallery-section" data-testid="board-gallery-pinned">
+      <div class="board-gallery-section-header">
+        <h2>Pinned</h2>
+        <span class="board-gallery-count">{{ pinnedBoards.length }}</span>
+      </div>
+      @if (pinnedBoards.length === 0) {
+        <div class="board-gallery-empty" data-testid="board-gallery-pinned-empty">
+          {{ getEmptyMessage('pinned') }}
+        </div>
+      } @else {
+        <div class="board-gallery-grid">
+          @for (board of pinnedBoards; track board.id) {
+            <div
+              class="board-gallery-card"
+              role="link"
+              tabindex="0"
+              (click)="openBoard(board)"
+              (keydown.enter)="openBoard(board)"
+              (keydown.space)="openBoard(board); $event.preventDefault()"
+              [attr.data-board-id]="board.id"
+              [attr.data-testid]="'board-gallery-card-' + board.id"
+            >
+              <div class="board-gallery-card-title">{{ board.title }}</div>
+              @if (board.description) {
+                <div
+                  class="board-gallery-card-description"
+                  [attr.title]="board.description"
+                >
+                  {{ formatDescription(board.description) }}
+                </div>
+              }
+              <button
+                type="button"
+                class="board-gallery-pin"
+                (click)="togglePin(board, $event)"
+                [attr.data-testid]="'board-gallery-pin-' + board.id"
+              >
+                {{ board.pinned ? 'Unpin' : 'Pin' }}
+              </button>
+            </div>
+          }
+        </div>
+      }
+    </section>
+
+    <section class="board-gallery-section" data-testid="board-gallery-all">
+      <div class="board-gallery-section-header">
+        <h2>All boards</h2>
+        <span class="board-gallery-count">{{ allBoards.length }}</span>
+      </div>
+      @if (allBoards.length === 0) {
+        <div class="board-gallery-empty" data-testid="board-gallery-all-empty">
+          {{ getEmptyMessage('all') }}
+        </div>
+      } @else {
+        <div class="board-gallery-grid">
+          @for (board of allBoards; track board.id) {
+            <div
+              class="board-gallery-card"
+              role="link"
+              tabindex="0"
+              (click)="openBoard(board)"
+              (keydown.enter)="openBoard(board)"
+              (keydown.space)="openBoard(board); $event.preventDefault()"
+              [attr.data-board-id]="board.id"
+              [attr.data-testid]="'board-gallery-card-' + board.id"
+            >
+              <div class="board-gallery-card-title">{{ board.title }}</div>
+              @if (board.description) {
+                <div
+                  class="board-gallery-card-description"
+                  [attr.title]="board.description"
+                >
+                  {{ formatDescription(board.description) }}
+                </div>
+              }
+              <button
+                type="button"
+                class="board-gallery-pin"
+                (click)="togglePin(board, $event)"
+                [attr.data-testid]="'board-gallery-pin-' + board.id"
+              >
+                {{ board.pinned ? 'Unpin' : 'Pin' }}
+              </button>
+            </div>
+          }
+        </div>
+      }
+    </section>
+  }
+</section>

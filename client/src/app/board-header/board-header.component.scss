@@ -1,0 +1,84 @@
+@use '../../styles/tokens' as tokens;
+
+.board-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: tokens.$space-md;
+  margin: 0;
+  padding: 0.5rem tokens.$space-md;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  background: #eee5d1;
+}
+
+.board-header-left {
+  display: flex;
+  align-items: center;
+}
+
+.board-panel-trigger {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.board-panel-trigger[disabled] {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.board-panel-trigger:hover,
+.board-panel-trigger:focus-visible {
+  border-color: tokens.$color-border;
+  background: tokens.$color-card;
+}
+
+.board-panel-trigger[aria-expanded='true'] {
+  border-color: tokens.$color-border;
+  background: tokens.$color-card;
+}
+
+.board-panel-trigger-icon {
+  position: relative;
+  width: 14px;
+  height: 14px;
+}
+
+.board-panel-trigger-icon::before,
+.board-panel-trigger-icon::after {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 2px;
+  background: tokens.$color-text-primary;
+  border-radius: 999px;
+  left: 0;
+}
+
+.board-panel-trigger-icon::before {
+  top: 4px;
+}
+
+.board-panel-trigger-icon::after {
+  top: 9px;
+}
+
+.board-title {
+  text-decoration: none;
+  color: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+}
+
+.board-subtitle {
+  margin: 0;
+  font-size: 0.85rem;
+  color: tokens.$color-text-muted;
+}

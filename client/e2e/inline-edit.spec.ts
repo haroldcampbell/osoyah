@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 // Spec: S003 Inline Title Editing
 
 test('S003 edits a list title inline', async ({ page }) => {
-	await page.goto('/');
+	await page.goto('/boards/board-1');
 
 	const lists = page.locator('[data-testid="list"]');
 	const initialCount = await lists.count();
@@ -27,7 +27,7 @@ test('S003 edits a list title inline', async ({ page }) => {
 });
 
 test('S003 edits a card title inline', async ({ page }) => {
-	await page.goto('/');
+	await page.goto('/boards/board-1');
 
 	const backlogList = page.locator('[data-testid="list"][data-list-title="Backlog"]');
 	const firstCard = backlogList.locator('[data-testid="card"]').first();

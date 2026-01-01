@@ -1,20 +1,12 @@
 <section class="board-shell">
-  <header class="board-header">
-    <div class="board-header-left">
-      <button
-        type="button"
-        class="board-panel-trigger"
-        (click)="toggleBoardPanel()"
-        aria-label="Open board panel"
-        [attr.aria-expanded]="boardPanelOpen"
-        data-testid="board-panel-trigger"
-      >
-        <span class="board-panel-trigger-icon" aria-hidden="true"></span>
-      </button>
-      <div class="board-title" data-testid="board-title">Kanban</div>
-    </div>
-    <p class="board-subtitle">Minimal board for focused flow.</p>
-  </header>
+  <app-board-header
+    title="Kanban"
+    subtitle="Minimal board for focused flow."
+    titleLink="/boards"
+    [showPanelTrigger]="true"
+    [panelExpanded]="boardPanelOpen"
+    (panelToggle)="toggleBoardPanel()"
+  ></app-board-header>
 
   @if (boardService.loading) {
     <div class="board-state">Loading board...</div>
@@ -167,16 +159,48 @@
                   </button>
                 </div>
                 <div class="board-settings-body">
-                  <input
-                    #boardSettingsTitleInput
-                    id="board-settings-title"
-                    type="text"
-                    class="board-settings-title-input"
-                    [(ngModel)]="boardSettingsTitle"
-                    (input)="boardSettingsError = ''"
-                    (keydown.escape)="cancelBoardSettingsTitleEdit(); $event.stopPropagation()"
-                    data-testid="board-settings-title"
-                  />
+                  <ul class="board-settings-list">
+                    <li class="board-settings-item">
+                      <label class="board-settings-label" for="board-settings-title">
+                        Board name
+                      </label>
+                      <input
+                        #boardSettingsTitleInput
+                        id="board-settings-title"
+                        type="text"
+                        class="board-settings-title-input"
+                        [(ngModel)]="boardSettingsTitle"
+                        (input)="boardSettingsError = ''"
+                        (keydown.escape)="cancelBoardSettingsTitleEdit(); $event.stopPropagation()"
+                        data-testid="board-settings-title"
+                      />
+                    </li>
+                    <li class="board-settings-item">
+                      <label class="board-settings-label" for="board-settings-description">
+                        Description
+                      </label>
+                      <input
+                        #boardSettingsDescriptionInput
+                        id="board-settings-description"
+                        type="text"
+                        class="board-settings-title-input"
+                        placeholder="Short description"
+                        maxlength="30"
+                        [(ngModel)]="boardSettingsDescription"
+                        (input)="boardSettingsError = ''"
+                        (keydown.escape)="cancelBoardSettingsDescriptionEdit(); $event.stopPropagation()"
+                        data-testid="board-settings-description"
+                      />
+                    </li>
+                    @if (boardService.board && boardService.board.createdAt) {
+                      <li class="board-settings-item" data-testid="board-settings-created">
+                        <div class="board-settings-label">Created</div>
+                        <div class="board-settings-date">
+                          {{ boardService.formatExactDate(boardService.board.createdAt) }}
+                        </div>
+                      </li>
+                    }
+                  </ul>
                   @if (boardSettingsError) {
                     <div class="board-settings-error" data-testid="board-settings-error">
                       {{ boardSettingsError }}

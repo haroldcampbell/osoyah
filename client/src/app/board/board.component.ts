@@ -18,13 +18,22 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { combineLatest } from 'rxjs';
 
 import { BoardService } from '../services/board.service';
+import { BoardHeaderComponent } from '../board-header/board-header.component';
 import { BoardListComponent } from './list/board-list.component';
 import { Board, BoardList, Card, CardComment } from '../models/board.model';
 import { MarkdownService } from '../services/markdown.service';
 
 @Component({
     selector: 'app-board',
-    imports: [CommonModule, FormsModule, DragDropModule, CdkMenuModule, BoardListComponent, RouterLink],
+    imports: [
+      CommonModule,
+      FormsModule,
+      DragDropModule,
+      CdkMenuModule,
+      BoardListComponent,
+      RouterLink,
+      BoardHeaderComponent,
+    ],
     templateUrl: './board.component.html',
     styleUrl: './board.component.scss'
 })
@@ -40,6 +49,7 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
   @ViewChild('boardMenuPanel') boardMenuPanel?: ElementRef<HTMLElement>;
   @ViewChild('panelTitleInput') panelTitleInput?: ElementRef<HTMLInputElement>;
   @ViewChild('boardSettingsTitleInput') boardSettingsTitleInput?: ElementRef<HTMLInputElement>;
+  @ViewChild('boardSettingsDescriptionInput') boardSettingsDescriptionInput?: ElementRef<HTMLInputElement>;
   @ViewChild('boardLists') boardLists?: ElementRef<HTMLElement>;
   @ViewChild('boardScrollTrack') boardScrollTrack?: ElementRef<HTMLDivElement>;
   @ViewChild('boardScrollSpacer') boardScrollSpacer?: ElementRef<HTMLDivElement>;
@@ -55,6 +65,7 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
   createBoardError = '';
   boardSettingsOpen = false;
   boardSettingsTitle = '';
+  boardSettingsDescription = '';
   boardSettingsError = '';
   boardPanelOpen = false;
   boardPanelSortMode: 'manual' | 'name' | 'name-desc' | 'recent' = 'manual';
@@ -83,7 +94,7 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.boardService.loadBoard();
+    this.boardService.loadBoard({ recordActivity: false });
     combineLatest([this.boardService.boardLoaded$, this.route.paramMap])
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(([loaded, params]) => {
@@ -665,6 +676,7 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
     this.boardSettingsOpen = !this.boardSettingsOpen;
     if (this.boardSettingsOpen) {
       this.boardSettingsTitle = this.boardService.board?.title ?? '';
+      this.boardSettingsDescription = this.boardService.board?.description ?? '';
     } else {
       this.boardSettingsError = '';
     }
@@ -673,6 +685,7 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
   closeBoardSettings(): void {
     this.boardSettingsOpen = false;
     this.boardSettingsTitle = this.boardService.board?.title ?? '';
+    this.boardSettingsDescription = this.boardService.board?.description ?? '';
     this.boardSettingsError = '';
   }
 
@@ -681,7 +694,11 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
     if (!board) {
       return;
     }
-    const result = this.boardService.renameBoard(board.id, this.boardSettingsTitle);
+    const result = this.boardService.updateBoardSettings(
+      board.id,
+      this.boardSettingsTitle,
+      this.boardSettingsDescription,
+    );
     if (!result.success) {
       this.boardSettingsError = result.error ?? 'Unable to rename board.';
       return;
@@ -808,6 +825,12 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
     this.boardSettingsTitle = this.boardService.board?.title ?? '';
     this.boardSettingsError = '';
     this.boardSettingsTitleInput?.nativeElement.blur();
+  }
+
+  cancelBoardSettingsDescriptionEdit(): void {
+    this.boardSettingsDescription = this.boardService.board?.description ?? '';
+    this.boardSettingsError = '';
+    this.boardSettingsDescriptionInput?.nativeElement.blur();
   }
 
   @HostListener('document:click', ['$event'])

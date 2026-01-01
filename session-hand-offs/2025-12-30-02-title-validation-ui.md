@@ -21,9 +21,8 @@
 - None.
 
 ## Outstanding (M005)
-- Run acceptance tests for S007: `npm run lint`, `npm run format:check`, `npm run e2e`.
-- Check off S007 Definition of Done items after tests pass.
+- None.
 
 ## Next Steps
-- Run acceptance tests and capture logs under `client/logs/`.
-- Update S007 DoD and milestone checkbox once tests pass.
+- S007 acceptance tests completed (`npm run lint`, `npm run format:check`, `npm run e2e`).
+- S007 Definition of Done and milestone checkbox updated after tests passed.

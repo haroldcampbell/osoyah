@@ -24,7 +24,7 @@ Out-of-scope:
 - [x] S004-Board Selection + CRUD
 - [x] S005-Board Management Panel
 - [x] S006-Board Routing + Deep Links
-- [ ] S007-Title Length Validation
+- [x] S007-Title Length Validation
 - [ ] S008-Board Layout Polish
 - [ ] S009-Board Gallery Home
 

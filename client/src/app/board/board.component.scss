@@ -394,6 +394,7 @@
 .board-panel-close:focus-visible {
   border-color: tokens.$color-border;
 }
+
 .board-panel-close {
   width: 28px;
   height: 28px;
@@ -923,6 +924,16 @@
   position: relative;
 }
 
+.board-settings-wrap>.board-settings-backdrop {
+  all: unset;
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 20, 20, 0.2);
+  z-index: 3;
+  cursor: pointer;
+  display: block;
+}
+
 .board-settings-toggle {
   border: 1px solid tokens.$color-border;
   border-radius: 8px;
@@ -952,6 +963,28 @@
   margin-bottom: tokens.$space-sm;
 }
 
+.add-list .board-settings-close {
+  all: unset;
+  border: 1px solid transparent;
+  cursor: pointer;
+  padding: 0.1rem 0.35rem;
+  border-radius: tokens.$radius-button;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.board-settings-close:hover,
+.board-settings-close:focus-visible {
+  border-color: tokens.$color-border;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.board-settings-close img {
+  width: 14px;
+  height: 14px;
+}
+
 .board-settings-title {
   font-weight: 600;
 }
@@ -969,12 +1002,24 @@
   color: tokens.$color-text-muted;
 }
 
-.board-settings-body input {
-  border: 1px solid tokens.$color-border;
+.add-list .board-settings-title-input {
+  border: 1px solid transparent;
   border-radius: 8px;
+  margin: 0 -0.5rem;
   padding: 0.45rem 0.6rem;
   font-size: 0.95rem;
   box-sizing: border-box;
+}
+
+.add-list .board-settings-title-input:hover {
+  border-color: tokens.$color-border;
+  background: tokens.$color-card;
+}
+
+.board-settings-error {
+  margin-top: -0.35rem;
+  color: tokens.$color-state-error;
+  font-size: 0.85rem;
 }
 
 .board-settings-actions {
@@ -987,7 +1032,8 @@
   display: flex;
   flex-direction: column;
   gap: tokens.$space-xs;
-  padding-top: tokens.$space-sm;
+  margin: tokens.$space-sm calc(-1 * tokens.$space-md) 0;
+  padding: tokens.$space-sm tokens.$space-md 0;
   border-top: 1px solid rgba(0, 0, 0, 0.08);
 }
 
@@ -1188,15 +1234,31 @@
 
 .card-panel-section input:focus,
 .card-panel-section textarea:focus {
-  border-color: tokens.$color-border;
+  border-color: tokens.$color-accent;
   background: tokens.$color-card;
-  outline: none;
+  outline: 2px solid rgba(20, 20, 20, 0.2);
+  outline-offset: 2px;
 }
 
-.card-panel-title-input {
+.card-panel-section>.card-panel-title-input {
   font-size: 1.4rem;
   font-weight: 600;
-  padding: 0;
+  padding: 0.15rem 0.35rem;
+  border: 1px solid transparent;
+  border-radius: tokens.$radius-button;
+  margin-top: 10px;
+}
+
+.card-panel-title-input:hover,
+.card-panel-section-title:hover .card-panel-title-input {
+  border-color: tokens.$color-border;
+  background: tokens.$color-card;
+}
+
+.card-panel-title-error {
+  margin-top: 0.35rem;
+  color: tokens.$color-state-error;
+  font-size: 0.85rem;
 }
 
 .card-panel-section textarea {
@@ -1206,9 +1268,9 @@
 
 
 .card-panel-description-view {
-  border: none;
-  border-radius: 0;
-  padding: 0;
+  border: 1px solid transparent;
+  border-radius: tokens.$radius-control;
+  padding: tokens.$input-padding-y tokens.$input-padding-x;
   background: transparent;
   min-height: 4.5rem;
   cursor: text;
@@ -1221,11 +1283,18 @@
   border: 1px dashed tokens.$color-border;
   border-radius: tokens.$radius-control;
   padding: tokens.$input-padding-y tokens.$input-padding-x;
-  background: tokens.$color-card;
+  background: transparent;
   color: tokens.$color-text-soft;
   text-align: left;
   cursor: text;
   font-family: inherit;
+}
+
+.card-panel-section-description:hover .card-panel-description-view,
+.card-panel-section-description:hover .card-panel-description-empty,
+.card-panel-section-description:hover textarea {
+  border-color: tokens.$color-border;
+  background: tokens.$color-card;
 }
 
 
@@ -1544,9 +1613,11 @@
     padding-bottom: tokens.$space-xs;
   }
 }
+
 .card-panel-section-title {
   padding-left: calc(tokens.$space-md - 5px);
 }
+
 .board-panel-row .board-panel-menu {
   opacity: 0;
   transition: opacity 0.2s ease;

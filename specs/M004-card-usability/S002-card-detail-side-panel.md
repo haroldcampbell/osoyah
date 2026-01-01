@@ -25,6 +25,8 @@ Enable deeper card editing without leaving the board, similar to Trello/Asana de
 
 ## Notes (edge cases, hazards, perf constraints)
 - The panel should be dismissible via close button and `Escape`.
+- While editing the description, pressing `Escape` should cancel edits and revert content.
+- Hovering the description area should reveal the input border for clarity.
 - Keep board interactions functional when the panel is open (e.g., scrolling).
 - Prefer a single panel instance managed by the board container.
 - Order of content in the panel must be fixed and explicit in the template:

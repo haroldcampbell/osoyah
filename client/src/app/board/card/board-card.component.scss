@@ -5,27 +5,80 @@
   border-radius: tokens.$radius-card;
   padding: 0.75rem;
   box-shadow: tokens.$shadow-card;
+  position: relative;
 }
 
 .card-title-row {
   min-height: 1.75rem;
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: tokens.$space-xs;
   margin-bottom: 0.25rem;
 }
 
-.card-title-button {
+.card-title-text {
   width: auto;
   text-align: left;
   font-weight: 600;
-  background: transparent;
-  border: 1px solid transparent;
-  padding: 0 0 0 tokens.$space-xs;
-  cursor: text;
-  font-family: inherit;
-  color: inherit;
   box-sizing: border-box;
   line-height: 1.4;
+}
+
+.card-edit-button {
+  border: 1px solid transparent;
+  background: transparent;
+  padding: 0.2rem;
+  border-radius: tokens.$radius-button;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-edit-button img {
+  width: 14px;
+  height: 14px;
+}
+
+.card-body:hover .card-edit-button,
+.card-body:focus-within .card-edit-button,
+.card-edit-button:focus-visible {
+  opacity: 1;
+}
+
+.card-edit-button:focus-visible {
+  outline: 2px solid tokens.$color-accent;
+  outline-offset: 1px;
+}
+
+.card-edit-modal {
+  position: relative;
+  z-index: 4;
+  display: grid;
+  gap: tokens.$space-xs;
+  padding: tokens.$space-sm;
+  border: 1px solid tokens.$color-border;
+  border-radius: tokens.$radius-card;
+  background: tokens.$color-card;
+  box-shadow: tokens.$shadow-card;
+}
+
+.card-edit-overlay {
+  position: fixed;
+  inset: 0;
+  border: none;
+  padding: 0;
+  background: rgba(20, 20, 20, 0.4);
+  z-index: 3;
+  cursor: pointer;
+}
+
+.card-edit-label {
+  font-size: 0.8rem;
+  color: tokens.$color-text-muted;
 }
 
 .card-description {
@@ -147,6 +200,37 @@
 .card-title-input:focus {
   outline: 2px solid tokens.$color-accent;
   outline-offset: 1px;
+}
+
+.card-title-error {
+  margin-top: 0.25rem;
+  font-size: 0.8rem;
+  color: tokens.$color-state-error;
+}
+
+.card-edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: tokens.$space-xs;
+}
+
+.card-edit-primary,
+.card-edit-secondary {
+  border: 1px solid tokens.$color-border;
+  border-radius: tokens.$radius-button;
+  padding: 0.2rem 0.6rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.card-edit-primary {
+  background: tokens.$color-accent;
+  color: tokens.$color-card;
+  border-color: tokens.$color-accent;
+}
+
+.card-edit-secondary {
+  background: tokens.$color-card;
 }
 
 .card-edit input,

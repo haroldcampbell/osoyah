@@ -37,7 +37,7 @@ test('S004 creates, renames, and deletes boards with validation', async ({ page 
 	await createInput.fill('12');
 	await menu.locator('[data-testid="board-create-button"]').click();
 	await expect(menu.locator('[data-testid="board-create-error"]')).toContainText(
-		'at least 3 characters',
+		'between 3 and 40 characters',
 	);
 
 	await createInput.fill('123');

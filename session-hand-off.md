@@ -19,6 +19,7 @@
 
 ## Entries
 
+-   2025-12-30-02-title-validation-ui.md - S007 validation + card edit modal + learnings capture
 -   2025-12-30-01-board-routing.md - Board routing + deep links implementation
 -   2025-12-29-01-product-differentiation-specs.md - Differentiation notes + idea specs + dependencies
 -   2025-12-28-03-board-management-panel.md - S005 board management panel, sorting, pinned/archived, compact layout

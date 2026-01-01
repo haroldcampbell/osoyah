@@ -37,6 +37,8 @@ export class BoardComponent implements OnInit, AfterViewChecked {
   @ViewChild('descriptionInput') descriptionInput?: ElementRef<HTMLTextAreaElement>;
   @ViewChild('descriptionView') descriptionView?: ElementRef<HTMLElement>;
   @ViewChild('boardMenuPanel') boardMenuPanel?: ElementRef<HTMLElement>;
+  @ViewChild('panelTitleInput') panelTitleInput?: ElementRef<HTMLInputElement>;
+  @ViewChild('boardSettingsTitleInput') boardSettingsTitleInput?: ElementRef<HTMLInputElement>;
   commentFocused = false;
   descriptionEditing = false;
   attachBoardId = '';
@@ -60,6 +62,9 @@ export class BoardComponent implements OnInit, AfterViewChecked {
   createBoardModalOpen = false;
   createBoardModalTitle = '';
   createBoardModalError = '';
+  panelCardTitleError = '';
+  panelTitleEditing = false;
+  private ignoreDescriptionSave = false;
   private activeBoardId = '';
   private activeCardId = '';
   private descriptionSaveTimeout?: number;
@@ -93,6 +98,7 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     }
     const activeCard = this.selectedCard;
     this.lastScrolledCardId = activeCard.id;
+    this.panelCardTitleError = '';
     window.setTimeout(() => {
       if (!this.selectedCard) {
         return;
@@ -257,6 +263,14 @@ export class BoardComponent implements OnInit, AfterViewChecked {
   }
 
   handleDescriptionBlur(card: Card): void {
+    if (this.ignoreDescriptionSave) {
+      this.ignoreDescriptionSave = false;
+      this.descriptionEditing = false;
+      if (this.descriptionInput?.nativeElement) {
+        this.descriptionInput.nativeElement.style.height = '';
+      }
+      return;
+    }
     this.flushDescriptionSave(card);
     this.descriptionEditing = false;
     if (this.descriptionInput?.nativeElement) {
@@ -266,6 +280,7 @@ export class BoardComponent implements OnInit, AfterViewChecked {
 
   startDescriptionEdit(): void {
     this.descriptionEditing = true;
+    this.ignoreDescriptionSave = false;
     setTimeout(() => {
       const input = this.descriptionInput?.nativeElement;
       if (!input) {
@@ -285,9 +300,31 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     });
   }
 
+  cancelDescriptionEdit(): void {
+    if (!this.selectedCard) {
+      return;
+    }
+    this.ignoreDescriptionSave = true;
+    this.boardService.panelCardDescription = this.selectedCard.description;
+    this.descriptionEditing = false;
+    if (this.descriptionSaveTimeout) {
+      window.clearTimeout(this.descriptionSaveTimeout);
+      this.descriptionSaveTimeout = undefined;
+    }
+    if (this.descriptionInput?.nativeElement) {
+      this.descriptionInput.nativeElement.style.height = '';
+      this.descriptionInput.nativeElement.blur();
+    }
+  }
+
 
   saveCardTitle(card: Card): void {
-    this.boardService.saveCardPanelTitle(card);
+    const result = this.boardService.saveCardPanelTitle(card);
+    if (!result.success) {
+      this.panelCardTitleError = result.error ?? 'Unable to save card title.';
+      return;
+    }
+    this.panelCardTitleError = '';
   }
 
   removeSelectedCard(card: Card): void {
@@ -316,6 +353,8 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     }
     this.cardNotFound = false;
     this.missingCardId = '';
+    this.panelCardTitleError = '';
+    this.panelTitleEditing = false;
     if (navigate) {
       this.navigateToBoardRoute(this.boardService.board?.id ?? '');
     }
@@ -618,6 +657,12 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     }
   }
 
+  closeBoardSettings(): void {
+    this.boardSettingsOpen = false;
+    this.boardSettingsTitle = this.boardService.board?.title ?? '';
+    this.boardSettingsError = '';
+  }
+
   saveBoardSettings(): void {
     const board = this.boardService.board;
     if (!board) {
@@ -650,6 +695,17 @@ export class BoardComponent implements OnInit, AfterViewChecked {
 
   @HostListener('document:keydown.escape')
   handleEscape(): void {
+    if (this.panelTitleEditing && this.selectedCard) {
+      this.boardService.panelCardTitle = this.selectedCard.title;
+      this.panelCardTitleError = '';
+      this.panelTitleEditing = false;
+      this.panelTitleInput?.nativeElement.blur();
+      return;
+    }
+    if (this.descriptionEditing && this.selectedCard) {
+      this.cancelDescriptionEdit();
+      return;
+    }
     this.boardService.cancelListEdit();
     this.boardService.cancelCardEdit();
     if (this.boardService.selectedCard) {
@@ -660,8 +716,8 @@ export class BoardComponent implements OnInit, AfterViewChecked {
       this.resetBoardMenuState();
     }
     if (this.boardSettingsOpen) {
-      this.boardSettingsOpen = false;
-      this.boardSettingsError = '';
+      this.closeBoardSettings();
+      return;
     }
     if (this.boardPanelOpen) {
       this.boardPanelOpen = false;
@@ -671,6 +727,20 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     if (activeElement?.classList.contains('board-selector')) {
       activeElement.blur();
     }
+  }
+
+  startPanelTitleEdit(): void {
+    this.panelTitleEditing = true;
+  }
+
+  stopPanelTitleEdit(): void {
+    this.panelTitleEditing = false;
+  }
+
+  cancelBoardSettingsTitleEdit(): void {
+    this.boardSettingsTitle = this.boardService.board?.title ?? '';
+    this.boardSettingsError = '';
+    this.boardSettingsTitleInput?.nativeElement.blur();
   }
 
   @HostListener('document:click', ['$event'])

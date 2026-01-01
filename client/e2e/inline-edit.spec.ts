@@ -31,11 +31,12 @@ test('S003 edits a card title inline', async ({ page }) => {
 
 	const backlogList = page.locator('[data-testid="list"][data-list-title="Backlog"]');
 	const firstCard = backlogList.locator('[data-testid="card"]').first();
-	await firstCard.locator('[data-testid="card-title"]').click();
+	await firstCard.hover();
+	await firstCard.locator('[data-testid="card-edit-button"]').click();
 
 	const titleInput = firstCard.locator('[data-testid="card-title-input"]');
 	await titleInput.fill('Updated card title');
-	await titleInput.press('Enter');
+	await firstCard.locator('[data-testid="card-edit-save"]').click();
 
 	await expect(
 		backlogList.locator('[data-testid="card"]', { hasText: 'Updated card title' }),

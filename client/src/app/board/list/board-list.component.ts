@@ -29,7 +29,9 @@ export class BoardListComponent implements AfterViewChecked {
   readonly boardService = inject(BoardService);
   @ViewChild('titleInput') titleInput?: ElementRef<HTMLInputElement>;
   @ViewChild('listMenu') listMenu?: ElementRef<HTMLDetailsElement>;
+  @ViewChild('newCardInput') newCardInput?: ElementRef<HTMLInputElement>;
   private needsFocus = false;
+  addCardError = '';
 
   get isEditingList(): boolean {
     return this.boardService.isEditingList(this.list);
@@ -66,7 +68,13 @@ export class BoardListComponent implements AfterViewChecked {
   }
 
   requestAddCard(): void {
-    this.boardService.addCard(this.list);
+    const result = this.boardService.addCard(this.list);
+    if (!result.success) {
+      this.addCardError = result.error ?? 'Unable to add card.';
+      this.newCardInput?.nativeElement.focus();
+      return;
+    }
+    this.addCardError = '';
   }
 
   requestStartCardEdit(card: Card): void {

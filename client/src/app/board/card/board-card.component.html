@@ -8,30 +8,69 @@
 >
   @if (!isEditing) {
     <div class="card-title-row">
+      <div class="card-title-text" data-testid="card-title">{{ card.title }}</div>
       <button
         type="button"
-        class="card-title-button"
+        class="card-edit-button"
         (click)="startTitleEdit($event)"
-        (keydown.enter)="startTitleEdit($event)"
-        (keydown.space)="startTitleEdit($event)"
-        data-testid="card-title"
+        aria-label="Edit card title"
+        data-testid="card-edit-button"
       >
-        {{ card.title }}
+        <img src="assets/icons/pen-to-square.svg" alt="" aria-hidden="true" />
       </button>
     </div>
   } @else {
-    <div class="card-title-row">
+    <button
+      type="button"
+      class="card-edit-overlay"
+      aria-label="Cancel card title edit"
+      (click)="cancelTitleEdit(); $event.stopPropagation()"
+    ></button>
+    <div
+      class="card-edit-modal"
+      role="dialog"
+      aria-label="Edit card title"
+      tabindex="0"
+      (click)="$event.stopPropagation()"
+      (keydown.enter)="$event.stopPropagation()"
+      (keydown.space)="$event.stopPropagation()"
+    >
+      <label class="card-edit-label" [attr.for]="'card-title-input-' + card.id">
+        Card title
+      </label>
       <input
         #titleInput
+        [id]="'card-title-input-' + card.id"
         type="text"
         class="card-title-input"
         placeholder="Card title"
         [(ngModel)]="boardService.editingCardTitle"
-        (blur)="cancelTitleEdit()"
+        (input)="handleTitleInput()"
         (keyup.enter)="saveTitleEdit()"
         (keyup.escape)="cancelTitleEdit()"
         data-testid="card-title-input"
       />
+      @if (titleError) {
+        <div class="card-title-error" data-testid="card-title-error">{{ titleError }}</div>
+      }
+      <div class="card-edit-actions">
+        <button
+          type="button"
+          class="card-edit-secondary"
+          (click)="cancelTitleEdit(); $event.stopPropagation()"
+          data-testid="card-edit-cancel"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="card-edit-primary"
+          (click)="saveTitleEdit(); $event.stopPropagation()"
+          data-testid="card-edit-save"
+        >
+          Save
+        </button>
+      </div>
     </div>
   }
   <div class="card-meta" data-testid="card-meta">

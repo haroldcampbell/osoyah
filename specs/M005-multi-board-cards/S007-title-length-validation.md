@@ -19,9 +19,11 @@ Keep board and card titles readable and consistent while blocking invalid length
 ## Definition of Done
 
 - [ ] Board titles require 3–40 characters after trimming.
-- [ ] Card titles require 3–120 characters after trimming.
+- [ ] Card titles require 3–90 characters after trimming.
 - [ ] Existing title edits and creates show validation errors and block save when invalid.
 - [ ] Validation messages are consistent with existing error tone.
+- [ ] Card titles on board lists are edited via a hover-triggered edit icon (right aligned), not by clicking the title directly.
+- [ ] Card title edit uses a modal/popup with Save/Cancel actions and is dismissable via Escape.
 - [ ] Existing flows continue to work for valid titles.
 - [ ] Acceptance tests pass.
 

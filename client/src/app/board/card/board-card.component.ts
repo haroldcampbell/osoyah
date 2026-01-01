@@ -32,6 +32,7 @@ export class BoardCardComponent implements AfterViewChecked {
   private readonly router = inject(Router);
   @ViewChild('titleInput') titleInput?: ElementRef<HTMLInputElement>;
   private needsFocus = false;
+  titleError = '';
 
   get isEditing(): boolean {
     return this.boardService.isEditingCard(this.list, this.card);
@@ -42,14 +43,26 @@ export class BoardCardComponent implements AfterViewChecked {
     this.boardService.closeCardPanel();
     this.boardService.startCardEdit(this.list, this.card);
     this.needsFocus = true;
+    this.titleError = '';
   }
 
   saveTitleEdit(): void {
-    this.boardService.saveCardEdit(this.list, this.card);
+    const result = this.boardService.saveCardEdit(this.list, this.card);
+    if (!result.success) {
+      this.titleError = result.error ?? 'Unable to save card title.';
+      this.needsFocus = true;
+      return;
+    }
+    this.titleError = '';
   }
 
   cancelTitleEdit(): void {
     this.boardService.cancelCardEdit();
+    this.titleError = '';
+  }
+
+  handleTitleInput(): void {
+    this.titleError = '';
   }
 
   openDetails(): void {

@@ -36,8 +36,8 @@ describe('BoardCardComponent', () => {
     fixture.detectChanges();
   });
 
-  it('enters edit mode when the title is clicked', () => {
-    const button = fixture.debugElement.query(By.css('[data-testid="card-title"]'));
+  it('enters edit mode when the edit button is clicked', () => {
+    const button = fixture.debugElement.query(By.css('[data-testid="card-edit-button"]'));
     button.nativeElement.click();
 
     expect(boardService.editingCard?.cardId).toBe(mockCard.id);

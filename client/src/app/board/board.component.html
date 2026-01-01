@@ -148,20 +148,40 @@
               Settings
             </button>
             @if (boardSettingsOpen) {
+              <button
+                type="button"
+                class="board-settings-backdrop"
+                aria-label="Close board settings"
+                (click)="closeBoardSettings()"
+              ></button>
               <section class="board-settings" data-testid="board-settings">
                 <div class="board-settings-header">
                   <div class="board-settings-title">Board settings</div>
-                  <button type="button" (click)="toggleBoardSettings()">Close</button>
+                  <button
+                    type="button"
+                    class="board-settings-close"
+                    aria-label="Close board settings"
+                    (click)="closeBoardSettings()"
+                  >
+                    <img src="assets/icons/xmark.svg" alt="" aria-hidden="true" />
+                  </button>
                 </div>
                 <div class="board-settings-body">
-                  <label class="board-settings-label" for="board-settings-title">Board name</label>
                   <input
+                    #boardSettingsTitleInput
                     id="board-settings-title"
                     type="text"
+                    class="board-settings-title-input"
                     [(ngModel)]="boardSettingsTitle"
                     (input)="boardSettingsError = ''"
+                    (keydown.escape)="cancelBoardSettingsTitleEdit(); $event.stopPropagation()"
                     data-testid="board-settings-title"
                   />
+                  @if (boardSettingsError) {
+                    <div class="board-settings-error" data-testid="board-settings-error">
+                      {{ boardSettingsError }}
+                    </div>
+                  }
                   <div class="board-settings-actions">
                     <button
                       type="button"
@@ -184,11 +204,6 @@
                       Delete board
                     </button>
                   </div>
-                  @if (boardSettingsError) {
-                    <div class="board-menu-error" data-testid="board-settings-error">
-                      {{ boardSettingsError }}
-                    </div>
-                  }
                 </div>
               </section>
             }
@@ -450,16 +465,24 @@
               <div class="card-panel-scroll">
                 <section class="card-panel-section card-panel-section-title">
                   <input
+                    #panelTitleInput
                     id="card-panel-title"
                     type="text"
                     aria-label="Card title"
                     class="card-panel-title-input"
                     [(ngModel)]="boardService.panelCardTitle"
                     (input)="saveCardTitle(selectedCard)"
+                    (focus)="startPanelTitleEdit()"
+                    (blur)="stopPanelTitleEdit()"
                   />
+                  @if (panelCardTitleError) {
+                    <div class="card-panel-title-error" data-testid="card-panel-title-error">
+                      {{ panelCardTitleError }}
+                    </div>
+                  }
                 </section>
 
-                <section class="card-panel-section">
+                <section class="card-panel-section card-panel-section-description">
                   <label class="card-panel-label" for="card-panel-description">Description</label>
                   @if (!descriptionEditing) {
                     @if (boardService.panelCardDescription.trim()) {
@@ -490,6 +513,7 @@
                       [(ngModel)]="boardService.panelCardDescription"
                       (input)="handleDescriptionInput(selectedCard)"
                       (blur)="handleDescriptionBlur(selectedCard)"
+                      (keydown.escape)="cancelDescriptionEdit(); $event.stopPropagation()"
                     ></textarea>
                   }
                 </section>

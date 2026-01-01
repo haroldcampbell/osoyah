@@ -345,10 +345,11 @@ export class BoardService {
     }
   }
 
-  addCard(list: BoardList): void {
+  addCard(list: BoardList): { success: boolean; error?: string; card?: Card } {
     const title = (this.newCardTitles[list.id] ?? '').trim();
-    if (!title) {
-      return;
+    const error = this.getCardTitleError(title);
+    if (error) {
+      return { success: false, error };
     }
 
     const now = new Date().toISOString();
@@ -363,6 +364,7 @@ export class BoardService {
     this.cardsById[card.id] = card;
     list.cardIds.push(card.id);
     this.newCardTitles[list.id] = '';
+    return { success: true, card };
   }
 
   startCardEdit(list: BoardList, card: Card): void {
@@ -372,10 +374,14 @@ export class BoardService {
     this.editingCardDescription = card.description;
   }
 
-  saveCardEdit(list: BoardList, card: Card): void {
+  saveCardEdit(
+    list: BoardList,
+    card: Card,
+  ): { success: boolean; error?: string } {
     const title = this.editingCardTitle.trim();
-    if (!title) {
-      return;
+    const error = this.getCardTitleError(title);
+    if (error) {
+      return { success: false, error };
     }
 
     card.title = title;
@@ -386,6 +392,7 @@ export class BoardService {
       this.panelCardDescription = card.description;
     }
     this.cancelCardEdit();
+    return { success: true };
   }
 
   cancelCardEdit(): void {
@@ -415,25 +422,29 @@ export class BoardService {
     this.panelCommentDraft = '';
   }
 
-  saveCardPanelDetails(card: Card): void {
+  saveCardPanelDetails(card: Card): { success: boolean; error?: string } {
     const title = this.panelCardTitle.trim();
-    if (!title) {
-      return;
+    const error = this.getCardTitleError(title);
+    if (error) {
+      return { success: false, error };
     }
 
     card.title = title;
     card.description = this.panelCardDescription.trim();
     card.updatedAt = new Date().toISOString();
+    return { success: true };
   }
 
-  saveCardPanelTitle(card: Card): void {
+  saveCardPanelTitle(card: Card): { success: boolean; error?: string } {
     const title = this.panelCardTitle.trim();
-    if (!title) {
-      return;
+    const error = this.getCardTitleError(title);
+    if (error) {
+      return { success: false, error };
     }
 
     card.title = title;
     card.updatedAt = new Date().toISOString();
+    return { success: true };
   }
 
   addComment(card: Card, message: string): void {
@@ -523,14 +534,19 @@ export class BoardService {
 
   getBoardTitleError(title: string): string | null {
     const trimmed = title.trim();
-    if (!trimmed) {
-      return 'Board name cannot be blank.';
-    }
-    if (trimmed.length < 3) {
-      return 'Board name must be at least 3 characters.';
+    if (trimmed.length < 3 || trimmed.length > 40) {
+      return 'Board name must be between 3 and 40 characters.';
     }
     if (/^\d+$/.test(trimmed)) {
       return 'Board name cannot be all numbers.';
+    }
+    return null;
+  }
+
+  getCardTitleError(title: string): string | null {
+    const trimmed = title.trim();
+    if (trimmed.length < 3 || trimmed.length > 90) {
+      return 'Card title must be between 3 and 90 characters.';
     }
     return null;
   }

@@ -70,12 +70,17 @@
 
 <div class="add-card">
   <input
+    #newCardInput
     type="text"
     placeholder="Add a card"
     [(ngModel)]="newCardTitle"
+    (input)="addCardError = ''"
     (keyup.enter)="requestAddCard()"
     data-testid="add-card-input"
     [attr.data-list-id]="list.id"
   />
   <button type="button" (click)="requestAddCard()" data-testid="add-card-button">Add card</button>
+  @if (addCardError) {
+    <div class="add-card-error" data-testid="add-card-error">{{ addCardError }}</div>
+  }
 </div>

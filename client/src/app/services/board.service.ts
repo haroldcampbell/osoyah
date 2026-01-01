@@ -3,7 +3,14 @@ import { inject, Injectable } from '@angular/core';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { BehaviorSubject, Observable, take } from 'rxjs';
 
-import { Board, BoardList, Card, CardComment, BoardsResponse } from '../models/board.model';
+import {
+  Board,
+  BoardList,
+  Card,
+  CardComment,
+  CardRelationship,
+  BoardsResponse,
+} from '../models/board.model';
 import { BoardGalleryStateService } from './board-gallery-state.service';
 
 @Injectable({ providedIn: 'root' })
@@ -32,6 +39,7 @@ export class BoardService {
   newListTitle = '';
   newCardTitles: Record<string, string> = {};
   cardsById: Record<string, Card> = {};
+  cardRelationships: CardRelationship[] = [];
 
   editingListId: string | null = null;
   editingListTitle = '';
@@ -65,6 +73,7 @@ export class BoardService {
       .subscribe({
         next: (data) => {
           this.cardsById = this.indexCards(data.cards ?? []);
+          this.cardRelationships = data.cardRelationships ?? [];
           const boards = data.boards ?? [];
           const lastOpened = this.boardGalleryState.getLastOpenedMap();
           this.lastActiveAt = { ...lastOpened };
@@ -489,6 +498,27 @@ export class BoardService {
   removeComment(card: Card, comment: CardComment): void {
     card.comments = card.comments.filter((item) => item.id !== comment.id);
     card.updatedAt = new Date().toISOString();
+  }
+
+  addCardRelationship(
+    childCardId: string,
+    parentCardId: string,
+  ): { success: boolean; error?: string; relationship?: CardRelationship } {
+    const child = this.getCard(childCardId);
+    if (!child) {
+      return { success: false, error: 'Child card not found.' };
+    }
+    const parent = this.getCard(parentCardId);
+    if (!parent) {
+      return { success: false, error: 'Parent card not found.' };
+    }
+    const relationship: CardRelationship = {
+      childCardId,
+      parentCardId,
+      createdAt: new Date().toISOString(),
+    };
+    this.cardRelationships.push(relationship);
+    return { success: true, relationship };
   }
 
   dropList(event: CdkDragDrop<BoardList[]>): void {

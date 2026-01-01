@@ -13,6 +13,12 @@ export interface CardComment {
   createdAt: string;
 }
 
+export interface CardRelationship {
+  childCardId: string;
+  parentCardId: string;
+  createdAt: string;
+}
+
 export interface BoardList {
   id: string;
   title: string;
@@ -48,4 +54,5 @@ export interface BoardActivityState {
 export interface BoardsResponse {
   boards: Board[];
   cards: Card[];
+  cardRelationships?: CardRelationship[];
 }

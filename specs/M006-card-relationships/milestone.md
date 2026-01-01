@@ -18,7 +18,7 @@ Out-of-scope:
 - New hierarchy entities beyond cards.
 
 ## Specs
-- [ ] S001-Parent/Child Links (Single Parent)
+- [x] S001-Parent/Child Links (Single Parent)
 - [ ] S002-Relationship Integrity
 - [ ] S003-Parent/Child UX
 

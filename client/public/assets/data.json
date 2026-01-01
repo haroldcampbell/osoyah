@@ -80,7 +80,8 @@
           "title": "Discovery",
           "cardIds": [
             "card-2",
-            "card-5"
+            "card-5",
+            "card-15"
           ]
         },
         {
@@ -344,6 +345,20 @@
       "comments": []
     },
     {
+      "id": "card-15",
+      "title": "Customer journey mapping",
+      "description": "Map handoffs across pre-sales, onboarding, and renewal.",
+      "createdAt": "2025-01-02T15:30:00Z",
+      "updatedAt": "2025-01-04T09:30:00Z",
+      "comments": [
+        {
+          "id": "comment-28",
+          "message": "Capture the sales-to-success loop.",
+          "createdAt": "2025-01-03T09:30:00Z"
+        }
+      ]
+    },
+    {
       "id": "card-3",
       "title": "Set up CI",
       "description": "Add basic lint and test checks.",
@@ -561,6 +576,13 @@
           "createdAt": "2025-01-06T00:00:00Z"
         }
       ]
+    }
+  ],
+  "cardRelationships": [
+    {
+      "childCardId": "card-7",
+      "parentCardId": "card-15",
+      "createdAt": "2025-01-04T08:00:00Z"
     }
   ]
 }

@@ -8,10 +8,11 @@ and focuses on how we work session-to-session.
 -   `AGENTS.md` is the source of truth for safety and workflow constraints.
 -   `docs/principles.md` is the foundation for all engineering and product decisions.
 -   `docs/decisions.md` holds active technical decisions that must be respected.
+-   `docs/learning.md` captures process and execution learnings; consult before starting work to reduce iteration.
 
 ## Session Start
 
--   Read `AGENTS.md`, `docs/principles.md`, and `docs/decisions.md`.
+-   Read `AGENTS.md`, `docs/principles.md`, `docs/decisions.md` and `docs/learning.md`.
 -   Read the latest entry in `session-hand-offs/` and the index in `session-hand-off.md` for current status and next steps.
 -   Before any implementation, begin with a collaborative review of the target spec to confirm scope, acceptance tests, and open questions.
 -   When asked "Where should we start?", or similar questions, recommend the next product spec to work on. Treat this as a prompt to collaboratively review the next spec (or the one last worked on) before actually starting to code.

@@ -14,6 +14,8 @@
   padding: 0;
   box-sizing: border-box;
   font-family: Roboto, 'Open Sans', 'PT Serif Caption', 'Helvetica Neue', sans-serif;
+  display: flex;
+  flex-direction: column;
 }
 
 
@@ -22,10 +24,10 @@
   font-size: 1rem;
   color: tokens.$color-neutral;
   margin: 0 tokens.$space-md;
-}
 
-.board-state.error {
-  color: tokens.$color-state-error;
+  &.error {
+    color: tokens.$color-state-error;
+  }
 }
 
 .board-alert {
@@ -35,6 +37,12 @@
   border: 1px solid rgba(156, 44, 44, 0.25);
   background: #fff3f3;
   color: tokens.$color-state-error;
+
+  &.warning {
+    border-color: rgba(156, 104, 22, 0.25);
+    background: #fff6e5;
+    color: #8a5a12;
+  }
 }
 
 .board-alert-plain {
@@ -65,19 +73,14 @@
   padding: 0.15rem 0.35rem;
   border-radius: tokens.$radius-button;
   color: inherit;
+
+  &:hover,
+  &:focus-visible {
+    border-color: tokens.$color-border;
+    background: rgba(0, 0, 0, 0.05);
+  }
 }
 
-.board-alert-close:hover,
-.board-alert-close:focus-visible {
-  border-color: tokens.$color-border;
-  background: rgba(0, 0, 0, 0.05);
-}
-
-.board-alert.warning {
-  border-color: rgba(156, 104, 22, 0.25);
-  background: #fff6e5;
-  color: #8a5a12;
-}
 
 .board-alert-title {
   font-weight: 600;
@@ -158,29 +161,29 @@
   line-height: 1;
   padding: 0.1rem 0.35rem;
   border-radius: tokens.$radius-button;
-}
 
-.board-modal-close:hover,
-.board-modal-close:focus-visible {
-  border-color: tokens.$color-border;
-  background: rgba(0, 0, 0, 0.05);
+  &:hover,
+  &:focus-visible {
+    border-color: tokens.$color-border;
+    background: rgba(0, 0, 0, 0.05);
+  }
 }
 
 .board-modal-body {
   display: grid;
   gap: tokens.$space-xs;
+
+  input {
+    border: 1px solid tokens.$color-border;
+    border-radius: tokens.$radius-control;
+    padding: tokens.$input-padding-y tokens.$input-padding-x;
+    font: inherit;
+  }
 }
 
 .board-modal-label {
   font-size: 0.85rem;
   color: tokens.$color-text-muted;
-}
-
-.board-modal-body input {
-  border: 1px solid tokens.$color-border;
-  border-radius: tokens.$radius-control;
-  padding: tokens.$input-padding-y tokens.$input-padding-x;
-  font: inherit;
 }
 
 .board-modal-actions {
@@ -220,6 +223,9 @@
   border-radius: 0;
   padding: 0;
   box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
 }
 
 .board-toolbar {
@@ -231,29 +237,30 @@
   margin-bottom: tokens.$space-md;
   position: relative;
   background-color: #f3efe8;
-}
 
-.board-toolbar::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  bottom: 0;
-  width: 100vw;
-  height: 1px;
-  background: rgba(0, 0, 0, 0.1);
-  transform: translateX(-50%);
-  pointer-events: none;
+  &::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 100vw;
+    height: 1px;
+    background: rgba(0, 0, 0, 0.1);
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
 }
 
 .board-layout {
   display: flex;
   gap: tokens.$space-lg;
   align-items: flex-start;
-  padding: 1rem tokens.$space-md 0 tokens.$space-md;
+  padding: 1rem 0 0 tokens.$space-md;
+  flex: 1 1 auto;
 }
 
 .board-layout-panel-open {
-  margin-right: calc(var(--card-panel-width) - 35px);
+  margin-right: var(--card-panel-width);
 }
 
 .board-layout-board-panel-open {
@@ -280,6 +287,18 @@
   cursor: pointer;
   font-size: inherit;
   font-weight: 600;
+
+  &:hover {
+    border-color: tokens.$color-border;
+  }
+
+  &:focus,
+  &:focus-visible {
+    outline: 2px solid tokens.$color-text-primary;
+    outline-offset: 2px;
+    border-color: tokens.$color-border;
+    background: tokens.$color-card;
+  }
 }
 
 .board-panel {
@@ -295,6 +314,10 @@
   flex-direction: column;
   z-index: 2;
   box-sizing: border-box;
+
+  &:hover .board-panel-grip {
+    opacity: 0.5;
+  }
 }
 
 .board-panel-header {
@@ -324,13 +347,11 @@
   background: tokens.$color-surface;
   cursor: pointer;
   font-size: 0.8rem;
-}
 
-.board-panel-header-button:hover,
-.board-panel-header-button:focus-visible,
-.board-panel-close:hover,
-.board-panel-close:focus-visible {
-  border-color: tokens.$color-border;
+  &:hover,
+  &:focus-visible {
+    border-color: tokens.$color-border;
+  }
 }
 
 .board-panel-close {
@@ -346,25 +367,25 @@
   width: 14px;
   height: 14px;
   position: relative;
-}
 
-.board-panel-close-icon::before,
-.board-panel-close-icon::after {
-  content: '';
-  position: absolute;
-  top: 6px;
-  left: 0;
-  width: 14px;
-  height: 2px;
-  background: tokens.$color-text-muted;
-}
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: 6px;
+    left: 0;
+    width: 14px;
+    height: 2px;
+    background: tokens.$color-text-muted;
+  }
 
-.board-panel-close-icon::before {
-  transform: rotate(45deg);
-}
+  &::before {
+    transform: rotate(45deg);
+  }
 
-.board-panel-close-icon::after {
-  transform: rotate(-45deg);
+  &::after {
+    transform: rotate(-45deg);
+  }
 }
 
 .board-panel-controls {
@@ -374,6 +395,14 @@
   gap: tokens.$space-sm;
   padding: tokens.$space-sm tokens.$space-md;
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+
+  select {
+    border: 1px solid tokens.$color-border;
+    border-radius: 8px;
+    padding: 0.3rem 0.55rem;
+    font-size: 0.85rem;
+    background: tokens.$color-card;
+  }
 }
 
 .board-panel-label {
@@ -381,14 +410,6 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: tokens.$color-text-muted;
-}
-
-.board-panel-controls select {
-  border: 1px solid tokens.$color-border;
-  border-radius: 8px;
-  padding: 0.3rem 0.55rem;
-  font-size: 0.85rem;
-  background: tokens.$color-card;
 }
 
 .board-panel-body {
@@ -400,12 +421,14 @@
   gap: tokens.$space-md;
 }
 
-.board-panel-compact .board-panel-row {
-  padding: 0.3rem 5px;
-}
+.board-panel-compact {
+  .board-panel-row {
+    padding: 0.3rem 5px;
+  }
 
-.board-panel-compact .board-panel-card {
-  padding: 0.4rem;
+  .board-panel-card {
+    padding: 0.4rem;
+  }
 }
 
 .board-panel-section {
@@ -426,10 +449,20 @@
   cursor: pointer;
   list-style: none;
   font-weight: 700;
-}
 
-.board-panel-section-title::-webkit-details-marker {
-  display: none;
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  &::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-right: 2px solid tokens.$color-text-muted;
+    border-bottom: 2px solid tokens.$color-text-muted;
+    transform: rotate(45deg);
+    margin-right: tokens.$space-xs;
+  }
 }
 
 .board-panel-section-count {
@@ -441,20 +474,10 @@
 
 .board-panel-section-collapsible {
   border: none;
-}
 
-.board-panel-section-title::before {
-  content: '';
-  width: 6px;
-  height: 6px;
-  border-right: 2px solid tokens.$color-text-muted;
-  border-bottom: 2px solid tokens.$color-text-muted;
-  transform: rotate(45deg);
-  margin-right: tokens.$space-xs;
-}
-
-.board-panel-section-collapsible:not([open]) .board-panel-section-title::before {
-  transform: rotate(-135deg);
+  &:not([open]) .board-panel-section-title::before {
+    transform: rotate(-135deg);
+  }
 }
 
 .board-panel-list {
@@ -470,36 +493,43 @@
   padding: 0.45rem 0.35rem 0.45rem 0.6rem;
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 2px;
+
+  &.current {
+    background: rgba(151, 102, 54, 0.12);
+
+    .board-panel-board {
+      padding: 0;
+    }
+
+    .board-panel-name {
+      font-weight: 700;
+    }
+  }
+
+  &:not(.current):hover {
+    background: rgba(0, 0, 0, 0.04);
+  }
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover .board-panel-grip,
+  &:focus-within .board-panel-grip {
+    opacity: 0.9;
+  }
+
+  .board-panel-menu {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  &:hover .board-panel-menu,
+  &:focus-within .board-panel-menu {
+    opacity: 1;
+  }
 }
 
-.board-panel-row.current .board-panel-board {
-  padding: 0;
-}
-
-.board-panel-row.current .board-panel-name {
-  font-weight: 700;
-}
-
-.board-panel-row.current {
-  background: rgba(151, 102, 54, 0.12);
-}
-
-.board-panel-row:not(.current):hover {
-  background: rgba(0, 0, 0, 0.04);
-}
-
-.board-panel-row:last-child {
-  border-bottom: none;
-}
-
-.board-panel:hover .board-panel-grip {
-  opacity: 0.5;
-}
-
-.board-panel-row:hover .board-panel-grip,
-.board-panel-row:focus-within .board-panel-grip {
-  opacity: 0.9;
-}
 
 .board-panel-grip {
   width: 10px;
@@ -507,23 +537,23 @@
   position: relative;
   opacity: 0;
   margin-right: 0.2rem;
-}
 
-.board-panel-grip::before,
-.board-panel-grip::after {
-  content: '';
-  position: absolute;
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
-  background: tokens.$color-text-muted;
-  left: 0;
-  top: 2px;
-  box-shadow: 0 4px 0 tokens.$color-text-muted, 0 8px 0 tokens.$color-text-muted;
-}
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: tokens.$color-text-muted;
+    left: 0;
+    top: 2px;
+    box-shadow: 0 4px 0 tokens.$color-text-muted, 0 8px 0 tokens.$color-text-muted;
+  }
 
-.board-panel-grip::after {
-  left: 6px;
+  &::after {
+    left: 6px;
+  }
 }
 
 .board-panel-board {
@@ -579,10 +609,10 @@
 .board-panel-menu {
   position: relative;
   margin-left: tokens.$space-xs;
-}
 
-.board-panel-menu[open] .board-panel-menu-popover {
-  display: flex;
+  &[open] .board-panel-menu-popover {
+    display: flex;
+  }
 }
 
 .board-panel-menu-trigger {
@@ -593,10 +623,10 @@
   padding: 0.2rem 0.4rem;
   font-size: 0.9rem;
   color: tokens.$color-text-muted;
-}
 
-.board-panel-menu-trigger::-webkit-details-marker {
-  display: none;
+  &::-webkit-details-marker {
+    display: none;
+  }
 }
 
 .board-panel-menu-popover {
@@ -612,20 +642,20 @@
   gap: 0.2rem;
   border: 1px solid rgba(0, 0, 0, 0.08);
   z-index: 3;
-}
 
-.board-panel-menu-popover button {
-  border: none;
-  background: transparent;
-  text-align: left;
-  padding: 0.25rem 0.5rem;
-  font-size: 0.8rem;
-  cursor: pointer;
-  border-radius: 6px;
-}
+  button {
+    border: none;
+    background: transparent;
+    text-align: left;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+    cursor: pointer;
+    border-radius: 6px;
 
-.board-panel-menu-popover button:hover {
-  background: rgba(0, 0, 0, 0.06);
+    &:hover {
+      background: rgba(0, 0, 0, 0.06);
+    }
+  }
 }
 
 .board-panel-empty {
@@ -665,36 +695,26 @@
   gap: tokens.$space-xs;
   opacity: 0;
   transition: opacity 0.2s ease;
+
+  button {
+    border: 1px solid tokens.$color-border;
+    border-radius: 6px;
+    padding: 0.2rem 0.4rem;
+    background: transparent;
+    font-size: 0.7rem;
+    cursor: pointer;
+  }
 }
 
-.board-panel-card:hover .board-panel-card-actions {
-  opacity: 1;
+.board-panel-card {
+
+  &:hover .board-panel-card-actions,
+  &:focus-within .board-panel-card-actions {
+    opacity: 1;
+  }
 }
 
-.board-panel-card:focus-within .board-panel-card-actions {
-  opacity: 1;
-}
 
-.board-panel-card-actions button {
-  border: 1px solid tokens.$color-border;
-  border-radius: 6px;
-  padding: 0.2rem 0.4rem;
-  background: transparent;
-  font-size: 0.7rem;
-  cursor: pointer;
-}
-
-.board-selector:hover {
-  border-color: tokens.$color-border;
-}
-
-.board-selector:focus,
-.board-selector:focus-visible {
-  outline: 2px solid tokens.$color-text-primary;
-  outline-offset: 2px;
-  border-color: tokens.$color-border;
-  background: tokens.$color-card;
-}
 
 .board-selector-caret {
   width: 5px;
@@ -729,18 +749,17 @@
   margin: 0 calc(tokens.$space-md * -1);
   padding: 0 tokens.$space-md tokens.$space-sm;
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+
+  input {
+    width: 100%;
+    border: 1px solid tokens.$color-border;
+    border-radius: 8px;
+    padding: 0.45rem 0.6rem;
+    font-size: 0.95rem;
+    box-sizing: border-box;
+  }
 }
 
-.board-menu-search input,
-.board-menu-create-row input,
-.board-menu-edit input {
-  width: 100%;
-  border: 1px solid tokens.$color-border;
-  border-radius: 8px;
-  padding: 0.45rem 0.6rem;
-  font-size: 0.95rem;
-  box-sizing: border-box;
-}
 
 .board-menu-list {
   display: flex;
@@ -756,10 +775,10 @@
   gap: tokens.$space-xs;
   padding: 0.35rem 0;
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-}
 
-.board-menu-row:last-child {
-  border-bottom: none;
+  &:last-child {
+    border-bottom: none;
+  }
 }
 
 .board-menu-select {
@@ -774,12 +793,12 @@
   background: transparent;
   cursor: pointer;
   text-align: left;
-}
 
-.board-menu-select:hover,
-.board-menu-select:focus-visible {
-  border-color: tokens.$color-border;
-  background: rgba(0, 0, 0, 0.05);
+  &:hover,
+  &:focus-visible {
+    border-color: tokens.$color-border;
+    background: rgba(0, 0, 0, 0.05);
+  }
 }
 
 .board-menu-name {
@@ -807,10 +826,30 @@
   align-items: center;
 }
 
+.board-menu-create-row {
+  input {
+    width: 100%;
+    border: 1px solid tokens.$color-border;
+    border-radius: 8px;
+    padding: 0.45rem 0.6rem;
+    font-size: 0.95rem;
+    box-sizing: border-box;
+  }
+}
+
 .board-menu-edit {
   display: flex;
   flex-direction: column;
   gap: tokens.$space-xs;
+
+  input {
+    width: 100%;
+    border: 1px solid tokens.$color-border;
+    border-radius: 8px;
+    padding: 0.45rem 0.6rem;
+    font-size: 0.95rem;
+    box-sizing: border-box;
+  }
 }
 
 .board-menu-action {
@@ -820,11 +859,11 @@
   background: tokens.$color-surface;
   cursor: pointer;
   font-size: 0.85rem;
-}
 
-.board-menu-action.delete {
-  color: tokens.$color-state-error;
-  border-color: rgba(181, 60, 44, 0.4);
+  &.delete {
+    color: tokens.$color-state-error;
+    border-color: rgba(181, 60, 44, 0.4);
+  }
 }
 
 .board-menu-create {
@@ -857,20 +896,75 @@
 .add-list {
   display: flex;
   gap: tokens.$space-xs;
+
+  .board-settings-close {
+    all: unset;
+    border: 1px solid transparent;
+    cursor: pointer;
+    padding: 0.1rem 0.35rem;
+    border-radius: tokens.$radius-button;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover,
+    &:focus-visible {
+      border-color: tokens.$color-border;
+      background: rgba(0, 0, 0, 0.05);
+    }
+
+    img {
+      width: 14px;
+      height: 14px;
+    }
+  }
+
+  .board-settings-title-input {
+    border: 1px solid transparent;
+    border-radius: 8px;
+    margin: 0 -0.5rem;
+    padding: 0.45rem 0.6rem;
+    font-size: 0.95rem;
+    box-sizing: border-box;
+
+    &:hover {
+      border-color: tokens.$color-border;
+      background: tokens.$color-card;
+    }
+  }
+
+  input {
+    border: 1px solid tokens.$color-border;
+    border-radius: tokens.$radius-control;
+    padding: tokens.$input-padding-y tokens.$input-padding-x;
+    background: tokens.$color-card;
+    font-family: inherit;
+  }
+
+  button {
+    border: none;
+    border-radius: tokens.$radius-button;
+    padding: tokens.$button-padding-y tokens.$button-padding-x;
+    background: tokens.$color-accent;
+    color: tokens.$color-card;
+    cursor: pointer;
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
 }
 
 .board-settings-wrap {
   position: relative;
-}
 
-.board-settings-wrap>.board-settings-backdrop {
-  all: unset;
-  position: fixed;
-  inset: 0;
-  background: rgba(20, 20, 20, 0.2);
-  z-index: 3;
-  cursor: pointer;
-  display: block;
+  >.board-settings-backdrop {
+    all: unset;
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 20, 20, 0.2);
+    z-index: 3;
+    cursor: pointer;
+    display: block;
+  }
 }
 
 .board-settings-toggle {
@@ -904,27 +998,6 @@
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 }
 
-.add-list .board-settings-close {
-  all: unset;
-  border: 1px solid transparent;
-  cursor: pointer;
-  padding: 0.1rem 0.35rem;
-  border-radius: tokens.$radius-button;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.board-settings-close:hover,
-.board-settings-close:focus-visible {
-  border-color: tokens.$color-border;
-  background: rgba(0, 0, 0, 0.05);
-}
-
-.board-settings-close img {
-  width: 14px;
-  height: 14px;
-}
 
 .board-settings-title {
   font-weight: 600;
@@ -958,19 +1031,6 @@
   gap: 0.2rem;
 }
 
-.add-list .board-settings-title-input {
-  border: 1px solid transparent;
-  border-radius: 8px;
-  margin: 0 -0.5rem;
-  padding: 0.45rem 0.6rem;
-  font-size: 0.95rem;
-  box-sizing: border-box;
-}
-
-.add-list .board-settings-title-input:hover {
-  border-color: tokens.$color-border;
-  background: tokens.$color-card;
-}
 
 .board-settings-error {
   margin-top: -0.35rem;
@@ -996,17 +1056,17 @@
   margin: tokens.$space-sm calc(-1 * tokens.$space-md) 0;
   padding: tokens.$space-sm tokens.$space-md 0;
   border-top: 1px solid rgba(0, 0, 0, 0.08);
+
+  .delete {
+    color: tokens.$color-state-error;
+    border: 1px solid rgba(181, 60, 44, 0.4);
+    background: transparent;
+  }
 }
 
 .board-settings-warning {
   font-size: 0.8rem;
   color: tokens.$color-text-muted;
-}
-
-.board-settings-danger .delete {
-  color: tokens.$color-state-error;
-  border: 1px solid rgba(181, 60, 44, 0.4);
-  background: transparent;
 }
 
 .lists {
@@ -1015,35 +1075,16 @@
   align-items: flex-start;
   overflow-x: auto;
   padding-bottom: tokens.$space-md;
+  padding-right: 2.6rem;
   flex: 1 1 auto;
-  scrollbar-width: none;
+  align-self: stretch;
+  scrollbar-gutter: stable both-edges;
 }
 
-.lists::-webkit-scrollbar {
-  display: none;
+.board-layout-panel-open .lists {
+  padding-right: 2.6rem;
 }
 
-.board-scrollbar {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 16px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  z-index: 4;
-  background: transparent;
-}
-
-.board-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(60, 60, 60, 0.35);
-  border-radius: 999px;
-}
-
-.board-scrollbar::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.08);
-
-}
 
 .card-panel {
   width: var(--card-panel-width);
@@ -1091,10 +1132,10 @@
 
 .card-panel-menu {
   position: relative;
-}
 
-.card-panel-menu[open] .card-panel-menu-popover {
-  display: flex;
+  &[open] .card-panel-menu-popover {
+    display: flex;
+  }
 }
 
 .card-panel-menu-button {
@@ -1108,15 +1149,15 @@
   align-items: center;
   justify-content: center;
   white-space: nowrap;
-}
 
-.card-panel-menu-button:focus,
-.card-panel-menu-button:focus-visible {
-  outline: none;
-}
+  &:focus,
+  &:focus-visible {
+    outline: none;
+  }
 
-.card-panel-menu-button::-webkit-details-marker {
-  display: none;
+  &::-webkit-details-marker {
+    display: none;
+  }
 }
 
 .card-panel-menu-icon {
@@ -1125,24 +1166,24 @@
   background: tokens.$color-text-muted;
   position: relative;
   display: inline-block;
-}
 
-.card-panel-menu-icon::before,
-.card-panel-menu-icon::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  width: 16px;
-  height: 2px;
-  background: tokens.$color-text-muted;
-}
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 16px;
+    height: 2px;
+    background: tokens.$color-text-muted;
+  }
 
-.card-panel-menu-icon::before {
-  top: -5px;
-}
+  &::before {
+    top: -5px;
+  }
 
-.card-panel-menu-icon::after {
-  top: 5px;
+  &::after {
+    top: 5px;
+  }
 }
 
 .card-panel-menu-popover {
@@ -1157,21 +1198,21 @@
   flex-direction: column;
   gap: 0.2rem;
   z-index: 2;
-}
 
-.card-panel-menu-popover button {
-  border: none;
-  background: transparent;
-  text-align: left;
-  padding: 0.35rem 0.5rem;
-  border-radius: tokens.$radius-button;
-  cursor: pointer;
-  font-size: 0.85rem;
-  white-space: nowrap;
-}
+  button {
+    border: none;
+    background: transparent;
+    text-align: left;
+    padding: 0.35rem 0.5rem;
+    border-radius: tokens.$radius-button;
+    cursor: pointer;
+    font-size: 0.85rem;
+    white-space: nowrap;
 
-.card-panel-menu-popover button:hover {
-  background: tokens.$color-surface;
+    &:hover {
+      background: tokens.$color-surface;
+    }
+  }
 }
 
 .card-panel-menu-delete {
@@ -1203,38 +1244,43 @@
   flex-direction: column;
   gap: tokens.$space-xs;
   padding: 0 calc(tokens.$space-md + 5px);
+
+  input,
+  textarea {
+    border: 1px solid transparent;
+    border-radius: tokens.$radius-control;
+    padding: tokens.$input-padding-y tokens.$input-padding-x;
+    background: transparent;
+    font-family: inherit;
+  }
+
+  input:focus,
+  textarea:focus {
+    border-color: tokens.$color-accent;
+    background: tokens.$color-card;
+    outline: 2px solid rgba(20, 20, 20, 0.2);
+    outline-offset: 2px;
+  }
+
+  >.card-panel-title-input {
+    font-size: 1.4rem;
+    font-weight: 600;
+    padding: 0.15rem 0.35rem;
+    border: 1px solid transparent;
+    border-radius: tokens.$radius-button;
+    margin-top: 10px;
+  }
+
+  textarea {
+    resize: vertical;
+    max-height: 360px;
+  }
 }
 
 .card-panel-label {
   font-size: 0.85rem;
   font-weight: 600;
   color: tokens.$color-text-muted;
-}
-
-.card-panel-section input,
-.card-panel-section textarea {
-  border: 1px solid transparent;
-  border-radius: tokens.$radius-control;
-  padding: tokens.$input-padding-y tokens.$input-padding-x;
-  background: transparent;
-  font-family: inherit;
-}
-
-.card-panel-section input:focus,
-.card-panel-section textarea:focus {
-  border-color: tokens.$color-accent;
-  background: tokens.$color-card;
-  outline: 2px solid rgba(20, 20, 20, 0.2);
-  outline-offset: 2px;
-}
-
-.card-panel-section>.card-panel-title-input {
-  font-size: 1.4rem;
-  font-weight: 600;
-  padding: 0.15rem 0.35rem;
-  border: 1px solid transparent;
-  border-radius: tokens.$radius-button;
-  margin-top: 10px;
 }
 
 .card-panel-title-input:hover,
@@ -1247,11 +1293,6 @@
   margin-top: 0.35rem;
   color: tokens.$color-state-error;
   font-size: 0.85rem;
-}
-
-.card-panel-section textarea {
-  resize: vertical;
-  max-height: 360px;
 }
 
 
@@ -1278,11 +1319,16 @@
   font-family: inherit;
 }
 
-.card-panel-section-description:hover .card-panel-description-view,
-.card-panel-section-description:hover .card-panel-description-empty,
-.card-panel-section-description:hover textarea {
-  border-color: tokens.$color-border;
-  background: tokens.$color-card;
+.card-panel-section-description {
+  &:hover {
+
+    .card-panel-description-view,
+    .card-panel-description-empty,
+    textarea {
+      border-color: tokens.$color-border;
+      background: tokens.$color-card;
+    }
+  }
 }
 
 
@@ -1315,15 +1361,15 @@
   cursor: pointer;
   color: tokens.$color-text-primary;
   white-space: nowrap;
-}
 
-.card-panel-membership:hover {
-  background: tokens.$color-surface;
-}
+  &:hover {
+    background: tokens.$color-surface;
+  }
 
-.card-panel-membership:disabled {
-  cursor: default;
-  opacity: 0.7;
+  &:disabled {
+    cursor: default;
+    opacity: 0.7;
+  }
 }
 
 .card-panel-membership-current {
@@ -1339,11 +1385,11 @@
   color: tokens.$color-card;
   padding: 0.1rem 0.35rem;
   border-radius: 999px;
-}
 
-.card-panel-membership-tag.archived {
-  background: rgba(181, 60, 44, 0.16);
-  color: tokens.$color-state-error;
+  &.archived {
+    background: rgba(181, 60, 44, 0.16);
+    color: tokens.$color-state-error;
+  }
 }
 
 .card-panel-attach {
@@ -1359,19 +1405,19 @@
   gap: tokens.$space-xs;
   font-size: 0.8rem;
   color: tokens.$color-text-muted;
-}
 
-.card-panel-field select {
-  border: 1px solid tokens.$color-border;
-  border-radius: tokens.$radius-control;
-  padding: tokens.$input-padding-y tokens.$input-padding-x;
-  background: tokens.$color-card;
-  font-family: inherit;
-}
+  select {
+    border: 1px solid tokens.$color-border;
+    border-radius: tokens.$radius-control;
+    padding: tokens.$input-padding-y tokens.$input-padding-x;
+    background: tokens.$color-card;
+    font-family: inherit;
 
-.card-panel-field select:disabled {
-  background: tokens.$color-surface;
-  color: tokens.$color-text-soft;
+    &:disabled {
+      background: tokens.$color-surface;
+      color: tokens.$color-text-soft;
+    }
+  }
 }
 
 .card-panel-attach-button {
@@ -1383,11 +1429,11 @@
   cursor: pointer;
   font-size: 0.85rem;
   white-space: nowrap;
-}
 
-.card-panel-attach-button:disabled {
-  cursor: not-allowed;
-  opacity: 0.6;
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
 }
 
 .card-panel-attach-status {
@@ -1432,6 +1478,21 @@
     background 0.2s ease,
     box-shadow 0.2s ease;
   border: 1px solid transparent;
+
+  &:hover {
+    background: tokens.$color-surface-muted;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+
+    .card-panel-comment-meta button {
+      opacity: 1;
+      color: tokens.$color-danger;
+    }
+
+    .comment-delete-text {
+      max-width: 120px;
+      opacity: 1;
+    }
+  }
 }
 
 .card-panel-comment-body {
@@ -1446,37 +1507,27 @@
   font-size: 0.75rem;
   color: tokens.$color-text-muted;
   gap: tokens.$space-xs;
-}
 
-.card-panel-comment-meta button {
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  white-space: nowrap;
-  color: tokens.$color-text-muted;
-  opacity: 0.3;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  overflow: hidden;
-  transition:
-    opacity 0.2s ease,
-    color 0.2s ease;
-}
+  button {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    white-space: nowrap;
+    color: tokens.$color-text-muted;
+    opacity: 0.3;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    overflow: hidden;
+    transition:
+      opacity 0.2s ease,
+      color 0.2s ease;
 
-.card-panel-comment:hover {
-  background: tokens.$color-surface-muted;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
-}
-
-.card-panel-comment:hover .card-panel-comment-meta button {
-  opacity: 1;
-  color: tokens.$color-danger;
-}
-
-.card-panel-comment-meta button:hover,
-.card-panel-comment-meta button:focus-visible {
-  text-decoration: underline;
+    &:hover,
+    &:focus-visible {
+      text-decoration: underline;
+    }
+  }
 }
 
 .comment-delete-icon {
@@ -1494,10 +1545,6 @@
     opacity 0.2s ease;
 }
 
-.card-panel-comment:hover .comment-delete-text {
-  max-width: 120px;
-  opacity: 1;
-}
 
 .card-panel-empty {
   font-size: 0.85rem;
@@ -1518,14 +1565,14 @@
   padding-bottom: tokens.$space-md;
   margin-left: 0;
   margin-right: 0;
-}
 
-.card-panel-comment-compose textarea {
-  background: tokens.$color-card;
-}
+  textarea {
+    background: tokens.$color-card;
+  }
 
-.card-panel-comment-compose::before {
-  content: none;
+  &::before {
+    content: none;
+  }
 }
 
 .card-panel-comment-compact {
@@ -1536,24 +1583,6 @@
   padding-bottom: 0.25rem;
 }
 
-.add-list input {
-  border: 1px solid tokens.$color-border;
-  border-radius: tokens.$radius-control;
-  padding: tokens.$input-padding-y tokens.$input-padding-x;
-  background: tokens.$color-card;
-  font-family: inherit;
-}
-
-.add-list button {
-  border: none;
-  border-radius: tokens.$radius-button;
-  padding: tokens.$button-padding-y tokens.$button-padding-x;
-  background: tokens.$color-accent;
-  color: tokens.$color-card;
-  cursor: pointer;
-  font-size: 0.85rem;
-  white-space: nowrap;
-}
 
 .empty-board {
   font-size: 0.85rem;
@@ -1604,14 +1633,4 @@
 
 .card-panel-section-title {
   padding-left: calc(tokens.$space-md - 5px);
-}
-
-.board-panel-row .board-panel-menu {
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-
-.board-panel-row:hover .board-panel-menu,
-.board-panel-row:focus-within .board-panel-menu {
-  opacity: 1;
 }

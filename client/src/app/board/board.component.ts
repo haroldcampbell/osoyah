@@ -3,7 +3,6 @@ import { CdkMenuModule } from '@angular/cdk/menu';
 import { CommonModule } from '@angular/common';
 import {
   AfterViewChecked,
-  AfterViewInit,
   Component,
   DestroyRef,
   ElementRef,
@@ -37,7 +36,7 @@ import { MarkdownService } from '../services/markdown.service';
     templateUrl: './board.component.html',
     styleUrl: './board.component.scss'
 })
-export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
+export class BoardComponent implements OnInit, AfterViewChecked {
   readonly boardService = inject(BoardService);
   private readonly markdown = inject(MarkdownService);
   private readonly elementRef = inject(ElementRef<HTMLElement>);
@@ -51,8 +50,6 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
   @ViewChild('boardSettingsTitleInput') boardSettingsTitleInput?: ElementRef<HTMLInputElement>;
   @ViewChild('boardSettingsDescriptionInput') boardSettingsDescriptionInput?: ElementRef<HTMLInputElement>;
   @ViewChild('boardLists') boardLists?: ElementRef<HTMLElement>;
-  @ViewChild('boardScrollTrack') boardScrollTrack?: ElementRef<HTMLDivElement>;
-  @ViewChild('boardScrollSpacer') boardScrollSpacer?: ElementRef<HTMLDivElement>;
   commentFocused = false;
   descriptionEditing = false;
   attachBoardId = '';
@@ -84,10 +81,6 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
   private activeCardId = '';
   private descriptionSaveTimeout?: number;
   private lastScrolledCardId: string | null = null;
-  private boardScrollbarReady = false;
-  private boardScrollbarSyncing = false;
-  private boardScrollbarWidth = 0;
-  private boardScrollbarUpdate?: () => void;
 
   get commentExpanded(): boolean {
     return this.commentFocused || this.boardService.panelCommentDraft.trim().length > 0;
@@ -108,7 +101,6 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
   }
 
   ngAfterViewChecked(): void {
-    this.updateBoardScrollbar();
     if (!this.selectedCard) {
       this.lastScrolledCardId = null;
       return;
@@ -117,7 +109,6 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
       return;
     }
     const activeCard = this.selectedCard;
-    this.lastScrolledCardId = activeCard.id;
     this.panelCardTitleError = '';
     window.setTimeout(() => {
       if (!this.selectedCard) {
@@ -129,12 +120,10 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
       }
       this.descriptionEditing = false;
       this.resetAttachState(activeCard);
-      this.scrollSelectedCardIntoView(this.lastScrolledCardId ?? '');
+      if (this.scrollSelectedCardIntoView(activeCard.id)) {
+        this.lastScrolledCardId = activeCard.id;
+      }
     }, 0);
-  }
-
-  ngAfterViewInit(): void {
-    this.updateBoardScrollbar();
   }
 
   get selectedList(): BoardList | null {
@@ -364,6 +353,7 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
   }
 
   closePanel(navigate = true): void {
+    const lastCardId = this.boardService.selectedCard?.cardId ?? '';
     this.boardService.closeCardPanel();
     this.commentFocused = false;
     this.descriptionEditing = false;
@@ -381,6 +371,14 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
     this.panelTitleEditing = false;
     if (navigate) {
       this.navigateToBoardRoute(this.boardService.board?.id ?? '');
+    }
+    if (lastCardId) {
+      window.requestAnimationFrame(() => {
+        this.scrollSelectedCardIntoView(lastCardId);
+        window.setTimeout(() => {
+          this.scrollSelectedCardIntoView(lastCardId);
+        }, 80);
+      });
     }
   }
 
@@ -714,67 +712,35 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
     }
   }
 
-  private scrollSelectedCardIntoView(cardId: string): void {
-    const host = this.elementRef.nativeElement;
-    const card = host.querySelector(`[data-testid="card"][data-card-id="${cardId}"]`);
-    if (!card) {
-      return;
-    }
-    card.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-  }
-
-  private updateBoardScrollbar(): void {
-    if (!this.boardScrollbarReady) {
-      this.ensureBoardScrollbar();
-      return;
-    }
-    this.boardScrollbarUpdate?.();
-  }
-
-  private ensureBoardScrollbar(): void {
+  private scrollSelectedCardIntoView(cardId: string): boolean {
     const lists = this.boardLists?.nativeElement;
-    const track = this.boardScrollTrack?.nativeElement;
-    const spacer = this.boardScrollSpacer?.nativeElement;
-    if (!lists || !track || !spacer) {
-      return;
+    if (!lists) {
+      return false;
     }
-    const handleListScroll = () => {
-      if (this.boardScrollbarSyncing) {
-        return;
+    const card = lists.querySelector(`[data-testid="card"][data-card-id="${cardId}"]`);
+    if (!card) {
+      return false;
+    }
+    window.requestAnimationFrame(() => {
+      const listsRect = lists.getBoundingClientRect();
+      const cardRect = card.getBoundingClientRect();
+      const panel = this.elementRef.nativeElement.querySelector('.card-panel');
+      const panelRect = panel?.getBoundingClientRect();
+      const buffer = 12;
+      const visibleLeft = listsRect.left + buffer;
+      const visibleRight =
+        Math.min(listsRect.right, panelRect?.left ?? listsRect.right) - buffer;
+      let nextScrollLeft = lists.scrollLeft;
+      if (cardRect.left < visibleLeft) {
+        nextScrollLeft -= visibleLeft - cardRect.left;
+      } else if (cardRect.right > visibleRight) {
+        nextScrollLeft += cardRect.right - visibleRight;
       }
-      this.boardScrollbarSyncing = true;
-      track.scrollLeft = lists.scrollLeft;
-      this.boardScrollbarSyncing = false;
-    };
-    const handleTrackScroll = () => {
-      if (this.boardScrollbarSyncing) {
-        return;
+      if (nextScrollLeft !== lists.scrollLeft) {
+        lists.scrollTo({ left: nextScrollLeft, behavior: 'smooth' });
       }
-      this.boardScrollbarSyncing = true;
-      lists.scrollLeft = track.scrollLeft;
-      this.boardScrollbarSyncing = false;
-    };
-    lists.addEventListener('scroll', handleListScroll, { passive: true });
-    track.addEventListener('scroll', handleTrackScroll, { passive: true });
-
-    const updateSpacer = () => {
-      const width = lists.scrollWidth;
-      if (width !== this.boardScrollbarWidth) {
-        this.boardScrollbarWidth = width;
-        spacer.style.width = `${width}px`;
-      }
-      if (track.scrollLeft !== lists.scrollLeft) {
-        track.scrollLeft = lists.scrollLeft;
-      }
-    };
-    this.boardScrollbarUpdate = updateSpacer;
-    updateSpacer();
-    this.boardScrollbarReady = true;
-
-    this.destroyRef.onDestroy(() => {
-      lists.removeEventListener('scroll', handleListScroll);
-      track.removeEventListener('scroll', handleTrackScroll);
     });
+    return true;
   }
 
   @HostListener('document:keydown.escape')

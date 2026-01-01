@@ -25,6 +25,15 @@ Running list of communication/process learnings captured after sessions.
 - Session hand-off filenames should follow `yyyy-mm-dd-nn-title.md` ordering (no spec/milestone ids).
 - Use `[ ]`/`[x]` checkboxes in milestone specs; only mark done after all DoD items are checked (or marked "Won't do").
 
+### SCSS nesting conventions
+- Keep nesting shallow (depth 2, rarely 3) to avoid specificity creep.
+- Group states and direct children under base selectors; avoid long descendant chains.
+- Use `&` for related modifiers/states only.
+
+### Scroll surface changes
+- Changing horizontal scroll surfaces can break post-close visibility even when open/deep-link scroll works.
+- Validate scroll behavior on both panel open and close transitions, not just selection events.
+
 ## 2025-12-30
 
 ### Where the friction showed up

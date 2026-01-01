@@ -20,6 +20,10 @@
 
 ## Entries
 
+-   2026-01-01-06-session-wrap.md - S010 wrap + native scroll shift + Ideas bug spec
+-   2026-01-01-05-scss-scroll-wrap.md - S010 DoD wrap-up, scroll work parked
+-   2026-01-01-04-native-scrollbar-card-scroll.md - Native lists scrollbar + selected card scroll fix
+-   2026-01-01-03-scss-nesting-exploration.md - SCSS nesting conventions + board styles pilot refactor
 -   2026-01-01-02-board-gallery-home.md - S009 board gallery home + shared header + board settings description + future specs
 -   2026-01-01-01-board-layout-polish.md - S008 layout polish + fixed scrollbar + spacing/contrast updates
 -   2025-12-30-02-title-validation-ui.md - S007 validation + card edit modal + learnings capture

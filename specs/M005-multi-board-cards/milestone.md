@@ -3,31 +3,37 @@
 Conform to `docs/principles.md`.
 
 ## Summary
+
 Enable cards to live on multiple boards with no primary board, so work items can move across pipelines without duplication.
 
 ## Goal
+
 Support cross-board card membership and navigation while keeping board behavior familiar.
 
 ## Scope
+
 In-scope:
-- Global card identity and many-to-many board membership.
-- UI to attach an existing card to another board.
-- Membership indicators and navigation between boards.
-Out-of-scope:
-- Server persistence or multi-user collaboration.
-- Board hierarchy or roll-up metrics (handled in later milestones).
+
+-   Global card identity and many-to-many board membership.
+-   UI to attach an existing card to another board.
+-   Membership indicators and navigation between boards.
+    Out-of-scope:
+-   Server persistence or multi-user collaboration.
+-   Board hierarchy or roll-up metrics (handled in later milestones).
 
 ## Specs
-- [x] S001-Global Card Identity + Board Memberships
-- [x] S002-Add Existing Card to Board
-- [x] S003-Membership Indicators + Navigation
-- [x] S004-Board Selection + CRUD
-- [x] S005-Board Management Panel
-- [x] S006-Board Routing + Deep Links
-- [x] S007-Title Length Validation
-- [x] S008-Board Layout Polish
-- [x] S009-Board Gallery Home
-- [ ] S010-SCSS Nesting Refactor Exploration
+
+-   [x] S001-Global Card Identity + Board Memberships
+-   [x] S002-Add Existing Card to Board
+-   [x] S003-Membership Indicators + Navigation
+-   [x] S004-Board Selection + CRUD
+-   [x] S005-Board Management Panel
+-   [x] S006-Board Routing + Deep Links
+-   [x] S007-Title Length Validation
+-   [x] S008-Board Layout Polish
+-   [x] S009-Board Gallery Home
+-   [x] S010-SCSS Nesting Refactor Exploration (includes 2 items marked "Won't do")
 
 ## Notes
-- Board lists remain the stage model for pipeline boards.
+
+-   Board lists remain the stage model for pipeline boards.

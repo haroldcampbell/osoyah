@@ -505,6 +505,19 @@
                       {{ panelCardTitleError }}
                     </div>
                   }
+                  <div class="card-panel-meta">
+                    <span
+                      class="card-panel-meta-item"
+                      [title]="boardService.getLastActivityTooltip(selectedCard)"
+                    >
+                      Last activity
+                      {{
+                        boardService.formatRelativeTime(
+                          boardService.getLastActivityIso(selectedCard)
+                        )
+                      }}
+                    </span>
+                  </div>
                 </section>
 
                 <section class="card-panel-section card-panel-section-description">
@@ -544,19 +557,89 @@
                 </section>
 
                 <section class="card-panel-section">
-                  <div class="card-panel-meta">
-                    <span
-                      class="card-panel-meta-item"
-                      [title]="boardService.getLastActivityTooltip(selectedCard)"
+                  <div class="card-panel-label">Parent card</div>
+                  <div class="card-panel-attach card-panel-parent">
+                    <label class="card-panel-field">
+                      <select
+                        [(ngModel)]="parentCardId"
+                        (ngModelChange)="handleParentSelectionChange()"
+                        data-testid="parent-card-select"
+                        aria-label="Parent card"
+                      >
+                        <option value="">No parent</option>
+                        @for (card of parentOptions; track card.id) {
+                          <option [value]="card.id">{{ formatCardLabel(card) }}</option>
+                        }
+                      </select>
+                    </label>
+                    <button
+                      type="button"
+                      class="card-panel-attach-button"
+                      [disabled]="!canSaveParent"
+                      (click)="saveParentRelationship(selectedCard)"
+                      data-testid="parent-card-save"
                     >
-                      Last activity
-                      {{
-                        boardService.formatRelativeTime(
-                          boardService.getLastActivityIso(selectedCard)
-                        )
-                      }}
-                    </span>
+                      {{ parentActionLabel }}
+                    </button>
                   </div>
+                  @if (parentCurrentId) {
+                    <button
+                      type="button"
+                      class="card-panel-parent-link"
+                      (click)="navigateToParent(selectedCard)"
+                      data-testid="parent-card-link"
+                    >
+                      Open parent
+                    </button>
+                  }
+                  @if (parentStatus) {
+                    <div
+                      class="card-panel-attach-status"
+                      [class.card-panel-attach-status-error]="parentError"
+                      data-testid="parent-card-status"
+                    >
+                      {{ parentStatus }}
+                    </div>
+                  }
+                </section>
+
+                <section class="card-panel-section">
+                  <div class="card-panel-label">Children cards</div>
+                  @if (childCards.length > 0) {
+                    <div class="card-panel-children">
+                      @for (child of childCards; track child.id) {
+                        <div class="card-panel-child">
+                          <button
+                            type="button"
+                            class="card-panel-child-link"
+                            (click)="navigateToChild(child)"
+                            data-testid="child-card-link"
+                          >
+                            {{ formatCardLabel(child) }}
+                          </button>
+                          <button
+                            type="button"
+                            class="card-panel-child-unlink"
+                            (click)="openUnlinkChildDialog(child)"
+                            data-testid="child-card-unlink"
+                          >
+                            Unlink
+                          </button>
+                        </div>
+                      }
+                    </div>
+                  } @else {
+                    <div class="card-panel-empty">No child cards.</div>
+                  }
+                  @if (childStatus && (childCards.length > 0 || childError)) {
+                    <div
+                      class="card-panel-attach-status"
+                      [class.card-panel-attach-status-error]="childError"
+                      data-testid="child-card-status"
+                    >
+                      {{ childStatus }}
+                    </div>
+                  }
                 </section>
 
                 <section class="card-panel-section">
@@ -730,6 +813,51 @@
         </button>
         <button type="button" class="board-modal-primary" (click)="saveCreateBoardModal()">
           Save
+        </button>
+      </footer>
+    </section>
+  }
+
+  @if (unlinkChildDialogOpen && selectedCard; as parentCard) {
+    <button
+      type="button"
+      class="board-modal-backdrop"
+      aria-label="Close unlink child dialog"
+      (click)="cancelUnlinkChild()"
+    ></button>
+    <section class="board-modal" role="dialog" aria-modal="true">
+      <header class="board-modal-header">
+        <div class="board-modal-title">Unlink child card</div>
+        <button
+          type="button"
+          class="board-modal-close"
+          aria-label="Close unlink child dialog"
+          (click)="cancelUnlinkChild()"
+        >
+          ×
+        </button>
+      </header>
+      <div class="board-modal-body">
+        @if (unlinkChildTarget) {
+          <div>
+            Unlink
+            <strong>{{ unlinkChildTarget.id }} - {{ unlinkChildTarget.title }}</strong>
+            from
+            <strong>{{ parentCard.id }} - {{ parentCard.title }}</strong>
+            ?
+          </div>
+        }
+      </div>
+      <footer class="board-modal-actions">
+        <button type="button" class="board-modal-secondary" (click)="cancelUnlinkChild()">
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="board-modal-primary"
+          (click)="confirmUnlinkChild(parentCard)"
+        >
+          Unlink
         </button>
       </footer>
     </section>

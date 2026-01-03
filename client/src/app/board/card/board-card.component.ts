@@ -99,4 +99,5 @@ export class BoardCardComponent implements AfterViewChecked {
   renderDescriptionPreview(description: string): string {
     return this.markdown.render(description);
   }
+
 }

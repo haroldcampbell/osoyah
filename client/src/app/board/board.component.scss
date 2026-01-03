@@ -1232,7 +1232,7 @@
 .card-panel-scroll {
   display: flex;
   flex-direction: column;
-  gap: tokens.$space-md;
+  gap: 2rem;
   overflow-y: auto;
   padding-right: tokens.$space-xs;
   flex: 1 1 auto;
@@ -1335,7 +1335,8 @@
 .card-panel-meta {
   display: flex;
   align-items: center;
-  font-size: 0.85rem;
+  justify-content: flex-end;
+  font-size: 0.82rem;
   color: tokens.$color-text-muted;
 }
 
@@ -1399,6 +1400,10 @@
   align-items: end;
 }
 
+.card-panel-parent {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
 .card-panel-field {
   display: flex;
   flex-direction: column;
@@ -1433,6 +1438,64 @@
   &:disabled {
     cursor: not-allowed;
     opacity: 0.6;
+  }
+}
+
+.card-panel-parent-link {
+  margin-top: tokens.$space-xs;
+  border: none;
+  padding: 0;
+  background: none;
+  color: tokens.$color-text-muted;
+  font-size: 0.85rem;
+  text-decoration: underline;
+  cursor: pointer;
+
+  &:hover {
+    color: tokens.$color-text-primary;
+  }
+}
+
+.card-panel-children {
+  display: grid;
+  gap: 0;
+}
+
+.card-panel-child {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: tokens.$space-xs;
+  padding: 0.15rem 0;
+  border-radius: tokens.$radius-control;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: tokens.$color-surface;
+  }
+}
+
+.card-panel-child-link {
+  border: none;
+  background: none;
+  padding: 0;
+  text-align: left;
+  color: tokens.$color-text-primary;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.card-panel-child-unlink {
+  border: none;
+  background: tokens.$color-surface;
+  color: tokens.$color-text-muted;
+  border-radius: tokens.$radius-button;
+  padding: 0.15rem 0.45rem;
+  font-size: 0.7rem;
+  cursor: pointer;
+
+  &:hover {
+    color: tokens.$color-text-primary;
   }
 }
 

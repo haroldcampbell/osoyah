@@ -13,11 +13,12 @@ Make parent/child relationships discoverable and editable from the card detail p
 - Full-screen detail view.
 
 ## Definition of Done
-- [ ] Side panel includes a parent selector and children list.
-- [ ] Users can navigate to related cards from the side panel.
-- [ ] Cross-board parents and children are clearly labeled.
-- [ ] Side panel remains usable on narrow viewports.
-- [ ] Acceptance tests pass.
+- [x] Side panel includes a parent selector and children list.
+- [x] Users can navigate to related cards from the side panel.
+- [x] Cross-board parents and children are clearly labeled.
+- [x] Unlinking a child uses a modal confirmation dialog (not a browser alert).
+- [x] Side panel remains usable on narrow viewports.
+- [x] Acceptance tests pass.
 
 ## Acceptance tests (exact commands + expected artifacts/output)
 - `npm run lint` passes.

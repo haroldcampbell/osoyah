@@ -34,6 +34,23 @@ Running list of communication/process learnings captured after sessions.
 - Changing horizontal scroll surfaces can break post-close visibility even when open/deep-link scroll works.
 - Validate scroll behavior on both panel open and close transitions, not just selection events.
 
+## 2026-01-03
+
+### Where the friction showed up
+- Test log access: I asked for logs that were already available in `client/logs/`, which added avoidable back-and-forth.
+- Spec drift: DoDs needed multiple updates after new behaviors (system comment formatting, modal requirement, clickable labels).
+- UX intent clarification: child list density, empty-state messaging, and card id placement required extra clarification.
+
+### How to communicate more precisely (reduce iteration)
+- Capture UI intent and examples directly in the spec as soon as the preference is decided.
+- Call out whether a change stays in the current spec or needs a new spec when scope expands.
+- Specify dialog modality (modal vs. native confirm) at the time the requirement is introduced.
+
+### What is working well (reinforce)
+- Clear, direct UX feedback with concrete preferences (sizes, labels, placement).
+- Fast test execution with explicit confirmation of results.
+- Willingness to split scope into new specs when behavior expands.
+
 ## 2025-12-30
 
 ### Where the friction showed up

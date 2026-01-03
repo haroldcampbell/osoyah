@@ -19,8 +19,10 @@ Out-of-scope:
 
 ## Specs
 - [x] S001-Parent/Child Links (Single Parent)
-- [ ] S002-Relationship Integrity
-- [ ] S003-Parent/Child UX
+- [x] S002-Relationship Integrity
+- [x] S003-Parent/Child UX
+- [ ] S004-Child Completion Count
+- [ ] S005-Parent Selector CDK Dropdown
 
 ## Notes
 - Parent/child visibility lives in the side panel only.

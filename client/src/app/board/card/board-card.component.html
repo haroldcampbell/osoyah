@@ -7,6 +7,7 @@
   (keydown.space)="openDetails()"
 >
   @if (!isEditing) {
+    <div class="card-id" data-testid="card-id">{{ card.id }}</div>
     <div class="card-title-row">
       <div class="card-title-text" data-testid="card-title">{{ card.title }}</div>
       <button

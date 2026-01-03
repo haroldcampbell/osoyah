@@ -293,27 +293,32 @@
         {
           "id": "comment-6",
           "message": "This is blocked by the latest review.",
-          "createdAt": "2025-01-03T09:00:00Z"
+          "createdAt": "2025-01-03T09:00:00Z",
+          "authorType": "user"
         },
         {
           "id": "comment-7",
           "message": "Confirm requirements before moving forward.",
-          "createdAt": "2025-01-03T12:00:00Z"
+          "createdAt": "2025-01-03T12:00:00Z",
+          "authorType": "user"
         },
         {
           "id": "comment-21",
           "message": "Clarify which features are must-haves.",
-          "createdAt": "2025-01-04T09:00:00Z"
+          "createdAt": "2025-01-04T09:00:00Z",
+          "authorType": "user"
         },
         {
           "id": "comment-22",
           "message": "Add a quick timeline estimate.",
-          "createdAt": "2025-01-04T11:00:00Z"
+          "createdAt": "2025-01-04T11:00:00Z",
+          "authorType": "user"
         },
         {
           "id": "comment-23",
           "message": "Share with design for feedback.",
-          "createdAt": "2025-01-04T13:00:00Z"
+          "createdAt": "2025-01-04T13:00:00Z",
+          "authorType": "user"
         }
       ]
     },
@@ -327,12 +332,14 @@
         {
           "id": "comment-8",
           "message": "Add screenshots when ready.",
-          "createdAt": "2025-01-03T15:00:00Z"
+          "createdAt": "2025-01-03T15:00:00Z",
+          "authorType": "user"
         },
         {
           "id": "comment-9",
           "message": "Double-check edge cases before release.",
-          "createdAt": "2025-01-03T18:00:00Z"
+          "createdAt": "2025-01-03T18:00:00Z",
+          "authorType": "user"
         }
       ]
     },
@@ -354,7 +361,8 @@
         {
           "id": "comment-28",
           "message": "Capture the sales-to-success loop.",
-          "createdAt": "2025-01-03T09:30:00Z"
+          "createdAt": "2025-01-03T09:30:00Z",
+          "authorType": "user"
         }
       ]
     },
@@ -368,12 +376,14 @@
         {
           "id": "comment-10",
           "message": "Sync with the team on this.",
-          "createdAt": "2025-01-03T21:00:00Z"
+          "createdAt": "2025-01-03T21:00:00Z",
+          "authorType": "user"
         },
         {
           "id": "comment-11",
           "message": "This is blocked by the latest review.",
-          "createdAt": "2025-01-04T00:00:00Z"
+          "createdAt": "2025-01-04T00:00:00Z",
+          "authorType": "user"
         }
       ]
     },
@@ -387,12 +397,14 @@
         {
           "id": "comment-12",
           "message": "Confirm requirements before moving forward.",
-          "createdAt": "2025-01-04T03:00:00Z"
+          "createdAt": "2025-01-04T03:00:00Z",
+          "authorType": "user"
         },
         {
           "id": "comment-13",
           "message": "Add screenshots when ready.",
-          "createdAt": "2025-01-04T06:00:00Z"
+          "createdAt": "2025-01-04T06:00:00Z",
+          "authorType": "user"
         }
       ]
     },
@@ -406,22 +418,26 @@
         {
           "id": "comment-1",
           "message": "Need to confirm pagination details.",
-          "createdAt": "2025-01-02T11:00:00Z"
+          "createdAt": "2025-01-02T11:00:00Z",
+          "authorType": "user"
         },
         {
           "id": "comment-14",
           "message": "Double-check edge cases before release.",
-          "createdAt": "2025-01-04T09:00:00Z"
+          "createdAt": "2025-01-04T09:00:00Z",
+          "authorType": "user"
         },
         {
           "id": "comment-24",
           "message": "Need to capture error handling too.",
-          "createdAt": "2025-01-04T15:00:00Z"
+          "createdAt": "2025-01-04T15:00:00Z",
+          "authorType": "user"
         },
         {
           "id": "comment-25",
           "message": "Include rate limit details.",
-          "createdAt": "2025-01-04T17:00:00Z"
+          "createdAt": "2025-01-04T17:00:00Z",
+          "authorType": "user"
         }
       ]
     },
@@ -435,12 +451,14 @@
         {
           "id": "comment-15",
           "message": "Sync with the team on this.",
-          "createdAt": "2025-01-04T12:00:00Z"
+          "createdAt": "2025-01-04T12:00:00Z",
+          "authorType": "user"
         },
         {
           "id": "comment-16",
           "message": "This is blocked by the latest review.",
-          "createdAt": "2025-01-04T15:00:00Z"
+          "createdAt": "2025-01-04T15:00:00Z",
+          "authorType": "user"
         }
       ]
     },
@@ -454,12 +472,14 @@
         {
           "id": "comment-2",
           "message": "Verify placeholder cues too.",
-          "createdAt": "2025-01-03T10:00:00Z"
+          "createdAt": "2025-01-03T10:00:00Z",
+          "authorType": "user"
         },
         {
           "id": "comment-3",
           "message": "Remember mobile viewport.",
-          "createdAt": "2025-01-03T11:00:00Z"
+          "createdAt": "2025-01-03T11:00:00Z",
+          "authorType": "user"
         }
       ]
     },
@@ -473,12 +493,14 @@
         {
           "id": "comment-17",
           "message": "Confirm requirements before moving forward.",
-          "createdAt": "2025-01-04T18:00:00Z"
+          "createdAt": "2025-01-04T18:00:00Z",
+          "authorType": "user"
         },
         {
           "id": "comment-18",
           "message": "Add screenshots when ready.",
-          "createdAt": "2025-01-04T21:00:00Z"
+          "createdAt": "2025-01-04T21:00:00Z",
+          "authorType": "user"
         }
       ]
     },
@@ -492,12 +514,14 @@
         {
           "id": "comment-4",
           "message": "Need decision by Friday.",
-          "createdAt": "2025-01-04T10:00:00Z"
+          "createdAt": "2025-01-04T10:00:00Z",
+          "authorType": "user"
         },
         {
           "id": "comment-19",
           "message": "Double-check edge cases before release.",
-          "createdAt": "2025-01-05T00:00:00Z"
+          "createdAt": "2025-01-05T00:00:00Z",
+          "authorType": "user"
         }
       ]
     },
@@ -511,12 +535,14 @@
         {
           "id": "comment-20",
           "message": "Sync with the team on this.",
-          "createdAt": "2025-01-05T03:00:00Z"
+          "createdAt": "2025-01-05T03:00:00Z",
+          "authorType": "user"
         },
         {
           "id": "comment-21",
           "message": "This is blocked by the latest review.",
-          "createdAt": "2025-01-05T06:00:00Z"
+          "createdAt": "2025-01-05T06:00:00Z",
+          "authorType": "user"
         }
       ]
     },
@@ -530,12 +556,14 @@
         {
           "id": "comment-22",
           "message": "Confirm requirements before moving forward.",
-          "createdAt": "2025-01-05T09:00:00Z"
+          "createdAt": "2025-01-05T09:00:00Z",
+          "authorType": "user"
         },
         {
           "id": "comment-23",
           "message": "Add screenshots when ready.",
-          "createdAt": "2025-01-05T12:00:00Z"
+          "createdAt": "2025-01-05T12:00:00Z",
+          "authorType": "user"
         }
       ]
     },
@@ -549,12 +577,14 @@
         {
           "id": "comment-24",
           "message": "Double-check edge cases before release.",
-          "createdAt": "2025-01-05T15:00:00Z"
+          "createdAt": "2025-01-05T15:00:00Z",
+          "authorType": "user"
         },
         {
           "id": "comment-25",
           "message": "Sync with the team on this.",
-          "createdAt": "2025-01-05T18:00:00Z"
+          "createdAt": "2025-01-05T18:00:00Z",
+          "authorType": "user"
         }
       ]
     },
@@ -568,12 +598,14 @@
         {
           "id": "comment-26",
           "message": "This is blocked by the latest review.",
-          "createdAt": "2025-01-05T21:00:00Z"
+          "createdAt": "2025-01-05T21:00:00Z",
+          "authorType": "user"
         },
         {
           "id": "comment-27",
           "message": "Confirm requirements before moving forward.",
-          "createdAt": "2025-01-06T00:00:00Z"
+          "createdAt": "2025-01-06T00:00:00Z",
+          "authorType": "user"
         }
       ]
     }

@@ -56,6 +56,14 @@ export class BoardComponent implements OnInit, AfterViewChecked {
   attachListId = '';
   attachStatus = '';
   attachError = false;
+  parentCardId = '';
+  parentCurrentId = '';
+  parentStatus = '';
+  parentError = false;
+  childStatus = '';
+  childError = false;
+  unlinkChildDialogOpen = false;
+  unlinkChildTarget: Card | null = null;
   boardMenuOpen = false;
   boardSearchTerm = '';
   newBoardTitle = '';
@@ -120,6 +128,7 @@ export class BoardComponent implements OnInit, AfterViewChecked {
       }
       this.descriptionEditing = false;
       this.resetAttachState(activeCard);
+      this.resetParentState(activeCard);
       if (this.scrollSelectedCardIntoView(activeCard.id)) {
         this.lastScrolledCardId = activeCard.id;
       }
@@ -201,6 +210,47 @@ export class BoardComponent implements OnInit, AfterViewChecked {
       return false;
     }
     return true;
+  }
+
+  get parentOptions(): Card[] {
+    const card = this.selectedCard;
+    if (!card) {
+      return [];
+    }
+    const options = this.boardService.getValidParentOptions(card.id);
+    const currentParent = this.boardService.getParentCard(card.id);
+    if (currentParent && !options.some((option) => option.id === currentParent.id)) {
+      return [currentParent, ...options];
+    }
+    return options;
+  }
+
+  get childCards(): Card[] {
+    const card = this.selectedCard;
+    if (!card) {
+      return [];
+    }
+    return this.boardService.getChildCards(card.id);
+  }
+
+  get canSaveParent(): boolean {
+    if (!this.selectedCard) {
+      return false;
+    }
+    if (this.parentCardId === this.parentCurrentId) {
+      return false;
+    }
+    return this.parentCardId !== '' || this.parentCurrentId !== '';
+  }
+
+  get parentActionLabel(): string {
+    if (this.parentCardId === '' && this.parentCurrentId !== '') {
+      return 'Remove parent';
+    }
+    if (this.parentCurrentId === '') {
+      return 'Link parent';
+    }
+    return 'Update parent';
   }
 
   get attachNotice(): string {
@@ -361,6 +411,14 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     this.attachListId = '';
     this.attachStatus = '';
     this.attachError = false;
+    this.parentCardId = '';
+    this.parentCurrentId = '';
+    this.parentStatus = '';
+    this.parentError = false;
+    this.childStatus = '';
+    this.childError = false;
+    this.unlinkChildDialogOpen = false;
+    this.unlinkChildTarget = null;
     if (this.descriptionSaveTimeout) {
       window.clearTimeout(this.descriptionSaveTimeout);
       this.descriptionSaveTimeout = undefined;
@@ -579,6 +637,99 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     return this.markdown.render(text);
   }
 
+  formatCardLabel(card: Card): string {
+    return `${card.id} - ${card.title}`;
+  }
+
+  handleParentSelectionChange(): void {
+    this.parentStatus = '';
+    this.parentError = false;
+  }
+
+  saveParentRelationship(card: Card): void {
+    if (!this.canSaveParent) {
+      return;
+    }
+    if (!this.parentCardId) {
+      const result = this.boardService.unlinkParent(card.id);
+      if (!result.success) {
+        this.parentStatus = result.error ?? 'Unable to remove parent.';
+        this.parentError = true;
+        return;
+      }
+      this.parentCurrentId = '';
+      this.parentStatus = 'Parent removed.';
+      this.parentError = false;
+      return;
+    }
+    const result = this.boardService.addCardRelationship(card.id, this.parentCardId);
+    if (!result.success) {
+      this.parentStatus = result.error ?? 'Unable to link parent.';
+      this.parentError = true;
+      return;
+    }
+    this.parentCurrentId = this.parentCardId;
+    this.parentStatus = 'Parent updated.';
+    this.parentError = false;
+  }
+
+  navigateToParent(card: Card): void {
+    const parent = this.boardService.getParentCard(card.id);
+    if (!parent) {
+      return;
+    }
+    const board = this.boardService.getBoardForCard(parent.id);
+    if (!board) {
+      this.parentStatus = 'Parent card is not on an active board.';
+      this.parentError = true;
+      return;
+    }
+    this.navigateToCardRoute(board.id, parent.id);
+  }
+
+  navigateToChild(child: Card): void {
+    const board = this.boardService.getBoardForCard(child.id);
+    if (!board) {
+      this.childStatus = 'Child card is not on an active board.';
+      this.childError = true;
+      return;
+    }
+    this.navigateToCardRoute(board.id, child.id);
+  }
+
+  openUnlinkChildDialog(child: Card): void {
+    this.unlinkChildDialogOpen = true;
+    this.unlinkChildTarget = child;
+    this.childStatus = '';
+    this.childError = false;
+  }
+
+  cancelUnlinkChild(): void {
+    this.unlinkChildDialogOpen = false;
+    this.unlinkChildTarget = null;
+  }
+
+  confirmUnlinkChild(parent: Card | null): void {
+    if (!parent) {
+      return;
+    }
+    const child = this.unlinkChildTarget;
+    if (!child) {
+      return;
+    }
+    const result = this.boardService.unlinkChild(parent.id, child.id);
+    if (!result.success) {
+      this.childStatus = result.error ?? 'Unable to unlink child.';
+      this.childError = true;
+      return;
+    }
+    const remaining = this.boardService.getChildCards(parent.id).length;
+    this.childStatus = remaining > 0 ? 'Child unlinked.' : '';
+    this.childError = false;
+    this.unlinkChildDialogOpen = false;
+    this.unlinkChildTarget = null;
+  }
+
   private resetAttachState(card: Card): void {
     const boards = this.boardService.boards;
     if (!boards.length) {
@@ -594,6 +745,14 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     this.attachListId = candidate.lists[0]?.id ?? '';
     this.attachStatus = '';
     this.attachError = false;
+  }
+
+  private resetParentState(card: Card): void {
+    const relationship = this.boardService.getParentRelationship(card.id);
+    this.parentCurrentId = relationship?.parentCardId ?? '';
+    this.parentCardId = this.parentCurrentId;
+    this.parentStatus = '';
+    this.parentError = false;
   }
 
   private resetBoardMenuState(): void {

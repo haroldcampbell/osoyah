@@ -11,6 +11,7 @@ export interface CardComment {
   id: string;
   message: string;
   createdAt: string;
+  authorType: 'user' | 'system' | 'bot';
 }
 
 export interface CardRelationship {

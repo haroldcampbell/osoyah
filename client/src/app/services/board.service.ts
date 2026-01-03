@@ -286,6 +286,10 @@ export class BoardService {
     return board.lists.some((list) => list.cardIds.includes(cardId));
   }
 
+  isCardOnAnyBoard(cardId: string): boolean {
+    return this.boards.some((board) => this.isCardOnBoard(cardId, board.id));
+  }
+
   addCardToBoard(
     cardId: string,
     boardId: string,
@@ -438,6 +442,9 @@ export class BoardService {
     if (this.selectedCard?.cardId === card.id) {
       this.closeCardPanel();
     }
+    if (!this.isCardOnAnyBoard(card.id)) {
+      this.handleDeletedCardRelationships(card.id);
+    }
   }
 
   openCardPanel(list: BoardList, card: Card): void {
@@ -490,6 +497,7 @@ export class BoardService {
       id: this.createId('comment'),
       message: trimmed,
       createdAt: now,
+      authorType: 'user',
     };
     card.comments.push(comment);
     card.updatedAt = now;
@@ -498,6 +506,22 @@ export class BoardService {
   removeComment(card: Card, comment: CardComment): void {
     card.comments = card.comments.filter((item) => item.id !== comment.id);
     card.updatedAt = new Date().toISOString();
+  }
+
+  addSystemComment(cardId: string, message: string, timestamp?: string): void {
+    const card = this.getCard(cardId);
+    if (!card) {
+      return;
+    }
+    const createdAt = timestamp ?? new Date().toISOString();
+    const comment: CardComment = {
+      id: this.createId('comment'),
+      message,
+      createdAt,
+      authorType: 'system',
+    };
+    card.comments.push(comment);
+    card.updatedAt = createdAt;
   }
 
   addCardRelationship(
@@ -512,13 +536,204 @@ export class BoardService {
     if (!parent) {
       return { success: false, error: 'Parent card not found.' };
     }
+    if (childCardId === parentCardId) {
+      return { success: false, error: 'A card cannot be its own parent.' };
+    }
+    if (this.wouldCreateCycle(childCardId, parentCardId)) {
+      return { success: false, error: 'This parent would create a cycle.' };
+    }
+    const existingParent = this.getParentRelationship(childCardId);
+    if (existingParent && existingParent.parentCardId === parentCardId) {
+      return { success: false, error: 'This parent is already linked.' };
+    }
+    if (existingParent) {
+      this.unlinkParent(childCardId);
+    }
     const relationship: CardRelationship = {
       childCardId,
       parentCardId,
       createdAt: new Date().toISOString(),
     };
     this.cardRelationships.push(relationship);
+    this.recordRelationshipLink(parentCardId, childCardId);
     return { success: true, relationship };
+  }
+
+  unlinkParent(childCardId: string): { success: boolean; error?: string } {
+    const relationship = this.getParentRelationship(childCardId);
+    if (!relationship) {
+      return { success: false, error: 'No parent link to remove.' };
+    }
+    this.cardRelationships = this.cardRelationships.filter(
+      (item) =>
+        !(
+          item.childCardId === relationship.childCardId &&
+          item.parentCardId === relationship.parentCardId
+        ),
+    );
+    this.recordRelationshipUnlink(relationship.parentCardId, relationship.childCardId);
+    return { success: true };
+  }
+
+  unlinkChild(parentCardId: string, childCardId: string): { success: boolean; error?: string } {
+    const relationship = this.cardRelationships.find(
+      (item) => item.parentCardId === parentCardId && item.childCardId === childCardId,
+    );
+    if (!relationship) {
+      return { success: false, error: 'No child link to remove.' };
+    }
+    this.cardRelationships = this.cardRelationships.filter(
+      (item) =>
+        !(item.parentCardId === parentCardId && item.childCardId === childCardId),
+    );
+    this.recordRelationshipUnlink(parentCardId, childCardId);
+    return { success: true };
+  }
+
+  getParentRelationship(childCardId: string): CardRelationship | null {
+    return this.cardRelationships.find((item) => item.childCardId === childCardId) ?? null;
+  }
+
+  getParentCard(childCardId: string): Card | null {
+    const relationship = this.getParentRelationship(childCardId);
+    if (!relationship) {
+      return null;
+    }
+    return this.getCard(relationship.parentCardId);
+  }
+
+  getChildRelationships(parentCardId: string): CardRelationship[] {
+    return this.cardRelationships.filter((item) => item.parentCardId === parentCardId);
+  }
+
+  getChildCards(parentCardId: string): Card[] {
+    return this.getChildRelationships(parentCardId)
+      .map((item) => this.getCard(item.childCardId))
+      .filter((card): card is Card => !!card);
+  }
+
+  getValidParentOptions(childCardId: string): Card[] {
+    return this.getActiveCards().filter(
+      (card) => card.id !== childCardId && !this.wouldCreateCycle(childCardId, card.id),
+    );
+  }
+
+  getBoardForCard(cardId: string): Board | null {
+    return this.boards.find((board) => this.isCardOnBoard(cardId, board.id)) ?? null;
+  }
+
+  private recordRelationshipLink(parentCardId: string, childCardId: string): void {
+    const timestamp = new Date().toISOString();
+    const parentLabel = this.formatCardMarkdown(parentCardId);
+    const childLabel = this.formatCardMarkdown(childCardId);
+    this.addSystemComment(
+      childCardId,
+      `Parent card linked: ${parentLabel}`,
+      timestamp,
+    );
+    this.addSystemComment(
+      parentCardId,
+      `Child card linked: ${childLabel}`,
+      timestamp,
+    );
+  }
+
+  private recordRelationshipUnlink(parentCardId: string, childCardId: string): void {
+    const timestamp = new Date().toISOString();
+    const parentLabel = this.formatCardMarkdown(parentCardId);
+    const childLabel = this.formatCardMarkdown(childCardId);
+    this.addSystemComment(
+      childCardId,
+      `Parent card unlinked: ${parentLabel}`,
+      timestamp,
+    );
+    this.addSystemComment(
+      parentCardId,
+      `Child card unlinked: ${childLabel}`,
+      timestamp,
+    );
+  }
+
+  private handleDeletedCardRelationships(cardId: string): void {
+    const timestamp = new Date().toISOString();
+    const cardLabel = this.formatCardMarkdown(cardId, { link: false });
+    const childLinks = this.getChildRelationships(cardId);
+    childLinks.forEach((relationship) => {
+      this.addSystemComment(
+        relationship.childCardId,
+        `Parent card unlinked: ${cardLabel}`,
+        timestamp,
+      );
+    });
+    const parentLink = this.getParentRelationship(cardId);
+    if (parentLink) {
+      this.addSystemComment(
+        parentLink.parentCardId,
+        `Child card unlinked: ${cardLabel}`,
+        timestamp,
+      );
+    }
+    this.cardRelationships = this.cardRelationships.filter(
+      (item) => item.parentCardId !== cardId && item.childCardId !== cardId,
+    );
+  }
+
+  private formatCardLabel(cardId: string): string {
+    const card = this.getCard(cardId);
+    if (!card) {
+      return `${cardId} - Unknown`;
+    }
+    return `${card.id} - ${card.title}`;
+  }
+
+  private formatCardMarkdown(
+    cardId: string,
+    options: { link?: boolean } = {},
+  ): string {
+    const label = this.formatCardLabel(cardId);
+    if (options.link === false) {
+      return `**${label}**`;
+    }
+    const board = this.getBoardForCard(cardId);
+    if (!board) {
+      return `**${label}**`;
+    }
+    return `[**${label}**](/boards/${board.id}/cards/${cardId})`;
+  }
+
+  private wouldCreateCycle(childCardId: string, parentCardId: string): boolean {
+    if (childCardId === parentCardId) {
+      return true;
+    }
+    let currentParentId = parentCardId;
+    const visited = new Set<string>();
+    while (currentParentId) {
+      if (visited.has(currentParentId)) {
+        return true;
+      }
+      visited.add(currentParentId);
+      const relationship = this.getParentRelationship(currentParentId);
+      if (!relationship) {
+        return false;
+      }
+      if (relationship.parentCardId === childCardId) {
+        return true;
+      }
+      currentParentId = relationship.parentCardId;
+    }
+    return false;
+  }
+
+  private getActiveCards(): Card[] {
+    const ids = new Set<string>();
+    this.boards.forEach((board) => {
+      board.lists.forEach((list) => {
+        list.cardIds.forEach((cardId) => ids.add(cardId));
+      });
+    });
+    return Array.from(ids)
+      .map((cardId) => this.getCard(cardId))
+      .filter((card): card is Card => !!card);
   }
 
   dropList(event: CdkDragDrop<BoardList[]>): void {
@@ -618,6 +833,10 @@ export class BoardService {
 
   private indexCards(cards: Card[]): Record<string, Card> {
     return cards.reduce<Record<string, Card>>((acc, card) => {
+      card.comments = card.comments.map((comment) => ({
+        ...comment,
+        authorType: comment.authorType ?? 'user',
+      }));
       acc[card.id] = card;
       return acc;
     }, {});

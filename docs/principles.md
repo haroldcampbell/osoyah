@@ -9,12 +9,17 @@
 ## Backend Engineering
 - Prioritize correctness and reliability before optimization.
 - Validate inputs at boundaries; fail fast with clear errors.
+  - "Fail fast" means choosing the simplest viable approach to learn quickly and surface errors early.
 - Keep business logic isolated from transport and persistence.
 - Make dependencies explicit and configuration consistent.
 
 ## Frontend & UX Engineering
 - Design for clarity and speed of understanding.
 - Keep UI states predictable; handle loading, empty, and error states.
+  - Empty state: short explanation + next action when applicable.
+  - Error state: clear message + recovery action when possible.
+  - Loading state: visible feedback; avoid blank screens.
+- Prefer warnings and safe fallbacks over hard failures for user-facing behavior.
 - Build accessible interfaces by default (semantic HTML, ARIA when needed).
 - Keep interactions consistent; reduce surprise and friction.
 
@@ -22,6 +27,10 @@
 - Optimize for readability and testability.
 - Keep functions and modules small and focused.
 - Avoid hidden side effects; prefer pure functions where practical.
+  - Mutations should be intentional; avoid mutating inputs unless explicitly documented.
+  - When mutations occur, return the updated value (or a clear result object).
+- Suggest refactoring repeated UI patterns into reusable components after 2+ occurrences; avoid premature abstraction before reuse is clear.
+- Avoid premature optimization; prioritize clarity and correctness until real bottlenecks are measured.
 - Use meaningful names; avoid cleverness.
 
 ## Testing & Quality

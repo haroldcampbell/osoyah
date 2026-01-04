@@ -10,7 +10,7 @@ Current active decisions, consolidated from session hand-offs. When a decision c
 ## Frontend data strategy
 
 -   Use file-based mock data in `client/public/assets/data.json` accessed via `HttpClient`.
--   Keep data models limited to Board/List/Card for now.
+-   Keep data models minimal, extending with related collections and richer metadata only as needed.
 -   Use Playwright for E2E tests.
 -   Use Angular CDK drag-and-drop for list/card ordering.
 -   Maintain board state in-memory on the client until backend persistence is added.
@@ -29,6 +29,8 @@ Current active decisions, consolidated from session hand-offs. When a decision c
 -   Commit messages include milestone + spec code as `(<milestone>-<spec>)` (e.g., `feat (M004-S006-02): drag placeholder cues`).
 -   Model relationships as separate collections/tables (not embedded on the primary entities) to stay SQL-friendly and scalable.
 -   New relationship records capture `createdAt` timestamps and default them via a service helper.
+-   Comment sources are explicit (`user`, `system`, `bot`) to distinguish activity posts.
+-   Relationship changes generate system comments on both parent and child cards.
 
 ## Domain-driven design boundaries
 

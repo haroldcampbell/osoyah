@@ -21,8 +21,10 @@ Out-of-scope:
 - [x] S001-Parent/Child Links (Single Parent)
 - [x] S002-Relationship Integrity
 - [x] S003-Parent/Child UX
-- [ ] S004-Child Completion Count
+- [x] S004-Child Completion Count
 - [ ] S005-Parent Selector CDK Dropdown
+- [ ] S006-Card Panel Component
+- [ ] S007-Card Panel List Picker
 
 ## Notes
 - Parent/child visibility lives in the side panel only.

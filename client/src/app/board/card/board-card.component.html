@@ -103,4 +103,28 @@
       {{ boardService.formatRelativeTime(boardService.getLastActivityIso(card)) }}
     </span>
   </div>
+  @if (boardService.getChildCompletion(card.id); as childProgress) {
+    @if (childProgress.total > 0) {
+      <div class="card-footer" data-testid="card-child-progress">
+        <div
+          class="card-progress-bar"
+          [style.--segment-count]="childProgress.total"
+          aria-hidden="true"
+        >
+          @for (segment of createSegments(childProgress.total); track segment) {
+            <span
+              class="card-progress-segment"
+              [class.is-complete]="segment < childProgress.completed"
+            ></span>
+          }
+        </div>
+        <div
+          class="card-progress-count"
+          [title]="childProgress.percent + '% complete'"
+        >
+          {{ childProgress.completed }}/{{ childProgress.total }}
+        </div>
+      </div>
+    }
+  }
 </div>

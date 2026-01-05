@@ -25,6 +25,7 @@ describe('BoardService relationships', () => {
       createdAt: '2025-01-01T00:00:00Z',
       updatedAt: '2025-01-01T00:00:00Z',
       comments: [],
+      status: { state: 'incomplete', completedAt: null },
     };
     cardChild = {
       id: 'card-2',
@@ -33,6 +34,7 @@ describe('BoardService relationships', () => {
       createdAt: '2025-01-01T00:00:00Z',
       updatedAt: '2025-01-01T00:00:00Z',
       comments: [],
+      status: { state: 'incomplete', completedAt: null },
     };
     cardOther = {
       id: 'card-3',
@@ -41,12 +43,14 @@ describe('BoardService relationships', () => {
       createdAt: '2025-01-01T00:00:00Z',
       updatedAt: '2025-01-01T00:00:00Z',
       comments: [],
+      status: { state: 'incomplete', completedAt: null },
     };
 
     list = {
       id: 'list-1',
       title: 'Backlog',
       cardIds: [cardParent.id, cardChild.id, cardOther.id],
+      isProcessDone: false,
     };
     board = {
       id: 'board-1',

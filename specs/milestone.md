@@ -17,6 +17,7 @@
 -   [ ] M007-Board Hierarchy
 -   [ ] M008-Roll-Up Metrics
 -   [ ] M009-Views and State
+-   [ ] M010-Done Lists
 
 ## Ideas and future milestones
 

@@ -166,6 +166,54 @@
   color: tokens.$color-text-muted;
 }
 
+.card-footer {
+  margin: 0.5rem -0.75rem -0.75rem;
+  border-top: 1px solid tokens.$color-border;
+  height: 1.5rem;
+  padding: 0 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  box-sizing: border-box;
+  flex-wrap: nowrap;
+}
+
+.card-progress-bar {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 0.25rem;
+  display: grid;
+  grid-template-columns: repeat(var(--segment-count), minmax(0, 1fr));
+  gap: 1px;
+}
+
+.card-progress-segment {
+  background: tokens.$color-progress-remaining;
+}
+
+.card-progress-segment.is-complete {
+  background: tokens.$color-progress-complete;
+}
+
+.card-progress-segment:first-child {
+  border-radius: 999px 0 0 999px;
+}
+
+.card-progress-segment:first-child:last-child {
+  border-radius: 999px;
+}
+
+.card-progress-segment:last-child {
+  border-radius: 0 999px 999px 0;
+}
+
+.card-progress-count {
+  font-size: 0.7rem;
+  color: tokens.$color-text-muted;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
 .card-meta-separator {
   color: tokens.$color-text-soft;
 }

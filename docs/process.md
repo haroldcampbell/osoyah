@@ -24,6 +24,7 @@ and focuses on how we work session-to-session.
     spec is reviewed together.
 -   Keep changes minimal and aligned with `docs/principles.md`.
 -   When ambiguous, prefer existing behavior and document the choice.
+-   Once the agent confirms the spec DoDs are met, check off the spec's DoD items. When all DoD items are checked, mark the spec complete in the corresponding `milestone.md`.
 
 ## Testing Loop
 
@@ -38,3 +39,24 @@ and focuses on how we work session-to-session.
 -   Add a session entry in `session-hand-offs/` using `yyyy-mm-dd-nn-title.md`.
 -   Update `docs/decisions.md` when decisions change.
 -   After drafting a hand-off, review potential learnings and ask the user which items to save in `docs/learning.md`. If confirmed, append a dated entry.
+
+## Agent Directive
+
+Once you have read the process, confirm the following:
+
+1. The location of the acceptance test logs
+2. Your understanding of the process. Give a short summary
+3. The next unit for work.
+
+### Hand-off feedback
+
+During the Hand-offs and session wrap-up, do the following:
+
+1. Give the user feedback on the quality of their prompts and communication during the session.
+
+-   Use a 1-5 score (5 is best).
+-   Give concrete examples of what to keep doing and what to avoid.
+
+2. Use the feedback to guide the user toward better collaboration and delivery.
+
+3. Be kind and direct with your feedback.

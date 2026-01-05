@@ -13,6 +13,7 @@ const makeCard = (id: string, title: string, description: string): Card => ({
   createdAt: '2025-01-01T00:00:00Z',
   updatedAt: '2025-01-01T00:00:00Z',
   comments: [],
+  status: { state: 'incomplete', completedAt: null },
 });
 
 describe('BoardListComponent', () => {
@@ -25,10 +26,11 @@ describe('BoardListComponent', () => {
   ];
 
   const mockList: BoardList = {
-    id: 'list-1',
-    title: 'Backlog',
-    cardIds: ['card-1', 'card-2'],
-  };
+  id: 'list-1',
+  title: 'Backlog',
+  cardIds: ['card-1', 'card-2'],
+  isProcessDone: false,
+};
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({

@@ -1262,19 +1262,49 @@
     outline-offset: 2px;
   }
 
-  >.card-panel-title-input {
+  .card-panel-title-input {
     font-size: 1.4rem;
     font-weight: 600;
     padding: 0.15rem 0.35rem;
     border: 1px solid transparent;
     border-radius: tokens.$radius-button;
-    margin-top: 10px;
   }
 
   textarea {
     resize: vertical;
     max-height: 360px;
   }
+}
+
+.card-panel-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.card-panel-status-toggle {
+  border: 1px solid tokens.$color-border;
+  border-radius: 2px;
+  padding: 0.1rem 0.35rem;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: transparent;
+  color: tokens.$color-text-muted;
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+
+.card-panel-status-toggle.is-complete {
+  background: tokens.$color-progress-complete;
+  border-color: tokens.$color-progress-complete;
+  color: tokens.$color-card;
+}
+
+.card-panel-title-input {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .card-panel-label {
@@ -1338,6 +1368,66 @@
   justify-content: flex-end;
   font-size: 0.82rem;
   color: tokens.$color-text-muted;
+}
+
+.card-panel-section-progress {
+  gap: tokens.$space-sm;
+}
+
+.card-panel-progress-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: nowrap;
+}
+
+.card-panel-progress-bar {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 0.25rem;
+  display: grid;
+  grid-template-columns: repeat(var(--segment-count), minmax(0, 1fr));
+  gap: 1px;
+}
+
+.card-panel-progress-segment {
+  background: tokens.$color-progress-remaining;
+}
+
+.card-panel-progress-segment.is-complete {
+  background: tokens.$color-progress-complete;
+}
+
+.card-panel-progress-segment:first-child {
+  border-radius: 999px 0 0 999px;
+}
+
+.card-panel-progress-segment:first-child:last-child {
+  border-radius: 999px;
+}
+
+.card-panel-progress-segment:last-child {
+  border-radius: 0 999px 999px 0;
+}
+
+.card-panel-progress-count {
+  font-size: 0.7rem;
+  color: tokens.$color-text-muted;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+.card-panel-divider {
+  border-top: 1px solid tokens.$color-border;
+  margin: tokens.$space-xs calc(-1 * (tokens.$space-md + 5px)) 0;
+}
+
+.card-panel-divider-top {
+  margin: 0 calc(-1 * (tokens.$space-md + 5px)) tokens.$space-sm;
+}
+
+.card-panel-divider-spaced {
+  margin: tokens.$space-sm calc(-1 * (tokens.$space-md + 5px)) 0;
 }
 
 .card-panel-meta-item {
@@ -1483,6 +1573,23 @@
   color: tokens.$color-text-primary;
   font-size: 0.82rem;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.card-panel-child-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: transparent;
+  border: 1px solid tokens.$color-border;
+  flex: 0 0 auto;
+}
+
+.card-panel-child-dot.is-complete {
+  background: tokens.$color-progress-complete;
+  border-color: tokens.$color-progress-complete;
 }
 
 .card-panel-child-unlink {
@@ -1495,6 +1602,7 @@
   cursor: pointer;
 
   &:hover {
+    background: tokens.$color-border;
     color: tokens.$color-text-primary;
   }
 }

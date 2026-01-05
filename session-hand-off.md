@@ -20,6 +20,7 @@
 
 ## Entries
 
+-   2026-01-04-01-card-completion-progress.md - S004 completion status, progress indicators, done-list sync, new M010 and S007 specs
 -   2026-01-03-01-card-relationships-ux.md - M006 S002/S003 relationship integrity + side-panel UX, modal unlink, system comments, new S004/S005 specs
 -   2026-01-01-07-parent-child-relationships.md - S001 parent/child relationship model + mock data + tests
 -   2026-01-01-06-session-wrap.md - S010 wrap + native scroll shift + Ideas bug spec

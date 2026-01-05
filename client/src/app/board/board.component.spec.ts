@@ -16,6 +16,7 @@ const makeCard = (id: string, title: string, description: string): Card => ({
   createdAt: '2025-01-01T00:00:00Z',
   updatedAt: '2025-01-01T00:00:00Z',
   comments: [],
+  status: { state: 'incomplete', completedAt: null },
 });
 
 const mockCards = [
@@ -33,11 +34,13 @@ const mockBoard: Board = {
       id: 'list-1',
       title: 'Backlog',
       cardIds: ['card-1', 'card-2'],
+      isProcessDone: false,
     },
     {
       id: 'list-2',
       title: 'Doing',
       cardIds: ['card-3'],
+      isProcessDone: false,
     },
   ],
 };
@@ -51,6 +54,7 @@ const mockBoardTwo: Board = {
       id: 'list-3',
       title: 'Todo',
       cardIds: ['card-3'],
+      isProcessDone: false,
     },
   ],
 };

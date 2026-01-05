@@ -15,6 +15,7 @@ completion, owners, etc.) lives on the card and stays consistent across boards.
       "description": "...",
       "createdAt": "2025-01-01T09:00:00Z",
       "updatedAt": "2025-01-04T13:00:00Z",
+      "status": { "state": "incomplete", "completedAt": null },
       "comments": [
         { "id": "comment-1", "message": "...", "createdAt": "2025-01-03T09:00:00Z" }
       ]
@@ -28,7 +29,8 @@ completion, owners, etc.) lives on the card and stays consistent across boards.
         {
           "id": "list-1",
           "title": "Backlog",
-          "cardIds": ["card-1", "card-2"]
+          "cardIds": ["card-1", "card-2"],
+          "isProcessDone": false
         }
       ]
     }
@@ -39,3 +41,5 @@ completion, owners, etc.) lives on the card and stays consistent across boards.
 Rules:
 - A card can appear on multiple boards, but only once per board.
 - List ordering remains local to the board list via `cardIds`.
+- Lists can be flagged with `isProcessDone` to represent completion stages.
+- Moving a card into a done list marks its `status` as completed and sets `completedAt`.

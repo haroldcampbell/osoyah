@@ -100,4 +100,8 @@ export class BoardCardComponent implements AfterViewChecked {
     return this.markdown.render(description);
   }
 
+  createSegments(total: number): number[] {
+    return Array.from({ length: total }, (_, index) => index);
+  }
+
 }

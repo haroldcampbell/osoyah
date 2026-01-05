@@ -81,6 +81,9 @@ export class BoardService {
             if (!board.createdAt) {
               board.createdAt = new Date().toISOString();
             }
+            board.lists.forEach((list) => {
+              list.isProcessDone = list.isProcessDone ?? false;
+            });
           });
           if (boards.length === 0) {
             this.board = this.createEmptyBoard();
@@ -154,6 +157,7 @@ export class BoardService {
           id: listId,
           title: 'Tasks',
           cardIds: [],
+          isProcessDone: false,
         },
       ],
       pinned: false,
@@ -343,6 +347,7 @@ export class BoardService {
       id: this.createId('list'),
       title,
       cardIds: [],
+      isProcessDone: false,
     });
     this.newListTitle = '';
   }
@@ -396,6 +401,10 @@ export class BoardService {
       createdAt: now,
       updatedAt: now,
       comments: [],
+      status: {
+        state: list.isProcessDone ? 'completed' : 'incomplete',
+        completedAt: list.isProcessDone ? now : null,
+      },
     };
     this.cardsById[card.id] = card;
     list.cardIds.push(card.id);
@@ -750,12 +759,58 @@ export class BoardService {
       return;
     }
 
+    const movedCardId = event.previousContainer.data[event.previousIndex];
+    const sourceListId = event.previousContainer.id;
+    const targetListId = event.container.id;
+    const sourceList = this.board?.lists.find((list) => list.id === sourceListId);
+    const targetList = this.board?.lists.find((list) => list.id === targetListId);
     transferArrayItem(
       event.previousContainer.data,
       event.container.data,
       event.previousIndex,
       event.currentIndex,
     );
+    this.applyCompletionFromListMove(movedCardId, sourceList, targetList);
+  }
+
+  moveCardToList(
+    cardId: string,
+    sourceListId: string,
+    targetListId: string,
+    options: { skipStatus?: boolean } = {},
+  ): { success: boolean; error?: string } {
+    if (!this.board) {
+      return { success: false, error: 'Board not found.' };
+    }
+    if (sourceListId === targetListId) {
+      return { success: false, error: 'Card is already in that list.' };
+    }
+    const sourceList = this.board.lists.find((list) => list.id === sourceListId);
+    if (!sourceList) {
+      return { success: false, error: 'Source list not found.' };
+    }
+    const targetList = this.board.lists.find((list) => list.id === targetListId);
+    if (!targetList) {
+      return { success: false, error: 'Target list not found.' };
+    }
+    if (!sourceList.cardIds.includes(cardId)) {
+      return { success: false, error: 'Card is not in the source list.' };
+    }
+
+    sourceList.cardIds = sourceList.cardIds.filter((id) => id !== cardId);
+    if (!targetList.cardIds.includes(cardId)) {
+      targetList.cardIds.push(cardId);
+    }
+    if (this.selectedCard?.cardId === cardId) {
+      this.selectedCard.listId = targetList.id;
+    }
+    if (this.editingCard?.cardId === cardId) {
+      this.editingCard.listId = targetList.id;
+    }
+    if (!options.skipStatus) {
+      this.applyCompletionFromListMove(cardId, sourceList, targetList);
+    }
+    return { success: true };
   }
 
   private createEmptyBoard(): Board {
@@ -837,9 +892,76 @@ export class BoardService {
         ...comment,
         authorType: comment.authorType ?? 'user',
       }));
+      card.status = card.status ?? { state: 'incomplete', completedAt: null };
       acc[card.id] = card;
       return acc;
     }, {});
+  }
+
+  isCardCompleted(card: Card): boolean {
+    return card.status?.state === 'completed';
+  }
+
+  setCardStatus(
+    card: Card,
+    state: 'completed' | 'incomplete',
+    options: { source?: 'manual' | 'list'; listTitle?: string } = {},
+  ): boolean {
+    if (card.status?.state === state) {
+      return false;
+    }
+    const now = new Date().toISOString();
+    card.status = {
+      state,
+      completedAt: state === 'completed' ? now : null,
+    };
+    card.updatedAt = now;
+    const listSuffix = options.listTitle ? ` ${options.listTitle}` : '';
+    const message =
+      state === 'completed'
+        ? options.source === 'list'
+          ? `Card marked done (moved to${listSuffix}).`
+          : 'Card marked done.'
+        : options.source === 'list'
+          ? `Card marked incomplete (moved out of${listSuffix}).`
+          : 'Card marked incomplete.';
+    this.addSystemComment(card.id, message, now);
+    return true;
+  }
+
+  getChildCompletion(parentCardId: string): { completed: number; total: number; percent: number } {
+    const children = this.getChildCards(parentCardId);
+    const total = children.length;
+    if (total === 0) {
+      return { completed: 0, total: 0, percent: 0 };
+    }
+    const completed = children.filter((child) => child.status?.state === 'completed').length;
+    const percent = Math.floor((completed / total) * 100);
+    return { completed, total, percent };
+  }
+
+  private applyCompletionFromListMove(
+    cardId: string | undefined,
+    sourceList?: BoardList,
+    targetList?: BoardList,
+  ): void {
+    if (!cardId || !sourceList || !targetList) {
+      return;
+    }
+    if (sourceList.isProcessDone === targetList.isProcessDone) {
+      return;
+    }
+    const card = this.getCard(cardId);
+    if (!card) {
+      return;
+    }
+    if (targetList.isProcessDone) {
+      this.setCardStatus(card, 'completed', { source: 'list', listTitle: targetList.title });
+      return;
+    }
+    if (sourceList.isProcessDone) {
+      this.setCardStatus(card, 'incomplete', { source: 'list', listTitle: sourceList.title });
+    }
   }
 
   private createId(prefix: string): string {

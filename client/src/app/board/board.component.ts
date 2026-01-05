@@ -94,6 +94,33 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     return this.commentFocused || this.boardService.panelCommentDraft.trim().length > 0;
   }
 
+  toggleCardCompletion(card: Card): void {
+    const nextState = this.boardService.isCardCompleted(card) ? 'incomplete' : 'completed';
+    this.boardService.setCardStatus(card, nextState, { source: 'manual' });
+    if (nextState !== 'completed') {
+      return;
+    }
+    const board = this.boardService.board;
+    const selectedList = this.selectedList;
+    const doneList = board?.lists.find((list) => list.isProcessDone);
+    if (!board || !selectedList || !doneList) {
+      return;
+    }
+    if (selectedList.id === doneList.id) {
+      return;
+    }
+    const result = this.boardService.moveCardToList(card.id, selectedList.id, doneList.id, {
+      skipStatus: true,
+    });
+    if (result.success) {
+      this.boardService.addSystemComment(card.id, `Card moved to ${doneList.title}.`);
+    }
+  }
+
+  createSegments(total: number): number[] {
+    return Array.from({ length: total }, (_, index) => index);
+  }
+
   ngOnInit(): void {
     this.boardService.loadBoard({ recordActivity: false });
     combineLatest([this.boardService.boardLoaded$, this.route.paramMap])

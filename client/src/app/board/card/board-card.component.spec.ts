@@ -18,8 +18,14 @@ describe('BoardCardComponent', () => {
     createdAt: '2025-01-01T00:00:00Z',
     updatedAt: '2025-01-01T00:00:00Z',
     comments: [],
+    status: { state: 'incomplete', completedAt: null },
   };
-  const mockList: BoardList = { id: 'list-1', title: 'Backlog', cardIds: ['card-1'] };
+  const mockList: BoardList = {
+    id: 'list-1',
+    title: 'Backlog',
+    cardIds: ['card-1'],
+    isProcessDone: false,
+  };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({

@@ -489,17 +489,30 @@
             <div class="card-panel-body">
               <div class="card-panel-scroll">
                 <section class="card-panel-section card-panel-section-title">
-                  <input
-                    #panelTitleInput
-                    id="card-panel-title"
-                    type="text"
-                    aria-label="Card title"
-                    class="card-panel-title-input"
-                    [(ngModel)]="boardService.panelCardTitle"
-                    (input)="saveCardTitle(selectedCard)"
-                    (focus)="startPanelTitleEdit()"
-                    (blur)="stopPanelTitleEdit()"
-                  />
+                  <div class="card-panel-title-row">
+                    <button
+                      type="button"
+                      class="card-panel-status-toggle"
+                      [class.is-complete]="boardService.isCardCompleted(selectedCard)"
+                      [attr.aria-pressed]="boardService.isCardCompleted(selectedCard)"
+                      [attr.aria-label]="boardService.isCardCompleted(selectedCard) ? 'Mark card incomplete' : 'Mark card done'"
+                      (click)="toggleCardCompletion(selectedCard)"
+                      data-testid="card-panel-status-toggle"
+                    >
+                      done
+                    </button>
+                    <input
+                      #panelTitleInput
+                      id="card-panel-title"
+                      type="text"
+                      aria-label="Card title"
+                      class="card-panel-title-input"
+                      [(ngModel)]="boardService.panelCardTitle"
+                      (input)="saveCardTitle(selectedCard)"
+                      (focus)="startPanelTitleEdit()"
+                      (blur)="stopPanelTitleEdit()"
+                    />
+                  </div>
                   @if (panelCardTitleError) {
                     <div class="card-panel-title-error" data-testid="card-panel-title-error">
                       {{ panelCardTitleError }}
@@ -519,6 +532,8 @@
                     </span>
                   </div>
                 </section>
+
+                <div class="card-panel-divider" aria-hidden="true"></div>
 
                 <section class="card-panel-section card-panel-section-description">
                   <label class="card-panel-label" for="card-panel-description">Description</label>
@@ -556,91 +571,7 @@
                   }
                 </section>
 
-                <section class="card-panel-section">
-                  <div class="card-panel-label">Parent card</div>
-                  <div class="card-panel-attach card-panel-parent">
-                    <label class="card-panel-field">
-                      <select
-                        [(ngModel)]="parentCardId"
-                        (ngModelChange)="handleParentSelectionChange()"
-                        data-testid="parent-card-select"
-                        aria-label="Parent card"
-                      >
-                        <option value="">No parent</option>
-                        @for (card of parentOptions; track card.id) {
-                          <option [value]="card.id">{{ formatCardLabel(card) }}</option>
-                        }
-                      </select>
-                    </label>
-                    <button
-                      type="button"
-                      class="card-panel-attach-button"
-                      [disabled]="!canSaveParent"
-                      (click)="saveParentRelationship(selectedCard)"
-                      data-testid="parent-card-save"
-                    >
-                      {{ parentActionLabel }}
-                    </button>
-                  </div>
-                  @if (parentCurrentId) {
-                    <button
-                      type="button"
-                      class="card-panel-parent-link"
-                      (click)="navigateToParent(selectedCard)"
-                      data-testid="parent-card-link"
-                    >
-                      Open parent
-                    </button>
-                  }
-                  @if (parentStatus) {
-                    <div
-                      class="card-panel-attach-status"
-                      [class.card-panel-attach-status-error]="parentError"
-                      data-testid="parent-card-status"
-                    >
-                      {{ parentStatus }}
-                    </div>
-                  }
-                </section>
-
-                <section class="card-panel-section">
-                  <div class="card-panel-label">Children cards</div>
-                  @if (childCards.length > 0) {
-                    <div class="card-panel-children">
-                      @for (child of childCards; track child.id) {
-                        <div class="card-panel-child">
-                          <button
-                            type="button"
-                            class="card-panel-child-link"
-                            (click)="navigateToChild(child)"
-                            data-testid="child-card-link"
-                          >
-                            {{ formatCardLabel(child) }}
-                          </button>
-                          <button
-                            type="button"
-                            class="card-panel-child-unlink"
-                            (click)="openUnlinkChildDialog(child)"
-                            data-testid="child-card-unlink"
-                          >
-                            Unlink
-                          </button>
-                        </div>
-                      }
-                    </div>
-                  } @else {
-                    <div class="card-panel-empty">No child cards.</div>
-                  }
-                  @if (childStatus && (childCards.length > 0 || childError)) {
-                    <div
-                      class="card-panel-attach-status"
-                      [class.card-panel-attach-status-error]="childError"
-                      data-testid="child-card-status"
-                    >
-                      {{ childStatus }}
-                    </div>
-                  }
-                </section>
+                <div class="card-panel-divider card-panel-divider-spaced" aria-hidden="true"></div>
 
                 <section class="card-panel-section">
                   <div class="card-panel-label">On boards</div>
@@ -719,6 +650,127 @@
                       {{ attachStatus }}
                     </div>
                   }
+                </section>
+
+                <section class="card-panel-section">
+                  <div class="card-panel-label">Parent card</div>
+                  <div class="card-panel-attach card-panel-parent">
+                    <label class="card-panel-field">
+                      <select
+                        [(ngModel)]="parentCardId"
+                        (ngModelChange)="handleParentSelectionChange()"
+                        data-testid="parent-card-select"
+                        aria-label="Parent card"
+                      >
+                        <option value="">No parent</option>
+                        @for (card of parentOptions; track card.id) {
+                          <option [value]="card.id">{{ formatCardLabel(card) }}</option>
+                        }
+                      </select>
+                    </label>
+                    <button
+                      type="button"
+                      class="card-panel-attach-button"
+                      [disabled]="!canSaveParent"
+                      (click)="saveParentRelationship(selectedCard)"
+                      data-testid="parent-card-save"
+                    >
+                      {{ parentActionLabel }}
+                    </button>
+                  </div>
+                  @if (parentCurrentId) {
+                    <button
+                      type="button"
+                      class="card-panel-parent-link"
+                      (click)="navigateToParent(selectedCard)"
+                      data-testid="parent-card-link"
+                    >
+                      Open parent
+                    </button>
+                  }
+                  @if (parentStatus) {
+                    <div
+                      class="card-panel-attach-status"
+                      [class.card-panel-attach-status-error]="parentError"
+                      data-testid="parent-card-status"
+                    >
+                      {{ parentStatus }}
+                    </div>
+                  }
+                </section>
+
+                @if (boardService.getChildCompletion(selectedCard.id); as childProgress) {
+                  @if (childProgress.total > 0) {
+                    <section class="card-panel-section card-panel-section-progress">
+                      <div class="card-panel-divider card-panel-divider-top" aria-hidden="true"></div>
+                      <div class="card-panel-progress-row">
+                        <div
+                          class="card-panel-progress-bar"
+                          [style.--segment-count]="childProgress.total"
+                          aria-hidden="true"
+                        >
+                          @for (segment of createSegments(childProgress.total); track segment) {
+                            <span
+                              class="card-panel-progress-segment"
+                              [class.is-complete]="segment < childProgress.completed"
+                            ></span>
+                          }
+                        </div>
+                        <div
+                          class="card-panel-progress-count"
+                          [title]="childProgress.percent + '% complete'"
+                        >
+                          {{ childProgress.completed }}/{{ childProgress.total }}
+                        </div>
+                      </div>
+                      <div class="card-panel-divider" aria-hidden="true"></div>
+                    </section>
+                  }
+                }
+
+                <section class="card-panel-section">
+                  <div class="card-panel-label">Children cards</div>
+                  @if (childCards.length > 0) {
+                    <div class="card-panel-children">
+                      @for (child of childCards; track child.id) {
+                        <div class="card-panel-child">
+                          <button
+                            type="button"
+                            class="card-panel-child-link"
+                            (click)="navigateToChild(child)"
+                            data-testid="child-card-link"
+                          >
+                            <span
+                              class="card-panel-child-dot"
+                              [class.is-complete]="boardService.isCardCompleted(child)"
+                              aria-hidden="true"
+                            ></span>
+                            <span class="card-panel-child-text">{{ formatCardLabel(child) }}</span>
+                          </button>
+                          <button
+                            type="button"
+                            class="card-panel-child-unlink"
+                            (click)="openUnlinkChildDialog(child)"
+                            data-testid="child-card-unlink"
+                          >
+                            Unlink
+                          </button>
+                        </div>
+                      }
+                    </div>
+                  } @else {
+                    <div class="card-panel-empty">No child cards.</div>
+                  }
+                  @if (childStatus && (childCards.length > 0 || childError)) {
+                    <div
+                      class="card-panel-attach-status"
+                      [class.card-panel-attach-status-error]="childError"
+                      data-testid="child-card-status"
+                    >
+                      {{ childStatus }}
+                    </div>
+                  }
+                  <div class="card-panel-divider card-panel-divider-spaced" aria-hidden="true"></div>
                 </section>
 
                 <section class="card-panel-section">

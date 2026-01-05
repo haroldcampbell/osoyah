@@ -5,6 +5,7 @@ export interface Card {
   createdAt: string;
   updatedAt: string;
   comments: CardComment[];
+  status: CardStatus;
 }
 
 export interface CardComment {
@@ -12,6 +13,11 @@ export interface CardComment {
   message: string;
   createdAt: string;
   authorType: 'user' | 'system' | 'bot';
+}
+
+export interface CardStatus {
+  state: 'incomplete' | 'completed';
+  completedAt: string | null;
 }
 
 export interface CardRelationship {
@@ -24,6 +30,7 @@ export interface BoardList {
   id: string;
   title: string;
   cardIds: string[];
+  isProcessDone: boolean;
 }
 
 export interface Board {

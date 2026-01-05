@@ -65,3 +65,11 @@ Running list of communication/process learnings captured after sessions.
 - Use a one-sentence intent + acceptance example: e.g., “Backdrop should dim the page at 20% opacity; visually similar to the card edit overlay.”
 - When UI text/placement matters, include the exact desired layout: e.g., “Banner only contains message; actions appear centered below: `Return to Boards | Create New board`.”
 - For behavior changes: specify precedence: e.g., “Escape should cancel editing and keep the panel open; never close the panel while editing.”
+
+## 2026-01-04
+
+### UI full-bleed borders
+- Full-bleed borders inside padded panels can be done with negative horizontal margins that match the panel padding (see `.board-settings-header` in `client/src/app/board/board.component.scss`).
+
+### Spec hygiene
+- When introducing a new workflow (like a list picker), call it out as a new spec early to keep scope clean and prevent drift.

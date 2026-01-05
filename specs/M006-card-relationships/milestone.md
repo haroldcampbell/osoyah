@@ -26,6 +26,7 @@ Out-of-scope:
 - [x] S006-Card Panel Component
 - [x] S007-Card Panel List Picker
 - [x] S008-Card Move System Comments
+- [x] S009-E2E Assertion Hardening
 
 ## Notes
 - Parent/child visibility lives in the side panel only.

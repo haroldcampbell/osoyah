@@ -33,6 +33,7 @@ and focuses on how we work session-to-session.
     `client/logs/` for review.
 -   Any new testing method should explicitly write logs under `client/logs/`.
 -   Recommend splitting E2E specs when files exceed ~200 lines, cover multiple specs, or need divergent setup flows.
+-   For new or updated E2E tests, add a quick false-positive check: confirm at least one assertion proves the intended state change for the intended entity (not just a label or generic text).
 
 ## Hand-Offs and Decisions
 

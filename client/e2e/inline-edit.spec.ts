@@ -31,6 +31,10 @@ test('S003 edits a card title inline', async ({ page }) => {
 
 	const backlogList = page.locator('[data-testid="list"][data-list-title="Backlog"]');
 	const firstCard = backlogList.locator('[data-testid="card"]').first();
+	const cardId = await firstCard.getAttribute('data-card-id');
+	if (!cardId) {
+		throw new Error('Card id missing before edit.');
+	}
 	await firstCard.hover();
 	await firstCard.locator('[data-testid="card-edit-button"]').click();
 
@@ -38,7 +42,8 @@ test('S003 edits a card title inline', async ({ page }) => {
 	await titleInput.fill('Updated card title');
 	await firstCard.locator('[data-testid="card-edit-save"]').click();
 
-	await expect(
-		backlogList.locator('[data-testid="card"]', { hasText: 'Updated card title' }),
-	).toBeVisible();
+	const updatedCard = backlogList.locator(
+		`[data-testid="card"][data-card-id="${cardId}"]`,
+	);
+	await expect(updatedCard).toContainText('Updated card title');
 });

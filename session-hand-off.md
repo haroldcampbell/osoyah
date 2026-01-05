@@ -20,6 +20,7 @@
 
 ## Entries
 
+-   2026-01-05-05-e2e-assertion-hardening.md - S009 E2E assertion hardening
 -   2026-01-05-04-card-move-comments.md - S008 card move system comments + list-move comment tests
 -   2026-01-05-03-card-panel-component.md - S006 card panel component extraction
 -   2026-01-05-02-parent-selector-search.md - S005 parent selector dropdown search + debounce, E2E adjustment

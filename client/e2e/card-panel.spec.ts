@@ -35,6 +35,10 @@ test('S007 moves cards with the list picker', async ({ page }) => {
 
 	const backlogList = page.locator('[data-testid="list"][data-list-title="Backlog"]');
 	const firstCard = backlogList.locator('[data-testid="card"]').first();
+	const cardId = await firstCard.getAttribute('data-card-id');
+	if (!cardId) {
+		throw new Error('Card id missing before list move.');
+	}
 
 	await clickCardBackground(page, firstCard);
 	const panel = page.locator('[data-testid="card-panel"]');
@@ -51,6 +55,12 @@ test('S007 moves cards with the list picker', async ({ page }) => {
 	await doneOption.click();
 
 	await expect(listTrigger).toContainText('Done');
+
+	const doneList = page.locator('[data-testid="list"][data-list-title="Done"]');
+	await expect(doneList.locator(`[data-testid="card"][data-card-id="${cardId}"]`)).toBeVisible();
+	await expect(
+		backlogList.locator(`[data-testid="card"][data-card-id="${cardId}"]`),
+	).toHaveCount(0);
 });
 
 test('S007 scrolls the target list into view after list picker moves a card', async ({ page }) => {

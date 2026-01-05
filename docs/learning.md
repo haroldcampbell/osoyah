@@ -84,3 +84,8 @@ Running list of communication/process learnings captured after sessions.
 
 ### Component extraction
 - Once UI pieces become complex (e.g., side panels or nested visual components), extract them into dedicated components for clearer separation and easier iteration.
+
+## 2026-01-05
+
+### Testing learnings
+- E2E assertions should validate the specific entity and the intended state change to avoid false positives (e.g., use `data-card-id` scoped assertions and confirm source/target list changes, not just label updates).

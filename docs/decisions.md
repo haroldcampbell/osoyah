@@ -32,6 +32,14 @@ Current active decisions, consolidated from session hand-offs. When a decision c
 -   Comment sources are explicit (`user`, `system`, `bot`) to distinguish activity posts.
 -   Relationship changes generate system comments on both parent and child cards.
 
+## Test guidance
+
+-   E2E assertions should target specific entities using stable `data-*` attributes (`data-card-id`, `data-list-id`).
+-   Favor state-change assertions (card present in target list and absent from source list) over label-only checks.
+-   Avoid generic text matches; scope locators to the intended list/card element.
+-   Use before/after assertions to confirm the state transition.
+-   When possible, use helper selectors/utilities that encode test intent.
+
 ## Domain-driven design boundaries
 
 -   Use domain-driven design boundaries and keep specs scoped to a single bounded context when possible.

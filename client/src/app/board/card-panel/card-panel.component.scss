@@ -1,0 +1,957 @@
+@use '../../../styles/tokens' as tokens;
+@use '../common.scss';
+
+.card-panel {
+  width: var(--card-panel-width);
+  min-width: 320px;
+  background: tokens.$color-card;
+  box-shadow: tokens.$shadow-card;
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  z-index: 3;
+  box-sizing: border-box;
+}
+
+.card-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: tokens.$space-sm;
+  margin-bottom: tokens.$space-md;
+  padding: tokens.$space-md tokens.$space-md tokens.$space-sm;
+  border-bottom: 1px solid tokens.$color-border;
+}
+
+.card-panel-title {
+  font-weight: 600;
+}
+
+.card-panel-close {
+  border: none;
+  background: transparent;
+  color: tokens.$color-text-muted;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.card-panel-header-actions {
+  display: flex;
+  align-items: center;
+  gap: tokens.$space-xs;
+}
+
+.card-panel-menu {
+  position: relative;
+
+  &[open] .card-panel-menu-popover {
+    display: flex;
+  }
+}
+
+.card-panel-menu-button {
+  list-style: none;
+  border: none;
+  background: transparent;
+  border-radius: 2px;
+  padding: 0.2rem 0.35rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+
+  &:focus,
+  &:focus-visible {
+    outline: none;
+  }
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+}
+
+.card-panel-menu-icon {
+  width: 16px;
+  height: 2px;
+  background: tokens.$color-text-muted;
+  position: relative;
+  display: inline-block;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 16px;
+    height: 2px;
+    background: tokens.$color-text-muted;
+  }
+
+  &::before {
+    top: -5px;
+  }
+
+  &::after {
+    top: 5px;
+  }
+}
+
+.card-panel-menu-popover {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.4rem);
+  background: tokens.$color-card;
+  border-radius: 6px;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.2);
+  padding: 0.4rem;
+  flex-direction: column;
+  gap: 0.2rem;
+  z-index: 2;
+
+  button {
+    border: none;
+    background: transparent;
+    text-align: left;
+    padding: 0.35rem 0.5rem;
+    border-radius: tokens.$radius-button;
+    cursor: pointer;
+    font-size: 0.85rem;
+    white-space: nowrap;
+
+    &:hover {
+      background: tokens.$color-surface;
+    }
+  }
+}
+
+.card-panel-menu-delete {
+  color: tokens.$color-danger;
+}
+
+.card-panel-body {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$space-md;
+  flex: 1 1 auto;
+  overflow: hidden;
+  min-height: 0;
+  padding: 0;
+}
+
+.card-panel-scroll {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  overflow-y: auto;
+  padding-right: tokens.$space-xs;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.card-panel-section {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$space-xs;
+  padding: 0 calc(tokens.$space-md + 5px);
+
+  input,
+  textarea {
+    border: 1px solid transparent;
+    border-radius: tokens.$radius-control;
+    padding: tokens.$input-padding-y tokens.$input-padding-x;
+    background: transparent;
+    font-family: inherit;
+  }
+
+  input:focus,
+  textarea:focus {
+    border-color: tokens.$color-accent;
+    background: tokens.$color-card;
+    outline: 2px solid rgba(20, 20, 20, 0.2);
+    outline-offset: 2px;
+  }
+
+  .card-panel-title-input {
+    font-size: 1.4rem;
+    font-weight: 600;
+    padding: 0.15rem 0.35rem;
+    border: 1px solid transparent;
+    border-radius: tokens.$radius-button;
+  }
+
+  textarea {
+    resize: vertical;
+    max-height: 360px;
+  }
+}
+
+.card-panel-title-row {
+  display: contents;
+}
+
+.card-panel-status-toggle {
+  border: 1px solid tokens.$color-border;
+  border-radius: 2px;
+  padding: 0.1rem 0.35rem;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: transparent;
+  color: tokens.$color-text-muted;
+  cursor: pointer;
+  flex: 0 0 auto;
+  grid-column: 1;
+}
+
+.card-panel-status-toggle.is-complete {
+  background: tokens.$color-progress-complete;
+  border-color: tokens.$color-progress-complete;
+  color: tokens.$color-card;
+}
+
+.card-panel-title-input {
+  grid-column: 2 / 4;
+  min-width: 0;
+}
+
+.card-panel-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: tokens.$color-text-muted;
+}
+
+.card-panel-title-input:hover,
+.card-panel-section-title:hover .card-panel-title-input {
+  border-color: tokens.$color-border;
+  background: tokens.$color-card;
+}
+
+.card-panel-title-error {
+  grid-column: 2 / 4;
+  margin-top: 0.35rem;
+  color: tokens.$color-state-error;
+  font-size: 0.85rem;
+}
+
+.card-panel-description-view {
+  border: 1px solid transparent;
+  border-radius: tokens.$radius-control;
+  padding: tokens.$input-padding-y tokens.$input-padding-x;
+  background: transparent;
+  min-height: 4.5rem;
+  cursor: text;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.card-panel-description-empty {
+  border: 1px dashed tokens.$color-border;
+  border-radius: tokens.$radius-control;
+  padding: tokens.$input-padding-y tokens.$input-padding-x;
+  background: transparent;
+  color: tokens.$color-text-soft;
+  text-align: left;
+  cursor: text;
+  font-family: inherit;
+}
+
+.card-panel-section-description {
+  &:hover {
+    .card-panel-description-view,
+    .card-panel-description-empty,
+    textarea {
+      border-color: tokens.$color-border;
+      background: tokens.$color-card;
+    }
+  }
+}
+
+.card-panel-meta {
+  display: contents;
+}
+
+.card-panel-section-progress {
+  gap: tokens.$space-sm;
+}
+
+.card-panel-progress-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: nowrap;
+}
+
+.card-panel-progress-bar {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 0.25rem;
+  display: grid;
+  grid-template-columns: repeat(var(--segment-count), minmax(0, 1fr));
+  gap: 1px;
+}
+
+.card-panel-progress-segment {
+  background: tokens.$color-progress-remaining;
+}
+
+.card-panel-progress-segment.is-complete {
+  background: tokens.$color-progress-complete;
+}
+
+.card-panel-progress-segment:first-child {
+  border-radius: 999px 0 0 999px;
+}
+
+.card-panel-progress-segment:first-child:last-child {
+  border-radius: 999px;
+}
+
+.card-panel-progress-segment:last-child {
+  border-radius: 0 999px 999px 0;
+}
+
+.card-panel-progress-count {
+  font-size: 0.7rem;
+  color: tokens.$color-text-muted;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+.card-panel-divider {
+  border-top: 1px solid tokens.$color-border;
+  margin: tokens.$space-xs calc(-1 * (tokens.$space-md + 5px)) 0;
+}
+
+.card-panel-divider-top {
+  margin: 0 calc(-1 * (tokens.$space-md + 5px)) tokens.$space-sm;
+}
+
+.card-panel-divider-spaced {
+  margin: tokens.$space-sm calc(-1 * (tokens.$space-md + 5px)) 0;
+}
+
+.card-panel-meta-item {
+  font-weight: 400;
+  font-size: 0.82rem;
+  color: tokens.$color-text-muted;
+}
+
+.card-panel-list-picker {
+  position: relative;
+  grid-column: 2;
+  width: 100%;
+  max-width: var(--list-picker-width);
+  justify-self: start;
+  min-width: 0;
+}
+
+.card-panel-list-trigger {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0 0 0 0.4rem;
+  border: 0;
+  background: transparent;
+  color: tokens.$color-text-muted;
+  font: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+
+  &:hover,
+  &:focus-visible {
+    color: tokens.$color-text-primary;
+    text-decoration-color: currentColor;
+  }
+}
+
+.card-panel-list-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-panel-list-caret {
+  width: 6px;
+  height: 6px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  margin-top: 1px;
+  flex: 0 0 auto;
+}
+
+.card-panel-list-menu-panel {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  left: 0;
+  width: 100%;
+  z-index: 10;
+}
+
+.card-panel-list-menu {
+  width: 100%;
+  background: tokens.$color-card;
+  border-radius: 10px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  padding: tokens.$space-xs;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  box-sizing: border-box;
+}
+
+.card-panel-list-option {
+  border: 0;
+  background: transparent;
+  border-radius: 8px;
+  text-align: left;
+  padding: 0.4rem 0.6rem;
+  color: tokens.$color-text-primary;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: tokens.$space-xs;
+  cursor: pointer;
+
+  &:hover {
+    background: tokens.$color-surface;
+  }
+}
+
+.card-panel-list-option-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-panel-list-option.is-current {
+  background: tokens.$color-surface;
+  font-weight: 600;
+  padding-left: calc(0.6rem + 5px);
+}
+
+.card-panel-last-activity {
+  grid-column: 3;
+  justify-self: end;
+  text-align: right;
+}
+
+.card-panel-memberships {
+  display: flex;
+  flex-wrap: wrap;
+  gap: tokens.$space-xs;
+}
+
+.card-panel-membership {
+  border: 1px solid tokens.$color-border;
+  border-radius: tokens.$radius-button;
+  background: tokens.$color-card;
+  padding: 0.35rem 0.6rem;
+  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: tokens.$space-xs;
+  cursor: pointer;
+  color: tokens.$color-text-primary;
+  white-space: nowrap;
+
+  &:hover {
+    background: tokens.$color-surface;
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.7;
+  }
+}
+
+.card-panel-membership-current {
+  border-color: tokens.$color-accent;
+  color: tokens.$color-accent;
+}
+
+.card-panel-membership-tag {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: tokens.$color-accent;
+  color: tokens.$color-card;
+  padding: 0.1rem 0.35rem;
+  border-radius: 999px;
+
+  &.archived {
+    background: rgba(181, 60, 44, 0.16);
+    color: tokens.$color-state-error;
+  }
+}
+
+.card-panel-attach {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  gap: tokens.$space-sm;
+  align-items: end;
+}
+
+.card-panel-parent {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.card-panel-parent-picker {
+  position: relative;
+}
+
+.card-panel-parent-trigger {
+  width: 100%;
+  border: 1px solid tokens.$color-border;
+  border-radius: tokens.$radius-control;
+  padding: tokens.$input-padding-y tokens.$input-padding-x;
+  background: tokens.$color-card;
+  font: inherit;
+  color: tokens.$color-text-primary;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: tokens.$space-xs;
+  cursor: pointer;
+
+  &:hover {
+    background: tokens.$color-surface;
+  }
+
+  &:focus-visible {
+    outline: 2px solid tokens.$color-accent;
+    outline-offset: 2px;
+  }
+}
+
+.card-panel-parent-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-panel-parent-caret {
+  width: 6px;
+  height: 6px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  margin-top: 1px;
+  flex: 0 0 auto;
+}
+
+.card-panel-parent-menu-panel {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  left: 0;
+  width: 100%;
+  z-index: 12;
+}
+
+.card-panel-parent-menu {
+  width: 100%;
+  background: tokens.$color-card;
+  border-radius: 10px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  padding: tokens.$space-xs;
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$space-xs;
+  box-sizing: border-box;
+}
+
+.card-panel-parent-search {
+  margin: 0 calc(-1 * tokens.$space-xs);
+  padding: 0 tokens.$space-xs tokens.$space-xs;
+  border-bottom: 1px solid tokens.$color-border;
+}
+
+.card-panel-parent-search-input {
+  width: 100%;
+  border: 1px solid transparent;
+  border-radius: 0;
+  padding: 0.4rem 0;
+  font: inherit;
+  background: transparent;
+  color: tokens.$color-text-primary;
+  box-sizing: border-box;
+
+  &:focus,
+  &:focus-visible {
+    outline: none;
+    box-shadow: none;
+  }
+}
+
+.card-panel-parent-search .card-panel-parent-search-input:focus,
+.card-panel-parent-search .card-panel-parent-search-input:focus-visible {
+  border: 1px solid transparent;
+  outline-style: none;
+  outline-width: 0px;
+  outline-offset: 0px;
+}
+
+.card-panel-parent-options {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 240px;
+  overflow-y: scroll;
+}
+
+.card-panel-parent-option {
+  border: 0;
+  background: transparent;
+  border-radius: 8px;
+  text-align: left;
+  padding: 0.4rem 0.6rem;
+  color: tokens.$color-text-primary;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: tokens.$space-xs;
+  cursor: pointer;
+
+  &:hover {
+    background: tokens.$color-surface;
+  }
+}
+
+.card-panel-parent-option-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-panel-parent-option.is-current {
+  background: tokens.$color-surface;
+  font-weight: 600;
+  padding-left: calc(0.6rem + 5px);
+}
+
+.card-panel-parent-option.is-pinned {
+  background: rgba(14, 26, 45, 0.04);
+}
+
+.card-panel-parent-section-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: tokens.$color-text-muted;
+  padding: 0.35rem 0.55rem 0.2rem;
+}
+
+.card-panel-parent-empty {
+  padding: 0.45rem 0.6rem;
+  font-size: 0.8rem;
+  color: tokens.$color-text-muted;
+}
+
+.card-panel-field {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$space-xs;
+  font-size: 0.8rem;
+  color: tokens.$color-text-muted;
+
+  select {
+    border: 1px solid tokens.$color-border;
+    border-radius: tokens.$radius-control;
+    padding: tokens.$input-padding-y tokens.$input-padding-x;
+    background: tokens.$color-card;
+    font-family: inherit;
+
+    &:disabled {
+      background: tokens.$color-surface;
+      color: tokens.$color-text-soft;
+    }
+  }
+}
+
+.card-panel-attach-button {
+  border: none;
+  border-radius: tokens.$radius-button;
+  padding: tokens.$button-padding-y tokens.$button-padding-x;
+  background: tokens.$color-accent;
+  color: tokens.$color-card;
+  cursor: pointer;
+  font-size: 0.85rem;
+  white-space: nowrap;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+.card-panel-parent-link {
+  margin-top: tokens.$space-xs;
+  border: none;
+  padding: 0;
+  background: none;
+  color: tokens.$color-text-muted;
+  font-size: 0.85rem;
+  text-decoration: underline;
+  cursor: pointer;
+
+  &:hover {
+    color: tokens.$color-text-primary;
+  }
+}
+
+.card-panel-children {
+  display: grid;
+  gap: 0;
+}
+
+.card-panel-child {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: tokens.$space-xs;
+  padding: 0.15rem 0;
+  border-radius: tokens.$radius-control;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: tokens.$color-surface;
+  }
+}
+
+.card-panel-child-link {
+  border: none;
+  background: none;
+  padding: 0;
+  text-align: left;
+  color: tokens.$color-text-primary;
+  font-size: 0.82rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.card-panel-child-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: transparent;
+  border: 1px solid tokens.$color-border;
+  flex: 0 0 auto;
+}
+
+.card-panel-child-dot.is-complete {
+  background: tokens.$color-progress-complete;
+  border-color: tokens.$color-progress-complete;
+}
+
+.card-panel-child-unlink {
+  border: none;
+  background: tokens.$color-surface;
+  color: tokens.$color-text-muted;
+  border-radius: tokens.$radius-button;
+  padding: 0.15rem 0.45rem;
+  font-size: 0.7rem;
+  cursor: pointer;
+
+  &:hover {
+    background: tokens.$color-border;
+    color: tokens.$color-text-primary;
+  }
+}
+
+.card-panel-attach-status {
+  font-size: 0.85rem;
+  color: tokens.$color-text-muted;
+}
+
+.card-panel-attach-status-muted {
+  color: tokens.$color-text-soft;
+}
+
+.card-panel-attach-status-error {
+  color: tokens.$color-state-error;
+}
+
+.card-panel-save {
+  align-self: flex-end;
+  border: none;
+  border-radius: tokens.$radius-button;
+  padding: tokens.$button-padding-y tokens.$button-padding-x;
+  background: tokens.$color-accent;
+  color: tokens.$color-card;
+  cursor: pointer;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.card-panel-comments {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$space-sm;
+  max-height: 35vh;
+  overflow-y: auto;
+  padding-right: tokens.$space-xs;
+}
+
+.card-panel-comment {
+  background: tokens.$color-surface;
+  border-radius: tokens.$radius-card;
+  padding: tokens.$space-sm;
+  transition:
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+  border: 1px solid transparent;
+
+  &:hover {
+    background: tokens.$color-surface-muted;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+
+    .card-panel-comment-meta button {
+      opacity: 1;
+      color: tokens.$color-danger;
+    }
+
+    .comment-delete-text {
+      max-width: 120px;
+      opacity: 1;
+    }
+  }
+}
+
+.card-panel-comment-body {
+  font-size: 0.9rem;
+  margin-bottom: tokens.$space-xs;
+}
+
+.card-panel-comment-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: tokens.$color-text-muted;
+  gap: tokens.$space-xs;
+
+  button {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    white-space: nowrap;
+    color: tokens.$color-text-muted;
+    opacity: 0.3;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    overflow: hidden;
+    transition:
+      opacity 0.2s ease,
+      color 0.2s ease;
+
+    &:hover,
+    &:focus-visible {
+      text-decoration: underline;
+    }
+  }
+}
+
+.comment-delete-icon {
+  width: 14px;
+  height: 14px;
+  display: inline-block;
+}
+
+.comment-delete-text {
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition:
+    max-width 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.card-panel-empty {
+  font-size: 0.85rem;
+  color: tokens.$color-text-soft;
+}
+
+.card-panel-comment-compose {
+  margin-top: auto;
+  padding-top: tokens.$space-sm;
+  background: tokens.$color-surface-muted;
+  position: sticky;
+  bottom: 0;
+  position: relative;
+  border-top: 1px solid tokens.$color-border;
+  border-radius: 1px;
+  padding-left: tokens.$space-md;
+  padding-right: tokens.$space-md;
+  padding-bottom: tokens.$space-md;
+  margin-left: 0;
+  margin-right: 0;
+
+  textarea {
+    background: tokens.$color-card;
+  }
+
+  &::before {
+    content: none;
+  }
+}
+
+.card-panel-comment-compact {
+  resize: none;
+  overflow: hidden;
+  min-height: 2rem;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+.card-panel-section-title {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.35rem 10px;
+  align-items: center;
+  padding-top: 10px;
+  --list-picker-width: 12rem;
+  padding-left: calc(tokens.$space-md - 5px);
+}
+
+@media (max-width: 800px) {
+  .card-panel {
+    width: 100%;
+    position: static;
+    height: auto;
+    right: auto;
+    top: auto;
+  }
+
+  .card-panel-attach {
+    grid-template-columns: 1fr;
+  }
+
+  .card-panel-attach-button {
+    width: 100%;
+  }
+
+  .card-panel-memberships {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: tokens.$space-xs;
+  }
+}

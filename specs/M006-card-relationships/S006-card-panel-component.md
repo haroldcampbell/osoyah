@@ -16,10 +16,10 @@ Make the card panel a standalone component with a focused template, styles, and 
 
 ## Definition of Done
 
-- [ ] Card side-panel is extracted into its own component.
-- [ ] The board view hosts the new card panel component with the same behavior and UI.
-- [ ] Existing panel tests remain passing or are moved to the new component.
-- [ ] Acceptance tests pass.
+- [x] Card side-panel is extracted into its own component.
+- [x] The board view hosts the new card panel component with the same behavior and UI.
+- [x] Existing panel tests remain passing or are moved to the new component.
+- [x] Acceptance tests pass.
 
 ## Acceptance tests (exact commands + expected artifacts/output)
 

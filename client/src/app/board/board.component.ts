@@ -19,8 +19,8 @@ import { combineLatest } from 'rxjs';
 import { BoardService } from '../services/board.service';
 import { BoardHeaderComponent } from '../board-header/board-header.component';
 import { BoardListComponent } from './list/board-list.component';
-import { Board, BoardList, Card, CardComment } from '../models/board.model';
-import { MarkdownService } from '../services/markdown.service';
+import { Board, BoardList, Card } from '../models/board.model';
+import { CardPanelComponent } from './card-panel/card-panel.component';
 
 @Component({
     selector: 'app-board',
@@ -30,6 +30,7 @@ import { MarkdownService } from '../services/markdown.service';
       DragDropModule,
       CdkMenuModule,
       BoardListComponent,
+      CardPanelComponent,
       RouterLink,
       BoardHeaderComponent,
     ],
@@ -38,41 +39,15 @@ import { MarkdownService } from '../services/markdown.service';
 })
 export class BoardComponent implements OnInit, AfterViewChecked {
   readonly boardService = inject(BoardService);
-  private readonly markdown = inject(MarkdownService);
-  private readonly elementRef = inject(ElementRef<HTMLElement>);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
-  @ViewChild('descriptionInput') descriptionInput?: ElementRef<HTMLTextAreaElement>;
-  @ViewChild('descriptionView') descriptionView?: ElementRef<HTMLElement>;
   @ViewChild('boardMenuPanel') boardMenuPanel?: ElementRef<HTMLElement>;
-  @ViewChild('panelTitleInput') panelTitleInput?: ElementRef<HTMLInputElement>;
   @ViewChild('boardSettingsTitleInput') boardSettingsTitleInput?: ElementRef<HTMLInputElement>;
   @ViewChild('boardSettingsDescriptionInput') boardSettingsDescriptionInput?: ElementRef<HTMLInputElement>;
-  @ViewChild('boardLists') boardLists?: ElementRef<HTMLElement>;
-  @ViewChild('listPickerPanel') listPickerPanel?: ElementRef<HTMLElement>;
-  @ViewChild('parentPickerPanel') parentPickerPanel?: ElementRef<HTMLElement>;
-  @ViewChild('parentSearchInput') parentSearchInput?: ElementRef<HTMLInputElement>;
-  commentFocused = false;
-  descriptionEditing = false;
-  attachBoardId = '';
-  attachListId = '';
-  attachStatus = '';
-  attachError = false;
-  parentCardId = '';
-  parentCurrentId = '';
-  parentStatus = '';
-  parentError = false;
-  childStatus = '';
-  childError = false;
-  unlinkChildDialogOpen = false;
-  unlinkChildTarget: Card | null = null;
+  @ViewChild(CardPanelComponent) cardPanel?: CardPanelComponent;
   boardMenuOpen = false;
-  listPickerOpen = false;
-  parentMenuOpen = false;
   boardSearchTerm = '';
-  parentSearchInputValue = '';
-  parentSearchTerm = '';
   newBoardTitle = '';
   createBoardError = '';
   boardSettingsOpen = false;
@@ -89,45 +64,9 @@ export class BoardComponent implements OnInit, AfterViewChecked {
   createBoardModalOpen = false;
   createBoardModalTitle = '';
   createBoardModalError = '';
-  panelCardTitleError = '';
-  panelTitleEditing = false;
-  private ignoreDescriptionSave = false;
-  private activeBoardId = '';
-  private activeCardId = '';
-  private descriptionSaveTimeout?: number;
-  private parentSearchTimeout?: number;
-  private lastScrolledCardId: string | null = null;
-
-  get commentExpanded(): boolean {
-    return this.commentFocused || this.boardService.panelCommentDraft.trim().length > 0;
-  }
-
-  toggleCardCompletion(card: Card): void {
-    const nextState = this.boardService.isCardCompleted(card) ? 'incomplete' : 'completed';
-    this.boardService.setCardStatus(card, nextState, { source: 'manual' });
-    if (nextState !== 'completed') {
-      return;
-    }
-    const board = this.boardService.board;
-    const selectedList = this.selectedList;
-    const doneList = board?.lists.find((list) => list.isProcessDone);
-    if (!board || !selectedList || !doneList) {
-      return;
-    }
-    if (selectedList.id === doneList.id) {
-      return;
-    }
-    const result = this.boardService.moveCardToList(card.id, selectedList.id, doneList.id, {
-      skipStatus: true,
-    });
-    if (result.success) {
-      this.boardService.addSystemComment(card.id, `Card moved to ${doneList.title}.`);
-    }
-  }
-
-  createSegments(total: number): number[] {
-    return Array.from({ length: total }, (_, index) => index);
-  }
+  activeBoardId = '';
+  activeCardId = '';
+  private lastSelectionId: string | null = null;
 
   ngOnInit(): void {
     this.boardService.loadBoard({ recordActivity: false });
@@ -145,28 +84,22 @@ export class BoardComponent implements OnInit, AfterViewChecked {
 
   ngAfterViewChecked(): void {
     if (!this.selectedCard) {
-      this.lastScrolledCardId = null;
+      this.lastSelectionId = null;
       return;
     }
-    if (this.lastScrolledCardId === this.selectedCard.id) {
+    if (this.lastSelectionId === this.selectedCard.id) {
       return;
     }
-    const activeCard = this.selectedCard;
-    this.panelCardTitleError = '';
+    const activeCardId = this.selectedCard.id;
     window.setTimeout(() => {
-      if (!this.selectedCard) {
+      if (!this.selectedCard || this.selectedCard.id !== activeCardId) {
         return;
       }
       if (this.boardPanelOpen) {
         this.boardPanelOpen = false;
         this.boardPanelArchivedView = false;
       }
-      this.descriptionEditing = false;
-      this.resetAttachState(activeCard);
-      this.resetParentState(activeCard);
-      if (this.scrollSelectedCardIntoView(activeCard.id)) {
-        this.lastScrolledCardId = activeCard.id;
-      }
+      this.lastSelectionId = activeCardId;
     }, 0);
   }
 
@@ -188,24 +121,6 @@ export class BoardComponent implements OnInit, AfterViewChecked {
       return null;
     }
     return this.boardService.getCardFromList(list, selection.cardId);
-  }
-
-  get attachBoard(): Board | null {
-    return this.attachBoardId ? this.boardService.getBoard(this.attachBoardId) : null;
-  }
-
-  get attachBoardLists(): BoardList[] {
-    return this.attachBoard?.lists ?? [];
-  }
-
-  get membershipBoards(): Board[] {
-    const card = this.selectedCard;
-    if (!card) {
-      return [];
-    }
-    return this.boardService.boards.filter((board) =>
-      this.boardService.isCardOnBoard(card.id, board.id),
-    );
   }
 
   get pinnedBoards(): Board[] {
@@ -234,299 +149,17 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     return this.boardService.boards.filter((board) => board.title.toLowerCase().includes(term));
   }
 
-  get canAttachCard(): boolean {
-    if (!this.selectedCard) {
-      return false;
-    }
-    if (!this.attachBoardId || !this.attachListId) {
-      return false;
-    }
-    if (this.boardService.isCardOnBoard(this.selectedCard.id, this.attachBoardId)) {
-      return false;
-    }
-    return true;
-  }
-
-  get parentOptions(): Card[] {
-    const card = this.selectedCard;
-    if (!card) {
-      return [];
-    }
-    const options = this.boardService.getValidParentOptions(card.id);
-    const currentParent = this.boardService.getParentCard(card.id);
-    if (currentParent && !options.some((option) => option.id === currentParent.id)) {
-      return [currentParent, ...options];
-    }
-    return options;
-  }
-
-  get parentSelectionLabel(): string {
-    if (!this.parentCardId) {
-      return 'No parent';
-    }
-    const parent = this.boardService.getCard(this.parentCardId);
-    return parent ? this.formatCardLabel(parent) : 'No parent';
-  }
-
-  get parentSelectedCard(): Card | null {
-    if (!this.parentCardId) {
-      return null;
-    }
-    return this.boardService.getCard(this.parentCardId) ?? null;
-  }
-
-  get parentPinnedCard(): Card | null {
-    const term = this.parentSearchTerm.trim().toLowerCase();
-    if (!term) {
-      return null;
-    }
-    const selected = this.parentSelectedCard;
-    if (!selected) {
-      return null;
-    }
-    return this.parentMatchesTerm(selected, term) ? null : selected;
-  }
-
-  get parentFilteredOptions(): Card[] {
-    const term = this.parentSearchTerm.trim().toLowerCase();
-    const options = this.parentOptions;
-    if (!term) {
-      return options;
-    }
-    return options.filter((card) => this.parentMatchesTerm(card, term));
-  }
-
-  get childCards(): Card[] {
-    const card = this.selectedCard;
-    if (!card) {
-      return [];
-    }
-    return this.boardService.getChildCards(card.id);
-  }
-
-  get canSaveParent(): boolean {
-    if (!this.selectedCard) {
-      return false;
-    }
-    if (this.parentCardId === this.parentCurrentId) {
-      return false;
-    }
-    return this.parentCardId !== '' || this.parentCurrentId !== '';
-  }
-
-  get parentActionLabel(): string {
-    if (this.parentCardId === '' && this.parentCurrentId !== '') {
-      return 'Remove parent';
-    }
-    if (this.parentCurrentId === '') {
-      return 'Link parent';
-    }
-    return 'Update parent';
-  }
-
-  get attachNotice(): string {
-    const card = this.selectedCard;
-    if (!card || !this.attachBoard) {
-      return '';
-    }
-    if (this.attachStatus && !this.attachError) {
-      return '';
-    }
-    if (this.attachBoard.lists.length === 0) {
-      return 'This board has no lists yet.';
-    }
-    if (this.boardService.isCardOnBoard(card.id, this.attachBoard.id)) {
-      return 'Card already on this board.';
-    }
-    return '';
-  }
-
-  handleAttachBoardChange(boardId: string): void {
-    this.attachBoardId = boardId;
-    const firstListId = this.attachBoard?.lists[0]?.id ?? '';
-    this.attachListId = firstListId;
-    this.attachStatus = '';
-    this.attachError = false;
-  }
-
-  handleAttachListChange(listId: string): void {
-    this.attachListId = listId;
-    this.attachStatus = '';
-    this.attachError = false;
-  }
-
-  attachCardToBoard(card: Card): void {
-    const result = this.boardService.addCardToBoard(card.id, this.attachBoardId, this.attachListId);
-    if (!result.success) {
-      this.attachStatus = result.error ?? 'Unable to add card to board.';
-      this.attachError = true;
-      return;
-    }
-    const boardTitle = this.attachBoard?.title ?? 'Board';
-    const listTitle =
-      this.attachBoardLists.find((list) => list.id === this.attachListId)?.title ?? 'List';
-    this.attachStatus = `Added to ${boardTitle} / ${listTitle}.`;
-    this.attachError = false;
-  }
-
-  addComment(card: Card): void {
-    this.boardService.addComment(card, this.boardService.panelCommentDraft);
-    this.boardService.panelCommentDraft = '';
-    this.commentFocused = false;
-  }
-
-  removeComment(card: Card, comment: CardComment): void {
-    this.boardService.removeComment(card, comment);
-  }
-
-  handleDescriptionInput(card: Card): void {
-    if (this.descriptionSaveTimeout) {
-      window.clearTimeout(this.descriptionSaveTimeout);
-    }
-    this.descriptionSaveTimeout = window.setTimeout(() => {
-      this.boardService.saveCardPanelDetails(card);
-    }, 600);
-  }
-
-  flushDescriptionSave(card: Card): void {
-    if (this.descriptionSaveTimeout) {
-      window.clearTimeout(this.descriptionSaveTimeout);
-      this.descriptionSaveTimeout = undefined;
-    }
-    this.boardService.saveCardPanelDetails(card);
-  }
-
-  handleDescriptionBlur(card: Card): void {
-    if (this.ignoreDescriptionSave) {
-      this.ignoreDescriptionSave = false;
-      this.descriptionEditing = false;
-      if (this.descriptionInput?.nativeElement) {
-        this.descriptionInput.nativeElement.style.height = '';
-      }
-      return;
-    }
-    this.flushDescriptionSave(card);
-    this.descriptionEditing = false;
-    if (this.descriptionInput?.nativeElement) {
-      this.descriptionInput.nativeElement.style.height = '';
-    }
-  }
-
-  startDescriptionEdit(): void {
-    this.descriptionEditing = true;
-    this.ignoreDescriptionSave = false;
-    setTimeout(() => {
-      const input = this.descriptionInput?.nativeElement;
-      if (!input) {
-        return;
-      }
-      input.focus();
-      const viewHeight = this.descriptionView?.nativeElement.getBoundingClientRect().height;
-      const minHeight = 200;
-      const maxHeight = 360;
-      if (viewHeight) {
-        const height = Math.min(Math.max(viewHeight, minHeight), maxHeight);
-        input.style.height = `${height}px`;
-      } else {
-        input.style.height = `${minHeight}px`;
-      }
-      input.scrollTop = 0;
-    });
-  }
-
-  cancelDescriptionEdit(): void {
-    if (!this.selectedCard) {
-      return;
-    }
-    this.ignoreDescriptionSave = true;
-    this.boardService.panelCardDescription = this.selectedCard.description;
-    this.descriptionEditing = false;
-    if (this.descriptionSaveTimeout) {
-      window.clearTimeout(this.descriptionSaveTimeout);
-      this.descriptionSaveTimeout = undefined;
-    }
-    if (this.descriptionInput?.nativeElement) {
-      this.descriptionInput.nativeElement.style.height = '';
-      this.descriptionInput.nativeElement.blur();
-    }
-  }
-
-
-  saveCardTitle(card: Card): void {
-    const result = this.boardService.saveCardPanelTitle(card);
-    if (!result.success) {
-      this.panelCardTitleError = result.error ?? 'Unable to save card title.';
-      return;
-    }
-    this.panelCardTitleError = '';
-  }
-
-  removeSelectedCard(card: Card): void {
-    const list = this.selectedList;
-    if (!list) {
-      return;
-    }
-    if (!window.confirm(`Remove "${card.title}"?`)) {
-      return;
-    }
-    this.boardService.removeCard(list, card);
-    this.closePanel(false);
-  }
-
   closePanel(navigate = true): void {
-    const lastCardId = this.boardService.selectedCard?.cardId ?? '';
-    this.boardService.closeCardPanel();
-    this.commentFocused = false;
-    this.descriptionEditing = false;
-    this.attachBoardId = '';
-    this.attachListId = '';
-    this.attachStatus = '';
-    this.attachError = false;
-    this.parentCardId = '';
-    this.parentCurrentId = '';
-    this.parentStatus = '';
-    this.parentError = false;
-    this.childStatus = '';
-    this.childError = false;
-    this.unlinkChildDialogOpen = false;
-    this.unlinkChildTarget = null;
-    this.listPickerOpen = false;
-    this.parentMenuOpen = false;
-    this.parentSearchInputValue = '';
-    this.parentSearchTerm = '';
-    if (this.parentSearchTimeout) {
-      window.clearTimeout(this.parentSearchTimeout);
-      this.parentSearchTimeout = undefined;
-    }
-    if (this.descriptionSaveTimeout) {
-      window.clearTimeout(this.descriptionSaveTimeout);
-      this.descriptionSaveTimeout = undefined;
+    if (this.cardPanel) {
+      this.cardPanel.closePanel(navigate);
+    } else {
+      this.boardService.closeCardPanel();
+      if (navigate) {
+        this.navigateToBoardRoute(this.boardService.board?.id ?? '');
+      }
     }
     this.cardNotFound = false;
     this.missingCardId = '';
-    this.panelCardTitleError = '';
-    this.panelTitleEditing = false;
-    if (navigate) {
-      this.navigateToBoardRoute(this.boardService.board?.id ?? '');
-    }
-    if (lastCardId) {
-      window.requestAnimationFrame(() => {
-        this.scrollSelectedCardIntoView(lastCardId);
-        window.setTimeout(() => {
-          this.scrollSelectedCardIntoView(lastCardId);
-        }, 80);
-      });
-    }
-  }
-
-  handleCommentFocus(): void {
-    this.commentFocused = true;
-  }
-
-  handleCommentBlur(): void {
-    if (!this.boardService.panelCommentDraft.trim()) {
-      this.commentFocused = false;
-    }
   }
 
   isCurrentBoard(boardId: string): boolean {
@@ -534,13 +167,6 @@ export class BoardComponent implements OnInit, AfterViewChecked {
       return this.activeBoardId === boardId;
     }
     return this.boardService.board?.id === boardId;
-  }
-
-  navigateToBoard(boardId: string, card: Card): void {
-    if (this.isCurrentBoard(boardId)) {
-      return;
-    }
-    this.navigateToCardRoute(boardId, card.id);
   }
 
   toggleBoardPanel(): void {
@@ -712,179 +338,6 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     }
   }
 
-  renderMarkdown(text: string): string {
-    return this.markdown.render(text);
-  }
-
-  formatCardLabel(card: Card): string {
-    return `${card.id} - ${card.title}`;
-  }
-
-  toggleParentMenu(event: MouseEvent): void {
-    event.stopPropagation();
-    this.parentMenuOpen = !this.parentMenuOpen;
-    if (this.parentMenuOpen) {
-      this.parentSearchInputValue = '';
-      this.parentSearchTerm = '';
-      if (this.parentSearchTimeout) {
-        window.clearTimeout(this.parentSearchTimeout);
-        this.parentSearchTimeout = undefined;
-      }
-      setTimeout(() => {
-        this.parentSearchInput?.nativeElement.focus();
-      }, 0);
-    } else {
-      this.parentSearchInputValue = '';
-      this.parentSearchTerm = '';
-      if (this.parentSearchTimeout) {
-        window.clearTimeout(this.parentSearchTimeout);
-        this.parentSearchTimeout = undefined;
-      }
-    }
-  }
-
-  handleParentSearchChange(nextValue: string): void {
-    this.parentSearchInputValue = nextValue;
-    if (this.parentSearchTimeout) {
-      window.clearTimeout(this.parentSearchTimeout);
-    }
-    this.parentSearchTimeout = window.setTimeout(() => {
-      this.parentSearchTerm = nextValue;
-    }, 150);
-  }
-
-  selectParentCard(cardId: string): void {
-    this.parentCardId = cardId;
-    this.handleParentSelectionChange();
-    this.parentMenuOpen = false;
-    this.parentSearchInputValue = '';
-    this.parentSearchTerm = '';
-    if (this.parentSearchTimeout) {
-      window.clearTimeout(this.parentSearchTimeout);
-      this.parentSearchTimeout = undefined;
-    }
-  }
-
-  handleParentSelectionChange(): void {
-    this.parentStatus = '';
-    this.parentError = false;
-  }
-
-  saveParentRelationship(card: Card): void {
-    if (!this.canSaveParent) {
-      return;
-    }
-    if (!this.parentCardId) {
-      const result = this.boardService.unlinkParent(card.id);
-      if (!result.success) {
-        this.parentStatus = result.error ?? 'Unable to remove parent.';
-        this.parentError = true;
-        return;
-      }
-      this.parentCurrentId = '';
-      this.parentStatus = 'Parent removed.';
-      this.parentError = false;
-      return;
-    }
-    const result = this.boardService.addCardRelationship(card.id, this.parentCardId);
-    if (!result.success) {
-      this.parentStatus = result.error ?? 'Unable to link parent.';
-      this.parentError = true;
-      return;
-    }
-    this.parentCurrentId = this.parentCardId;
-    this.parentStatus = 'Parent updated.';
-    this.parentError = false;
-  }
-
-  navigateToParent(card: Card): void {
-    const parent = this.boardService.getParentCard(card.id);
-    if (!parent) {
-      return;
-    }
-    const board = this.boardService.getBoardForCard(parent.id);
-    if (!board) {
-      this.parentStatus = 'Parent card is not on an active board.';
-      this.parentError = true;
-      return;
-    }
-    this.navigateToCardRoute(board.id, parent.id);
-  }
-
-  navigateToChild(child: Card): void {
-    const board = this.boardService.getBoardForCard(child.id);
-    if (!board) {
-      this.childStatus = 'Child card is not on an active board.';
-      this.childError = true;
-      return;
-    }
-    this.navigateToCardRoute(board.id, child.id);
-  }
-
-  openUnlinkChildDialog(child: Card): void {
-    this.unlinkChildDialogOpen = true;
-    this.unlinkChildTarget = child;
-    this.childStatus = '';
-    this.childError = false;
-  }
-
-  cancelUnlinkChild(): void {
-    this.unlinkChildDialogOpen = false;
-    this.unlinkChildTarget = null;
-  }
-
-  confirmUnlinkChild(parent: Card | null): void {
-    if (!parent) {
-      return;
-    }
-    const child = this.unlinkChildTarget;
-    if (!child) {
-      return;
-    }
-    const result = this.boardService.unlinkChild(parent.id, child.id);
-    if (!result.success) {
-      this.childStatus = result.error ?? 'Unable to unlink child.';
-      this.childError = true;
-      return;
-    }
-    const remaining = this.boardService.getChildCards(parent.id).length;
-    this.childStatus = remaining > 0 ? 'Child unlinked.' : '';
-    this.childError = false;
-    this.unlinkChildDialogOpen = false;
-    this.unlinkChildTarget = null;
-  }
-
-  private resetAttachState(card: Card): void {
-    const boards = this.boardService.boards;
-    if (!boards.length) {
-      this.attachBoardId = '';
-      this.attachListId = '';
-      this.attachStatus = '';
-      this.attachError = false;
-      return;
-    }
-    const candidate =
-      boards.find((board) => !this.boardService.isCardOnBoard(card.id, board.id)) ?? boards[0];
-    this.attachBoardId = candidate.id;
-    this.attachListId = candidate.lists[0]?.id ?? '';
-    this.attachStatus = '';
-    this.attachError = false;
-  }
-
-  private resetParentState(card: Card): void {
-    const relationship = this.boardService.getParentRelationship(card.id);
-    this.parentCurrentId = relationship?.parentCardId ?? '';
-    this.parentCardId = this.parentCurrentId;
-    this.parentStatus = '';
-    this.parentError = false;
-    this.parentSearchInputValue = '';
-    this.parentSearchTerm = '';
-    if (this.parentSearchTimeout) {
-      window.clearTimeout(this.parentSearchTimeout);
-      this.parentSearchTimeout = undefined;
-    }
-  }
-
   private resetBoardMenuState(): void {
     this.boardSearchTerm = '';
     this.newBoardTitle = '';
@@ -899,16 +352,6 @@ export class BoardComponent implements OnInit, AfterViewChecked {
       return;
     }
     this.router.navigate(['/boards', boardId]);
-  }
-
-  private navigateToCardRoute(boardId: string, cardId: string): void {
-    if (!boardId || !cardId) {
-      return;
-    }
-    if (this.activeBoardId === boardId && this.activeCardId === cardId) {
-      return;
-    }
-    this.router.navigate(['/boards', boardId, 'cards', cardId]);
   }
 
   private handleRoute(boardId: string | null, cardId: string | null): void {
@@ -1001,91 +444,9 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     }
   }
 
-  toggleListPicker(event: MouseEvent): void {
-    event.stopPropagation();
-    if (!this.selectedList || !this.boardService.board?.lists.length) {
-      return;
-    }
-    this.listPickerOpen = !this.listPickerOpen;
-  }
-
-  moveSelectedCardToList(list: BoardList): void {
-    const card = this.selectedCard;
-    const currentList = this.selectedList;
-    if (!card || !currentList) {
-      this.listPickerOpen = false;
-      return;
-    }
-    if (list.id === currentList.id) {
-      this.listPickerOpen = false;
-      return;
-    }
-    this.boardService.moveCardToList(card.id, currentList.id, list.id);
-    this.listPickerOpen = false;
-    window.setTimeout(() => {
-      this.scrollSelectedCardIntoView(card.id);
-    }, 80);
-    window.setTimeout(() => {
-      this.scrollSelectedCardIntoView(card.id);
-    }, 160);
-  }
-
-  private scrollSelectedCardIntoView(cardId: string): boolean {
-    const lists = this.boardLists?.nativeElement;
-    if (!lists) {
-      return false;
-    }
-    const card = lists.querySelector(`[data-testid="card"][data-card-id="${cardId}"]`);
-    if (!card) {
-      return false;
-    }
-    window.requestAnimationFrame(() => {
-      const listsRect = lists.getBoundingClientRect();
-      const cardRect = card.getBoundingClientRect();
-      const panel = this.elementRef.nativeElement.querySelector('.card-panel');
-      const panelRect = panel?.getBoundingClientRect();
-      const buffer = 12;
-      const visibleLeft = listsRect.left + buffer;
-      const visibleRight =
-        Math.min(listsRect.right, panelRect?.left ?? listsRect.right) - buffer;
-      let nextScrollLeft = lists.scrollLeft;
-      if (cardRect.left < visibleLeft) {
-        nextScrollLeft -= visibleLeft - cardRect.left;
-      } else if (cardRect.right > visibleRight) {
-        nextScrollLeft += cardRect.right - visibleRight;
-      }
-      if (nextScrollLeft !== lists.scrollLeft) {
-        lists.scrollTo({ left: nextScrollLeft, behavior: 'smooth' });
-      }
-    });
-    return true;
-  }
-
   @HostListener('document:keydown.escape')
   handleEscape(): void {
-    if (this.panelTitleEditing && this.selectedCard) {
-      this.boardService.panelCardTitle = this.selectedCard.title;
-      this.panelCardTitleError = '';
-      this.panelTitleEditing = false;
-      this.panelTitleInput?.nativeElement.blur();
-      return;
-    }
-    if (this.descriptionEditing && this.selectedCard) {
-      this.cancelDescriptionEdit();
-      return;
-    }
-    if (this.listPickerOpen) {
-      this.listPickerOpen = false;
-      return;
-    }
-    if (this.parentMenuOpen) {
-      this.parentMenuOpen = false;
-      this.parentSearchInputValue = '';
-      this.parentSearchTerm = '';
-      if (this.parentSearchTimeout) {
-        window.clearTimeout(this.parentSearchTimeout);
-        this.parentSearchTimeout = undefined;
-      }
+    if (this.cardPanel?.handleEscape()) {
       return;
     }
     this.boardService.cancelListEdit();
@@ -1109,14 +470,6 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     if (activeElement?.classList.contains('board-selector')) {
       activeElement.blur();
     }
-  }
-
-  startPanelTitleEdit(): void {
-    this.panelTitleEditing = true;
-  }
-
-  stopPanelTitleEdit(): void {
-    this.panelTitleEditing = false;
   }
 
   cancelBoardSettingsTitleEdit(): void {
@@ -1145,35 +498,5 @@ export class BoardComponent implements OnInit, AfterViewChecked {
         this.resetBoardMenuState();
       }
     }
-    if (this.listPickerOpen) {
-      const clickedListPicker =
-        this.listPickerPanel?.nativeElement.contains(target) ||
-        !!target.closest('.card-panel-list-trigger');
-      if (!clickedListPicker) {
-        this.listPickerOpen = false;
-      }
-    }
-    if (this.parentMenuOpen) {
-      const clickedParentPicker =
-        this.parentPickerPanel?.nativeElement.contains(target) ||
-        !!target.closest('.card-panel-parent-trigger');
-      if (!clickedParentPicker) {
-        this.parentMenuOpen = false;
-        this.parentSearchInputValue = '';
-        this.parentSearchTerm = '';
-        if (this.parentSearchTimeout) {
-          window.clearTimeout(this.parentSearchTimeout);
-          this.parentSearchTimeout = undefined;
-        }
-      }
-    }
-  }
-
-  private parentMatchesTerm(card: Card, term: string): boolean {
-    const normalizedTerm = term.toLowerCase();
-    return (
-      card.id.toLowerCase().includes(normalizedTerm) ||
-      card.title.toLowerCase().includes(normalizedTerm)
-    );
   }
 }

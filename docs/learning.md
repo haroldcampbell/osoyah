@@ -81,3 +81,6 @@ Running list of communication/process learnings captured after sessions.
 
 ### Dropdown E2E interactions
 - Close dropdown overlays before clicking nearby panel actions; open menus can intercept pointer events and cause Playwright timeouts.
+
+### Component extraction
+- Once UI pieces become complex (e.g., side panels or nested visual components), extract them into dedicated components for clearer separation and easier iteration.

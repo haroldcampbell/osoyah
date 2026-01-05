@@ -23,7 +23,7 @@ Out-of-scope:
 - [x] S003-Parent/Child UX
 - [x] S004-Child Completion Count
 - [x] S005-Parent Selector CDK Dropdown
-- [ ] S006-Card Panel Component
+- [x] S006-Card Panel Component
 - [x] S007-Card Panel List Picker
 - [ ] S008-Card Move System Comments
 

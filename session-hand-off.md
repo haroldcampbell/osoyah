@@ -20,6 +20,7 @@
 
 ## Entries
 
+-   2026-01-05-03-card-panel-component.md - S006 card panel component extraction
 -   2026-01-05-02-parent-selector-search.md - S005 parent selector dropdown search + debounce, E2E adjustment
 -   2026-01-05-01-list-picker-wrap.md - S007 list picker wrap, E2E stabilization, new S008 spec draft
 -   2026-01-04-01-card-completion-progress.md - S004 completion status, progress indicators, done-list sync, new M010 and S007 specs

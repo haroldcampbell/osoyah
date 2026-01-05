@@ -5,26 +5,88 @@ import { clickCardBackground } from './helpers';
 
 
 test('S002 opens the card panel, manages comments, and closes it', async ({ page }) => {
-  await page.goto('/boards/board-1');
+	await page.goto('/boards/board-1');
 
-  const backlogList = page.locator('[data-testid="list"][data-list-title="Backlog"]');
-  const firstCard = backlogList.locator('[data-testid="card"]').first();
+	const backlogList = page.locator('[data-testid="list"][data-list-title="Backlog"]');
+	const firstCard = backlogList.locator('[data-testid="card"]').first();
 
-  await clickCardBackground(page, firstCard);
-  const panel = page.locator('[data-testid="card-panel"]');
-  await expect(panel).toBeVisible();
+	await clickCardBackground(page, firstCard);
+	const panel = page.locator('[data-testid="card-panel"]');
+	await expect(panel).toBeVisible();
 
-  await panel.locator('#card-panel-comment').fill('First comment');
-  await panel.getByRole('button', { name: 'Post comment' }).click();
-  const comment = panel.locator('.card-panel-comment', { hasText: 'First comment' });
-  await expect(comment).toBeVisible();
+	await panel.locator('#card-panel-comment').fill('First comment');
+	await panel.getByRole('button', { name: 'Post comment' }).click();
+	const comment = panel.locator('.card-panel-comment', { hasText: 'First comment' });
+	await expect(comment).toBeVisible();
 
-  await comment.hover();
-  await comment.getByRole('button', { name: 'Delete' }).click();
-  await expect(panel.locator('.card-panel-comment-body', { hasText: 'First comment' })).toHaveCount(
-    0,
-  );
+	await comment.hover();
+	await comment.getByRole('button', { name: 'Delete' }).click();
+	await expect(panel.locator('.card-panel-comment-body', { hasText: 'First comment' })).toHaveCount(
+		0,
+	);
 
-  await page.keyboard.press('Escape');
-  await expect(panel).toHaveCount(0);
+	await page.keyboard.press('Escape');
+	await expect(panel).toHaveCount(0);
+});
+
+// Spec: S007 Card Panel List Picker
+test('S007 moves cards with the list picker', async ({ page }) => {
+	await page.goto('/boards/board-1');
+
+	const backlogList = page.locator('[data-testid="list"][data-list-title="Backlog"]');
+	const firstCard = backlogList.locator('[data-testid="card"]').first();
+
+	await clickCardBackground(page, firstCard);
+	const panel = page.locator('[data-testid="card-panel"]');
+	await expect(panel).toBeVisible();
+
+	const listTrigger = panel.getByTestId('card-panel-list-trigger');
+	await listTrigger.scrollIntoViewIfNeeded();
+	await listTrigger.click();
+
+	const listMenu = panel.getByTestId('card-panel-list-menu');
+	await expect(listMenu).toBeVisible();
+	const doneOption = listMenu.locator('.card-panel-list-option', { hasText: 'Done' });
+	await expect(doneOption).toBeVisible();
+	await doneOption.click();
+
+	await expect(listTrigger).toContainText('Done');
+});
+
+test('S007 scrolls the target list into view after list picker moves a card', async ({ page }) => {
+	await page.goto('/boards/board-1');
+
+	const backlogList = page.locator('[data-testid="list"][data-list-title="Backlog"]');
+	const firstCard = backlogList.locator('[data-testid="card"]').first();
+	const cardId = await firstCard.getAttribute('data-card-id');
+	const lists = page.locator('.lists');
+
+	const initialScrollLeft = await lists.evaluate((element) => {
+		element.scrollLeft = 0;
+		return element.scrollLeft;
+	});
+
+	await clickCardBackground(page, firstCard);
+	const panel = page.locator('[data-testid="card-panel"]');
+	await expect(panel).toBeVisible();
+
+	const listTrigger = panel.getByTestId('card-panel-list-trigger');
+	await listTrigger.scrollIntoViewIfNeeded();
+	await listTrigger.click();
+
+	const listMenu = panel.getByTestId('card-panel-list-menu');
+	await expect(listMenu).toBeVisible();
+	const doneOption = listMenu.locator('.card-panel-list-option', { hasText: 'Done' });
+	await expect(doneOption).toBeVisible();
+	await doneOption.click();
+
+	await expect.poll(async () => {
+		const currentScrollLeft = await lists.evaluate((element) => element.scrollLeft);
+		return currentScrollLeft > initialScrollLeft;
+	}).toBe(true);
+
+	if (cardId) {
+		const doneList = page.locator('[data-testid="list"][data-list-title="Done"]');
+		await expect(doneList.locator(`[data-testid="card"][data-card-id="${cardId}"]`)).toBeVisible();
+	}
 });

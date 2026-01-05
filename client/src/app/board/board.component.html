@@ -519,8 +519,41 @@
                     </div>
                   }
                   <div class="card-panel-meta">
+                    <div class="card-panel-meta-item card-panel-list-picker">
+                      <button
+                        type="button"
+                        class="card-panel-list-trigger"
+                        (click)="toggleListPicker($event)"
+                        [attr.aria-expanded]="listPickerOpen"
+                        aria-haspopup="menu"
+                        data-testid="card-panel-list-trigger"
+                      >
+                        <span class="card-panel-list-label" [attr.title]="selectedList.title">
+                          {{ selectedList.title }}
+                        </span>
+                        <span class="card-panel-list-caret" aria-hidden="true"></span>
+                      </button>
+                      @if (listPickerOpen) {
+                        <div class="card-panel-list-menu-panel" #listPickerPanel>
+                          <div class="card-panel-list-menu" cdkMenu data-testid="card-panel-list-menu">
+                            @for (list of boardService.board.lists; track list.id) {
+                              <button
+                                type="button"
+                                class="card-panel-list-option"
+                                cdkMenuItem
+                                [class.is-current]="list.id === selectedList.id"
+                                (click)="moveSelectedCardToList(list)"
+                                [attr.title]="list.title"
+                              >
+                                <span class="card-panel-list-option-label">{{ list.title }}</span>
+                              </button>
+                            }
+                          </div>
+                        </div>
+                      }
+                    </div>
                     <span
-                      class="card-panel-meta-item"
+                      class="card-panel-meta-item card-panel-last-activity"
                       [title]="boardService.getLastActivityTooltip(selectedCard)"
                     >
                       Last activity

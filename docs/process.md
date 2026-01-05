@@ -42,11 +42,11 @@ and focuses on how we work session-to-session.
 
 ## Agent Directive
 
-Once you have read the process, confirm the following:
+Once you have read the process, ensure the following:
 
-1. The location of the acceptance test logs
-2. Your understanding of the process. Give a short summary
-3. The next unit for work.
+1. You know the location of the acceptance test logs
+2. You understand the process. You don't need to give a summary.
+3. Confirm the next unit for work and prompt to review the spec.
 
 ### Hand-off feedback
 

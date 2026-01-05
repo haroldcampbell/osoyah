@@ -1277,10 +1277,7 @@
 }
 
 .card-panel-title-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 10px;
+  display: contents;
 }
 
 .card-panel-status-toggle {
@@ -1294,6 +1291,7 @@
   color: tokens.$color-text-muted;
   cursor: pointer;
   flex: 0 0 auto;
+  grid-column: 1;
 }
 
 .card-panel-status-toggle.is-complete {
@@ -1303,7 +1301,7 @@
 }
 
 .card-panel-title-input {
-  flex: 1 1 auto;
+  grid-column: 2 / 4;
   min-width: 0;
 }
 
@@ -1320,6 +1318,7 @@
 }
 
 .card-panel-title-error {
+  grid-column: 2 / 4;
   margin-top: 0.35rem;
   color: tokens.$color-state-error;
   font-size: 0.85rem;
@@ -1363,11 +1362,7 @@
 
 
 .card-panel-meta {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  font-size: 0.82rem;
-  color: tokens.$color-text-muted;
+  display: contents;
 }
 
 .card-panel-section-progress {
@@ -1432,6 +1427,115 @@
 
 .card-panel-meta-item {
   font-weight: 400;
+  font-size: 0.82rem;
+  color: tokens.$color-text-muted;
+}
+
+.card-panel-list-picker {
+  position: relative;
+  grid-column: 2;
+  width: 100%;
+  max-width: var(--list-picker-width);
+  justify-self: start;
+  min-width: 0;
+}
+
+.card-panel-list-trigger {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0 0 0 0.4rem;
+  border: 0;
+  background: transparent;
+  color: tokens.$color-text-muted;
+  font: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+
+  &:hover,
+  &:focus-visible {
+    color: tokens.$color-text-primary;
+    text-decoration-color: currentColor;
+  }
+}
+
+.card-panel-list-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-panel-list-caret {
+  width: 6px;
+  height: 6px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  margin-top: 1px;
+  flex: 0 0 auto;
+}
+
+.card-panel-list-menu-panel {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  left: 0;
+  width: 100%;
+  z-index: 10;
+}
+
+.card-panel-list-menu {
+  width: 100%;
+  background: tokens.$color-card;
+  border-radius: 10px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  padding: tokens.$space-xs;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  box-sizing: border-box;
+}
+
+.card-panel-list-option {
+  border: 0;
+  background: transparent;
+  border-radius: 8px;
+  text-align: left;
+  padding: 0.4rem 0.6rem;
+  color: tokens.$color-text-primary;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: tokens.$space-xs;
+  cursor: pointer;
+
+  &:hover {
+    background: tokens.$color-surface;
+  }
+}
+
+.card-panel-list-option-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-panel-list-option.is-current {
+  background: tokens.$color-surface;
+  font-weight: 600;
+  padding-left: calc(0.6rem + 5px);
+}
+
+.card-panel-last-activity {
+  grid-column: 3;
+  justify-self: end;
+  text-align: right;
 }
 
 .card-panel-memberships {
@@ -1803,5 +1907,11 @@
 }
 
 .card-panel-section-title {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.35rem 10px;
+  align-items: center;
+  padding-top: 10px;
+  --list-picker-width: 12rem;
   padding-left: calc(tokens.$space-md - 5px);
 }

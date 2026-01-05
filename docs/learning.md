@@ -73,3 +73,8 @@ Running list of communication/process learnings captured after sessions.
 
 ### Spec hygiene
 - When introducing a new workflow (like a list picker), call it out as a new spec early to keep scope clean and prevent drift.
+
+## 2026-01-05
+
+### E2E scroll assertions
+- Prefer asserting `scrollLeft` deltas on the scroll container instead of bounding-box visibility checks for horizontal scroll. Bounding boxes can stay outside the viewport even when scroll succeeds (panel overlays, dynamic widths, and list sizing make "fully in view" brittle), causing `expect.poll` to hang. A simple predicate like `scrollLeft` increasing after a move (optionally paired with a card presence check in the target list) is more stable and avoids actionability timeouts.

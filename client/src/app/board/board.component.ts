@@ -50,6 +50,7 @@ export class BoardComponent implements OnInit, AfterViewChecked {
   @ViewChild('boardSettingsTitleInput') boardSettingsTitleInput?: ElementRef<HTMLInputElement>;
   @ViewChild('boardSettingsDescriptionInput') boardSettingsDescriptionInput?: ElementRef<HTMLInputElement>;
   @ViewChild('boardLists') boardLists?: ElementRef<HTMLElement>;
+  @ViewChild('listPickerPanel') listPickerPanel?: ElementRef<HTMLElement>;
   commentFocused = false;
   descriptionEditing = false;
   attachBoardId = '';
@@ -65,6 +66,7 @@ export class BoardComponent implements OnInit, AfterViewChecked {
   unlinkChildDialogOpen = false;
   unlinkChildTarget: Card | null = null;
   boardMenuOpen = false;
+  listPickerOpen = false;
   boardSearchTerm = '';
   newBoardTitle = '';
   createBoardError = '';
@@ -446,6 +448,7 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     this.childError = false;
     this.unlinkChildDialogOpen = false;
     this.unlinkChildTarget = null;
+    this.listPickerOpen = false;
     if (this.descriptionSaveTimeout) {
       window.clearTimeout(this.descriptionSaveTimeout);
       this.descriptionSaveTimeout = undefined;
@@ -898,6 +901,35 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     }
   }
 
+  toggleListPicker(event: MouseEvent): void {
+    event.stopPropagation();
+    if (!this.selectedList || !this.boardService.board?.lists.length) {
+      return;
+    }
+    this.listPickerOpen = !this.listPickerOpen;
+  }
+
+  moveSelectedCardToList(list: BoardList): void {
+    const card = this.selectedCard;
+    const currentList = this.selectedList;
+    if (!card || !currentList) {
+      this.listPickerOpen = false;
+      return;
+    }
+    if (list.id === currentList.id) {
+      this.listPickerOpen = false;
+      return;
+    }
+    this.boardService.moveCardToList(card.id, currentList.id, list.id);
+    this.listPickerOpen = false;
+    window.setTimeout(() => {
+      this.scrollSelectedCardIntoView(card.id);
+    }, 80);
+    window.setTimeout(() => {
+      this.scrollSelectedCardIntoView(card.id);
+    }, 160);
+  }
+
   private scrollSelectedCardIntoView(cardId: string): boolean {
     const lists = this.boardLists?.nativeElement;
     if (!lists) {
@@ -940,6 +972,10 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     }
     if (this.descriptionEditing && this.selectedCard) {
       this.cancelDescriptionEdit();
+      return;
+    }
+    if (this.listPickerOpen) {
+      this.listPickerOpen = false;
       return;
     }
     this.boardService.cancelListEdit();
@@ -987,20 +1023,25 @@ export class BoardComponent implements OnInit, AfterViewChecked {
 
   @HostListener('document:click', ['$event'])
   handleDocumentClick(event: MouseEvent): void {
-    if (!this.boardMenuOpen) {
-      return;
-    }
     const target = event.target as HTMLElement | null;
     if (!target) {
       return;
     }
-    if (this.boardMenuPanel?.nativeElement.contains(target)) {
-      return;
+    if (this.boardMenuOpen) {
+      const clickedBoardMenu =
+        this.boardMenuPanel?.nativeElement.contains(target) || !!target.closest('.board-selector');
+      if (!clickedBoardMenu) {
+        this.boardMenuOpen = false;
+        this.resetBoardMenuState();
+      }
     }
-    if (target.closest('.board-selector')) {
-      return;
+    if (this.listPickerOpen) {
+      const clickedListPicker =
+        this.listPickerPanel?.nativeElement.contains(target) ||
+        !!target.closest('.card-panel-list-trigger');
+      if (!clickedListPicker) {
+        this.listPickerOpen = false;
+      }
     }
-    this.boardMenuOpen = false;
-    this.resetBoardMenuState();
   }
 }

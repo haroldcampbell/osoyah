@@ -24,7 +24,8 @@ Out-of-scope:
 - [x] S004-Child Completion Count
 - [ ] S005-Parent Selector CDK Dropdown
 - [ ] S006-Card Panel Component
-- [ ] S007-Card Panel List Picker
+- [x] S007-Card Panel List Picker
+- [ ] S008-Card Move System Comments
 
 ## Notes
 - Parent/child visibility lives in the side panel only.

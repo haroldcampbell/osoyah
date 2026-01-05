@@ -16,12 +16,12 @@ Make it faster to find a parent card in large datasets.
 
 ## Definition of Done
 
-- [ ] Parent selector uses a CDK dropdown (not native select).
-- [ ] Dropdown includes a search input at the top.
-- [ ] Search matches partial text against card id and title.
-- [ ] Empty state appears when no results match.
-- [ ] Existing parent selection rules (single parent, no cycles) still apply.
-- [ ] Acceptance tests pass.
+- [x] Parent selector uses a CDK dropdown (not native select).
+- [x] Dropdown includes a search input at the top.
+- [x] Search matches partial text against card id and title.
+- [x] Empty state appears when no results match.
+- [x] Existing parent selection rules (single parent, no cycles) still apply.
+- [x] Acceptance tests pass.
 
 ## Acceptance tests (exact commands + expected artifacts/output)
 

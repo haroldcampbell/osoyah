@@ -1598,6 +1598,160 @@
   grid-template-columns: minmax(0, 1fr) auto;
 }
 
+.card-panel-parent-picker {
+  position: relative;
+}
+
+.card-panel-parent-trigger {
+  width: 100%;
+  border: 1px solid tokens.$color-border;
+  border-radius: tokens.$radius-control;
+  padding: tokens.$input-padding-y tokens.$input-padding-x;
+  background: tokens.$color-card;
+  font: inherit;
+  color: tokens.$color-text-primary;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: tokens.$space-xs;
+  cursor: pointer;
+
+  &:hover {
+    background: tokens.$color-surface;
+  }
+
+  &:focus-visible {
+    outline: 2px solid tokens.$color-accent;
+    outline-offset: 2px;
+  }
+}
+
+.card-panel-parent-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-panel-parent-caret {
+  width: 6px;
+  height: 6px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  margin-top: 1px;
+  flex: 0 0 auto;
+}
+
+.card-panel-parent-menu-panel {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  left: 0;
+  width: 100%;
+  z-index: 12;
+}
+
+.card-panel-parent-menu {
+  width: 100%;
+  background: tokens.$color-card;
+  border-radius: 10px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  padding: tokens.$space-xs;
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$space-xs;
+  box-sizing: border-box;
+}
+
+.card-panel-parent-search {
+  margin: 0 calc(-1 * tokens.$space-xs);
+  padding: 0 tokens.$space-xs tokens.$space-xs;
+  border-bottom: 1px solid tokens.$color-border;
+}
+
+.card-panel-parent-search-input {
+  width: 100%;
+  border: 1px solid transparent;
+  border-radius: 0;
+  padding: 0.4rem 0;
+  font: inherit;
+  background: transparent;
+  color: tokens.$color-text-primary;
+  box-sizing: border-box;
+
+  &:focus,
+  &:focus-visible {
+    outline: none;
+    box-shadow: none;
+  }
+}
+
+.card-panel-parent-search .card-panel-parent-search-input:focus,
+.card-panel-parent-search .card-panel-parent-search-input:focus-visible {
+  border: 1px solid transparent;
+  outline-style: none;
+  outline-width: 0px;
+  outline-offset: 0px;
+}
+
+.card-panel-parent-options {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 240px;
+  overflow-y: scroll;
+}
+
+.card-panel-parent-option {
+  border: 0;
+  background: transparent;
+  border-radius: 8px;
+  text-align: left;
+  padding: 0.4rem 0.6rem;
+  color: tokens.$color-text-primary;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: tokens.$space-xs;
+  cursor: pointer;
+
+  &:hover {
+    background: tokens.$color-surface;
+  }
+}
+
+.card-panel-parent-option-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-panel-parent-option.is-current {
+  background: tokens.$color-surface;
+  font-weight: 600;
+  padding-left: calc(0.6rem + 5px);
+}
+
+.card-panel-parent-option.is-pinned {
+  background: rgba(14, 26, 45, 0.04);
+}
+
+.card-panel-parent-section-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: tokens.$color-text-muted;
+  padding: 0.35rem 0.55rem 0.2rem;
+}
+
+.card-panel-parent-empty {
+  padding: 0.45rem 0.6rem;
+  font-size: 0.8rem;
+  color: tokens.$color-text-muted;
+}
+
 .card-panel-field {
   display: flex;
   flex-direction: column;

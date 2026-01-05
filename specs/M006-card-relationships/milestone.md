@@ -22,7 +22,7 @@ Out-of-scope:
 - [x] S002-Relationship Integrity
 - [x] S003-Parent/Child UX
 - [x] S004-Child Completion Count
-- [ ] S005-Parent Selector CDK Dropdown
+- [x] S005-Parent Selector CDK Dropdown
 - [ ] S006-Card Panel Component
 - [x] S007-Card Panel List Picker
 - [ ] S008-Card Move System Comments

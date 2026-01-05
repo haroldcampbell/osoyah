@@ -51,6 +51,8 @@ export class BoardComponent implements OnInit, AfterViewChecked {
   @ViewChild('boardSettingsDescriptionInput') boardSettingsDescriptionInput?: ElementRef<HTMLInputElement>;
   @ViewChild('boardLists') boardLists?: ElementRef<HTMLElement>;
   @ViewChild('listPickerPanel') listPickerPanel?: ElementRef<HTMLElement>;
+  @ViewChild('parentPickerPanel') parentPickerPanel?: ElementRef<HTMLElement>;
+  @ViewChild('parentSearchInput') parentSearchInput?: ElementRef<HTMLInputElement>;
   commentFocused = false;
   descriptionEditing = false;
   attachBoardId = '';
@@ -67,7 +69,10 @@ export class BoardComponent implements OnInit, AfterViewChecked {
   unlinkChildTarget: Card | null = null;
   boardMenuOpen = false;
   listPickerOpen = false;
+  parentMenuOpen = false;
   boardSearchTerm = '';
+  parentSearchInputValue = '';
+  parentSearchTerm = '';
   newBoardTitle = '';
   createBoardError = '';
   boardSettingsOpen = false;
@@ -90,6 +95,7 @@ export class BoardComponent implements OnInit, AfterViewChecked {
   private activeBoardId = '';
   private activeCardId = '';
   private descriptionSaveTimeout?: number;
+  private parentSearchTimeout?: number;
   private lastScrolledCardId: string | null = null;
 
   get commentExpanded(): boolean {
@@ -252,6 +258,42 @@ export class BoardComponent implements OnInit, AfterViewChecked {
       return [currentParent, ...options];
     }
     return options;
+  }
+
+  get parentSelectionLabel(): string {
+    if (!this.parentCardId) {
+      return 'No parent';
+    }
+    const parent = this.boardService.getCard(this.parentCardId);
+    return parent ? this.formatCardLabel(parent) : 'No parent';
+  }
+
+  get parentSelectedCard(): Card | null {
+    if (!this.parentCardId) {
+      return null;
+    }
+    return this.boardService.getCard(this.parentCardId) ?? null;
+  }
+
+  get parentPinnedCard(): Card | null {
+    const term = this.parentSearchTerm.trim().toLowerCase();
+    if (!term) {
+      return null;
+    }
+    const selected = this.parentSelectedCard;
+    if (!selected) {
+      return null;
+    }
+    return this.parentMatchesTerm(selected, term) ? null : selected;
+  }
+
+  get parentFilteredOptions(): Card[] {
+    const term = this.parentSearchTerm.trim().toLowerCase();
+    const options = this.parentOptions;
+    if (!term) {
+      return options;
+    }
+    return options.filter((card) => this.parentMatchesTerm(card, term));
   }
 
   get childCards(): Card[] {
@@ -449,6 +491,13 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     this.unlinkChildDialogOpen = false;
     this.unlinkChildTarget = null;
     this.listPickerOpen = false;
+    this.parentMenuOpen = false;
+    this.parentSearchInputValue = '';
+    this.parentSearchTerm = '';
+    if (this.parentSearchTimeout) {
+      window.clearTimeout(this.parentSearchTimeout);
+      this.parentSearchTimeout = undefined;
+    }
     if (this.descriptionSaveTimeout) {
       window.clearTimeout(this.descriptionSaveTimeout);
       this.descriptionSaveTimeout = undefined;
@@ -671,6 +720,51 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     return `${card.id} - ${card.title}`;
   }
 
+  toggleParentMenu(event: MouseEvent): void {
+    event.stopPropagation();
+    this.parentMenuOpen = !this.parentMenuOpen;
+    if (this.parentMenuOpen) {
+      this.parentSearchInputValue = '';
+      this.parentSearchTerm = '';
+      if (this.parentSearchTimeout) {
+        window.clearTimeout(this.parentSearchTimeout);
+        this.parentSearchTimeout = undefined;
+      }
+      setTimeout(() => {
+        this.parentSearchInput?.nativeElement.focus();
+      }, 0);
+    } else {
+      this.parentSearchInputValue = '';
+      this.parentSearchTerm = '';
+      if (this.parentSearchTimeout) {
+        window.clearTimeout(this.parentSearchTimeout);
+        this.parentSearchTimeout = undefined;
+      }
+    }
+  }
+
+  handleParentSearchChange(nextValue: string): void {
+    this.parentSearchInputValue = nextValue;
+    if (this.parentSearchTimeout) {
+      window.clearTimeout(this.parentSearchTimeout);
+    }
+    this.parentSearchTimeout = window.setTimeout(() => {
+      this.parentSearchTerm = nextValue;
+    }, 150);
+  }
+
+  selectParentCard(cardId: string): void {
+    this.parentCardId = cardId;
+    this.handleParentSelectionChange();
+    this.parentMenuOpen = false;
+    this.parentSearchInputValue = '';
+    this.parentSearchTerm = '';
+    if (this.parentSearchTimeout) {
+      window.clearTimeout(this.parentSearchTimeout);
+      this.parentSearchTimeout = undefined;
+    }
+  }
+
   handleParentSelectionChange(): void {
     this.parentStatus = '';
     this.parentError = false;
@@ -783,6 +877,12 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     this.parentCardId = this.parentCurrentId;
     this.parentStatus = '';
     this.parentError = false;
+    this.parentSearchInputValue = '';
+    this.parentSearchTerm = '';
+    if (this.parentSearchTimeout) {
+      window.clearTimeout(this.parentSearchTimeout);
+      this.parentSearchTimeout = undefined;
+    }
   }
 
   private resetBoardMenuState(): void {
@@ -978,6 +1078,16 @@ export class BoardComponent implements OnInit, AfterViewChecked {
       this.listPickerOpen = false;
       return;
     }
+    if (this.parentMenuOpen) {
+      this.parentMenuOpen = false;
+      this.parentSearchInputValue = '';
+      this.parentSearchTerm = '';
+      if (this.parentSearchTimeout) {
+        window.clearTimeout(this.parentSearchTimeout);
+        this.parentSearchTimeout = undefined;
+      }
+      return;
+    }
     this.boardService.cancelListEdit();
     this.boardService.cancelCardEdit();
     if (this.boardService.selectedCard) {
@@ -1043,5 +1153,27 @@ export class BoardComponent implements OnInit, AfterViewChecked {
         this.listPickerOpen = false;
       }
     }
+    if (this.parentMenuOpen) {
+      const clickedParentPicker =
+        this.parentPickerPanel?.nativeElement.contains(target) ||
+        !!target.closest('.card-panel-parent-trigger');
+      if (!clickedParentPicker) {
+        this.parentMenuOpen = false;
+        this.parentSearchInputValue = '';
+        this.parentSearchTerm = '';
+        if (this.parentSearchTimeout) {
+          window.clearTimeout(this.parentSearchTimeout);
+          this.parentSearchTimeout = undefined;
+        }
+      }
+    }
+  }
+
+  private parentMatchesTerm(card: Card, term: string): boolean {
+    const normalizedTerm = term.toLowerCase();
+    return (
+      card.id.toLowerCase().includes(normalizedTerm) ||
+      card.title.toLowerCase().includes(normalizedTerm)
+    );
   }
 }

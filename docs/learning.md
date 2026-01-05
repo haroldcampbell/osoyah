@@ -78,3 +78,6 @@ Running list of communication/process learnings captured after sessions.
 
 ### E2E scroll assertions
 - Prefer asserting `scrollLeft` deltas on the scroll container instead of bounding-box visibility checks for horizontal scroll. Bounding boxes can stay outside the viewport even when scroll succeeds (panel overlays, dynamic widths, and list sizing make "fully in view" brittle), causing `expect.poll` to hang. A simple predicate like `scrollLeft` increasing after a move (optionally paired with a card presence check in the target list) is more stable and avoids actionability timeouts.
+
+### Dropdown E2E interactions
+- Close dropdown overlays before clicking nearby panel actions; open menus can intercept pointer events and cause Playwright timeouts.

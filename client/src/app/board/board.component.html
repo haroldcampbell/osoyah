@@ -688,19 +688,92 @@
                 <section class="card-panel-section">
                   <div class="card-panel-label">Parent card</div>
                   <div class="card-panel-attach card-panel-parent">
-                    <label class="card-panel-field">
-                      <select
-                        [(ngModel)]="parentCardId"
-                        (ngModelChange)="handleParentSelectionChange()"
-                        data-testid="parent-card-select"
+                    <div class="card-panel-parent-picker">
+                      <button
+                        type="button"
+                        class="card-panel-parent-trigger"
+                        (click)="toggleParentMenu($event)"
+                        [attr.aria-expanded]="parentMenuOpen"
+                        aria-haspopup="listbox"
                         aria-label="Parent card"
+                        data-testid="parent-card-select"
                       >
-                        <option value="">No parent</option>
-                        @for (card of parentOptions; track card.id) {
-                          <option [value]="card.id">{{ formatCardLabel(card) }}</option>
-                        }
-                      </select>
-                    </label>
+                        <span
+                          class="card-panel-parent-label"
+                          data-testid="parent-card-label"
+                          [attr.title]="parentSelectionLabel"
+                        >
+                          {{ parentSelectionLabel }}
+                        </span>
+                        <span class="card-panel-parent-caret" aria-hidden="true"></span>
+                      </button>
+                      @if (parentMenuOpen) {
+                        <div class="card-panel-parent-menu-panel" #parentPickerPanel>
+                          <div class="card-panel-parent-menu" cdkMenu data-testid="parent-card-menu">
+                            <div class="card-panel-parent-search">
+                              <input
+                                #parentSearchInput
+                                class="card-panel-parent-search-input"
+                                type="text"
+                                placeholder="Search by id or title"
+                                aria-label="Search parent cards"
+                                [(ngModel)]="parentSearchInputValue"
+                                (ngModelChange)="handleParentSearchChange($event)"
+                                data-testid="parent-card-search"
+                              />
+                            </div>
+                            <div class="card-panel-parent-options">
+                              <button
+                                type="button"
+                                class="card-panel-parent-option"
+                                cdkMenuItem
+                                [class.is-current]="!parentCardId"
+                                (click)="selectParentCard('')"
+                              >
+                                <span class="card-panel-parent-option-label">No parent</span>
+                              </button>
+                              @if (parentPinnedCard) {
+                                <div class="card-panel-parent-section-label">Selected</div>
+                                <button
+                                  type="button"
+                                  class="card-panel-parent-option is-pinned"
+                                  cdkMenuItem
+                                  [class.is-current]="parentPinnedCard.id === parentCardId"
+                                  (click)="selectParentCard(parentPinnedCard.id)"
+                                  [attr.data-parent-card-id]="parentPinnedCard.id"
+                                  [attr.title]="formatCardLabel(parentPinnedCard)"
+                                >
+                                  <span class="card-panel-parent-option-label">
+                                    {{ formatCardLabel(parentPinnedCard) }}
+                                  </span>
+                                </button>
+                              }
+                              @if (parentSearchTerm.trim() && parentFilteredOptions.length === 0) {
+                                <div class="card-panel-parent-empty" data-testid="parent-card-empty">
+                                  No matches found.
+                                </div>
+                              } @else {
+                                @for (card of parentFilteredOptions; track card.id) {
+                                  <button
+                                    type="button"
+                                    class="card-panel-parent-option"
+                                    cdkMenuItem
+                                    [class.is-current]="card.id === parentCardId"
+                                    (click)="selectParentCard(card.id)"
+                                    [attr.data-parent-card-id]="card.id"
+                                    [attr.title]="formatCardLabel(card)"
+                                  >
+                                    <span class="card-panel-parent-option-label">
+                                      {{ formatCardLabel(card) }}
+                                    </span>
+                                  </button>
+                                }
+                              }
+                            </div>
+                          </div>
+                        </div>
+                      }
+                    </div>
                     <button
                       type="button"
                       class="card-panel-attach-button"

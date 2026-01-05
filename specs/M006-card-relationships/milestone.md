@@ -25,7 +25,7 @@ Out-of-scope:
 - [x] S005-Parent Selector CDK Dropdown
 - [x] S006-Card Panel Component
 - [x] S007-Card Panel List Picker
-- [ ] S008-Card Move System Comments
+- [x] S008-Card Move System Comments
 
 ## Notes
 - Parent/child visibility lives in the side panel only.

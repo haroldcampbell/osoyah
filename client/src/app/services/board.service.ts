@@ -710,6 +710,14 @@ export class BoardService {
     return `[**${label}**](/boards/${board.id}/cards/${cardId})`;
   }
 
+  private formatBoardMarkdown(boardId: string, cardId: string): string {
+    const board = this.boards.find((item) => item.id === boardId);
+    if (!board) {
+      return 'Board';
+    }
+    return `[${board.title}](/boards/${boardId}/cards/${cardId})`;
+  }
+
   private wouldCreateCycle(childCardId: string, parentCardId: string): boolean {
     if (childCardId === parentCardId) {
       return true;
@@ -770,6 +778,7 @@ export class BoardService {
       event.previousIndex,
       event.currentIndex,
     );
+    this.recordListMoveComment(movedCardId, sourceList, targetList, this.board?.id);
     this.applyCompletionFromListMove(movedCardId, sourceList, targetList);
   }
 
@@ -807,6 +816,7 @@ export class BoardService {
     if (this.editingCard?.cardId === cardId) {
       this.editingCard.listId = targetList.id;
     }
+    this.recordListMoveComment(cardId, sourceList, targetList, this.board.id);
     if (!options.skipStatus) {
       this.applyCompletionFromListMove(cardId, sourceList, targetList);
     }
@@ -962,6 +972,26 @@ export class BoardService {
     if (sourceList.isProcessDone) {
       this.setCardStatus(card, 'incomplete', { source: 'list', listTitle: sourceList.title });
     }
+  }
+
+  private recordListMoveComment(
+    cardId: string | undefined,
+    sourceList?: BoardList,
+    targetList?: BoardList,
+    boardId?: string,
+  ): void {
+    if (!cardId || !sourceList || !targetList) {
+      return;
+    }
+    if (sourceList.id === targetList.id) {
+      return;
+    }
+    if (!boardId) {
+      return;
+    }
+    const boardLabel = this.formatBoardMarkdown(boardId, cardId);
+    const message = `Card moved from ${sourceList.title} to ${targetList.title} on ${boardLabel}.`;
+    this.addSystemComment(cardId, message, new Date().toISOString());
   }
 
   private createId(prefix: string): string {

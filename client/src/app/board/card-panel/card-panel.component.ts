@@ -214,12 +214,9 @@ export class CardPanelComponent implements OnChanges {
     if (this.selectedList.id === doneList.id) {
       return;
     }
-    const result = this.boardService.moveCardToList(card.id, this.selectedList.id, doneList.id, {
+    this.boardService.moveCardToList(card.id, this.selectedList.id, doneList.id, {
       skipStatus: true,
     });
-    if (result.success) {
-      this.boardService.addSystemComment(card.id, `Card moved to ${doneList.title}.`);
-    }
   }
 
   createSegments(total: number): number[] {

@@ -18,13 +18,13 @@ Make list moves visible in the card’s comment stream, whether moved by drag-an
 
 ## Definition of Done
 
--   [ ] Moving a card between lists generates a system comment on the card.
--   [ ] The system comment includes the destination list title (e.g., "Card moved to Done.").
--   [ ] Drag-and-drop moves generate the same comment as list picker moves.
--   [ ] Existing done-list status comments remain unchanged and may coexist with the move comment.
--   [ ] Include the board information in the comment.
--   [ ] Ensure that the board Name is clickable and will navigate to the board, opening the card's side panel details.
--   [ ] Acceptance tests pass.
+-   [x] Moving a card between lists generates a system comment on the card.
+-   [x] The system comment includes the destination list title (e.g., "Card moved to Done.").
+-   [x] Drag-and-drop moves generate the same comment as list picker moves.
+-   [x] Existing done-list status comments remain unchanged and may coexist with the move comment.
+-   [x] Include the board information in the comment.
+-   [x] Ensure that the board Name is clickable and will navigate to the board, opening the card's side panel details.
+-   [x] Acceptance tests pass.
 
 ## Acceptance tests (exact commands + expected artifacts/output)
 

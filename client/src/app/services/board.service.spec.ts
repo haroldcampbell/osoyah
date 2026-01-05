@@ -1,6 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
+import { CdkDragDrop } from '@angular/cdk/drag-drop';
+
 import { BoardService } from './board.service';
 import { Board, BoardList, Card } from '../models/board.model';
 
@@ -122,5 +124,109 @@ describe('BoardService relationships', () => {
     const childComment = cardChild.comments.at(-1);
     expect(childComment?.authorType).toBe('system');
     expect(childComment?.message).toBe(`Parent card unlinked: **${cardParent.id} - ${cardParent.title}**`);
+  });
+});
+
+describe('BoardService list move comments', () => {
+  let service: BoardService;
+  let card: Card;
+  let boardOne: Board;
+  let boardTwo: Board;
+  let listOneSource: BoardList;
+  let listOneTarget: BoardList;
+  let listTwoSource: BoardList;
+  let listTwoTarget: BoardList;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
+    });
+    service = TestBed.inject(BoardService);
+
+    card = {
+      id: 'card-1',
+      title: 'Shared card',
+      description: '',
+      createdAt: '2025-01-01T00:00:00Z',
+      updatedAt: '2025-01-01T00:00:00Z',
+      comments: [],
+      status: { state: 'incomplete', completedAt: null },
+    };
+
+    listOneSource = {
+      id: 'list-1',
+      title: 'Backlog',
+      cardIds: [card.id],
+      isProcessDone: false,
+    };
+    listOneTarget = {
+      id: 'list-2',
+      title: 'Done',
+      cardIds: [],
+      isProcessDone: true,
+    };
+    listTwoSource = {
+      id: 'list-3',
+      title: 'Leads',
+      cardIds: [card.id],
+      isProcessDone: false,
+    };
+    listTwoTarget = {
+      id: 'list-4',
+      title: 'Closed',
+      cardIds: [],
+      isProcessDone: true,
+    };
+
+    boardOne = {
+      id: 'board-1',
+      title: 'Product Roadmap',
+      createdAt: '2025-01-01T00:00:00Z',
+      lists: [listOneSource, listOneTarget],
+    };
+    boardTwo = {
+      id: 'board-2',
+      title: 'Sales Pipeline',
+      createdAt: '2025-01-01T00:00:00Z',
+      lists: [listTwoSource, listTwoTarget],
+    };
+
+    service.boards = [boardOne, boardTwo];
+    service.board = boardTwo;
+    service.cardsById = {
+      [card.id]: card,
+    };
+  });
+
+  it('records list move comments with the active board link (list picker)', () => {
+    const result = service.moveCardToList(card.id, listTwoSource.id, listTwoTarget.id);
+
+    expect(result.success).toBe(true);
+    const moveComment = [...card.comments]
+      .reverse()
+      .find((item) => item.message.startsWith('Card moved from'));
+    expect(moveComment?.authorType).toBe('system');
+    expect(moveComment?.message).toBe(
+      `Card moved from ${listTwoSource.title} to ${listTwoTarget.title} on [${boardTwo.title}](/boards/${boardTwo.id}/cards/${card.id}).`,
+    );
+  });
+
+  it('records list move comments with the active board link (drag and drop)', () => {
+    const event = {
+      previousIndex: 0,
+      currentIndex: 0,
+      previousContainer: { data: listTwoSource.cardIds, id: listTwoSource.id },
+      container: { data: listTwoTarget.cardIds, id: listTwoTarget.id },
+    } as CdkDragDrop<string[]>;
+
+    service.dropCard(event);
+
+    const moveComment = [...card.comments]
+      .reverse()
+      .find((item) => item.message.startsWith('Card moved from'));
+    expect(moveComment?.authorType).toBe('system');
+    expect(moveComment?.message).toBe(
+      `Card moved from ${listTwoSource.title} to ${listTwoTarget.title} on [${boardTwo.title}](/boards/${boardTwo.id}/cards/${card.id}).`,
+    );
   });
 });

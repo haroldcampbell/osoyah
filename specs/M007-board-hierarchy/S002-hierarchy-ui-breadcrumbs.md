@@ -13,12 +13,12 @@ Enable fast jumps across Goals > Initiatives > Teams > Tasks while staying on a 
 - Roll-up metrics in this view.
 
 ## Definition of Done
-- [ ] Left panel renders the board hierarchy tree.
-- [ ] Top breadcrumb bar shows current path and supports navigation.
-- [ ] Hierarchy UI is visible on boards that are linked into the tree.
-- [ ] Boards outside the hierarchy show an empty state with a management CTA and an option to collapse the hierarchy panel.
-- [ ] UI remains usable on narrow viewports.
-- [ ] Acceptance tests pass.
+- [x] Left panel renders the board hierarchy tree.
+- [x] Top breadcrumb bar shows current path and supports navigation.
+- [x] Hierarchy UI is visible on boards that are linked into the tree.
+- [x] Boards outside the hierarchy show an empty state with a management CTA and an option to collapse the hierarchy panel.
+- [x] UI remains usable on narrow viewports.
+- [x] Acceptance tests pass.
 
 ## Acceptance tests (exact commands + expected artifacts/output)
 - Log output is stored in `./client/logs/` (for example: `lint.log`, `e2e.log`, `test.log`).

@@ -18,7 +18,7 @@ Out-of-scope:
 - New project entity or backend persistence.
 
 ## Specs
-- [ ] S001-Board Hierarchy Model (Derived)
+- [x] S001-Board Hierarchy Model (Derived)
 - [ ] S002-Hierarchy UI + Breadcrumbs
 - [ ] S003-Hierarchy Management
 

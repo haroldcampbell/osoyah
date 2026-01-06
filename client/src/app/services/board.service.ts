@@ -9,6 +9,7 @@ import {
   Card,
   CardComment,
   CardRelationship,
+  BoardRelationship,
   BoardsResponse,
 } from '../models/board.model';
 import { BoardGalleryStateService } from './board-gallery-state.service';
@@ -40,6 +41,7 @@ export class BoardService {
   newCardTitles: Record<string, string> = {};
   cardsById: Record<string, Card> = {};
   cardRelationships: CardRelationship[] = [];
+  boardRelationships: BoardRelationship[] = [];
 
   editingListId: string | null = null;
   editingListTitle = '';
@@ -74,6 +76,7 @@ export class BoardService {
         next: (data) => {
           this.cardsById = this.indexCards(data.cards ?? []);
           this.cardRelationships = data.cardRelationships ?? [];
+          this.boardRelationships = data.boardRelationships ?? [];
           const boards = data.boards ?? [];
           const lastOpened = this.boardGalleryState.getLastOpenedMap();
           this.lastActiveAt = { ...lastOpened };

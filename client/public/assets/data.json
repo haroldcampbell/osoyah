@@ -717,5 +717,47 @@
       "parentCardId": "card-1",
       "createdAt": "2025-01-03T09:30:00Z"
     }
+  ],
+  "boardRelationships": [
+    {
+      "childBoardId": "board-3",
+      "parentBoardId": "board-1",
+      "createdAt": "2025-01-06T09:00:00Z"
+    },
+    {
+      "childBoardId": "board-4",
+      "parentBoardId": "board-3",
+      "createdAt": "2025-01-06T09:05:00Z"
+    },
+    {
+      "childBoardId": "board-5",
+      "parentBoardId": "board-4",
+      "createdAt": "2025-01-06T09:10:00Z"
+    },
+    {
+      "childBoardId": "board-6",
+      "parentBoardId": "board-3",
+      "createdAt": "2025-01-06T09:15:00Z"
+    },
+    {
+      "childBoardId": "board-7",
+      "parentBoardId": "board-6",
+      "createdAt": "2025-01-06T09:20:00Z"
+    },
+    {
+      "childBoardId": "board-8",
+      "parentBoardId": "board-2",
+      "createdAt": "2025-01-06T09:25:00Z"
+    },
+    {
+      "childBoardId": "board-9",
+      "parentBoardId": "board-8",
+      "createdAt": "2025-01-06T09:30:00Z"
+    },
+    {
+      "childBoardId": "board-10",
+      "parentBoardId": "board-9",
+      "createdAt": "2025-01-06T09:35:00Z"
+    }
   ]
 }

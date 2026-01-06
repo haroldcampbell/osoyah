@@ -19,7 +19,7 @@ import { combineLatest } from 'rxjs';
 import { BoardService } from '../services/board.service';
 import { BoardHeaderComponent } from '../board-header/board-header.component';
 import { BoardListComponent } from './list/board-list.component';
-import { Board, BoardList, Card } from '../models/board.model';
+import { Board, BoardList, BoardRelationship, Card } from '../models/board.model';
 import { CardPanelComponent } from './card-panel/card-panel.component';
 
 @Component({
@@ -66,9 +66,14 @@ export class BoardComponent implements OnInit, AfterViewChecked {
   createBoardModalError = '';
   activeBoardId = '';
   activeCardId = '';
+  hierarchyPanelOpen = true;
+  isNarrowViewport = window.matchMedia('(max-width: 800px)').matches;
   private lastSelectionId: string | null = null;
 
   ngOnInit(): void {
+    if (this.isNarrowViewport) {
+      this.hierarchyPanelOpen = false;
+    }
     this.boardService.loadBoard({ recordActivity: false });
     combineLatest([this.boardService.boardLoaded$, this.route.paramMap])
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -462,6 +467,10 @@ export class BoardComponent implements OnInit, AfterViewChecked {
       this.closeBoardSettings();
       return;
     }
+    if (this.isNarrowViewport && this.hierarchyPanelOpen) {
+      this.hierarchyPanelOpen = false;
+      return;
+    }
     if (this.boardPanelOpen) {
       this.boardPanelOpen = false;
       this.boardPanelArchivedView = false;
@@ -499,4 +508,136 @@ export class BoardComponent implements OnInit, AfterViewChecked {
       }
     }
   }
+
+  @HostListener('window:resize')
+  handleWindowResize(): void {
+    const isNarrow = window.matchMedia('(max-width: 800px)').matches;
+    if (isNarrow !== this.isNarrowViewport) {
+      this.isNarrowViewport = isNarrow;
+      if (isNarrow) {
+        this.hierarchyPanelOpen = false;
+      }
+    }
+  }
+
+  toggleHierarchyPanel(): void {
+    this.hierarchyPanelOpen = !this.hierarchyPanelOpen;
+  }
+
+  openHierarchyManager(): void {
+    if (!this.boardSettingsOpen) {
+      this.toggleBoardSettings();
+    }
+  }
+
+  get hierarchyRoots(): HierarchyNode[] {
+    return this.buildHierarchyRoots();
+  }
+
+  get breadcrumbBoards(): Board[] {
+    const board = this.boardService.board;
+    if (!board) {
+      return [];
+    }
+    const { parentByChild, relatedIds } = this.getHierarchyMaps();
+    if (!relatedIds.has(board.id)) {
+      return [];
+    }
+    const path: Board[] = [];
+    const visited = new Set<string>();
+    let currentId: string | undefined = board.id;
+    while (currentId) {
+      if (visited.has(currentId)) {
+        break;
+      }
+      visited.add(currentId);
+      const currentBoard = this.boardService.getBoard(currentId);
+      if (currentBoard) {
+        path.unshift(currentBoard);
+      }
+      currentId = parentByChild.get(currentId);
+    }
+    return path;
+  }
+
+  get isHierarchyBoard(): boolean {
+    const board = this.boardService.board;
+    if (!board) {
+      return false;
+    }
+    return this.getHierarchyMaps().relatedIds.has(board.id);
+  }
+
+  private buildHierarchyRoots(): HierarchyNode[] {
+    const { childrenByParent, rootIds } = this.getHierarchyMaps();
+    const roots: HierarchyNode[] = [];
+    rootIds.forEach((rootId) => {
+      const node = this.buildHierarchyNode(rootId, childrenByParent, new Set());
+      if (node) {
+        roots.push(node);
+      }
+    });
+    if (roots.length > 0) {
+      return roots;
+    }
+    return [];
+  }
+
+  private buildHierarchyNode(
+    boardId: string,
+    childrenByParent: Map<string, string[]>,
+    visited: Set<string>,
+  ): HierarchyNode | null {
+    if (visited.has(boardId)) {
+      return null;
+    }
+    visited.add(boardId);
+    const board = this.boardService.getBoard(boardId);
+    if (!board) {
+      return null;
+    }
+    const childrenIds = childrenByParent.get(boardId) ?? [];
+    const children = childrenIds
+      .map((childId) => this.buildHierarchyNode(childId, childrenByParent, new Set(visited)))
+      .filter((child): child is HierarchyNode => !!child);
+    return { board, children };
+  }
+
+  private getHierarchyMaps(): {
+    parentByChild: Map<string, string>;
+    childrenByParent: Map<string, string[]>;
+    relatedIds: Set<string>;
+    rootIds: string[];
+  } {
+    const relationships = this.boardService.boardRelationships ?? [];
+    const parentByChild = new Map<string, string>();
+    const childrenByParent = new Map<string, string[]>();
+    const relatedIds = new Set<string>();
+
+    relationships.forEach((relationship) => {
+      parentByChild.set(relationship.childBoardId, relationship.parentBoardId);
+      relatedIds.add(relationship.childBoardId);
+      relatedIds.add(relationship.parentBoardId);
+      const children = childrenByParent.get(relationship.parentBoardId) ?? [];
+      if (!children.includes(relationship.childBoardId)) {
+        children.push(relationship.childBoardId);
+        childrenByParent.set(relationship.parentBoardId, children);
+      }
+    });
+
+    const rootIds: string[] = [];
+    relationships.forEach((relationship: BoardRelationship) => {
+      const parentId = relationship.parentBoardId;
+      if (!parentByChild.has(parentId) && !rootIds.includes(parentId)) {
+        rootIds.push(parentId);
+      }
+    });
+
+    return { parentByChild, childrenByParent, relatedIds, rootIds };
+  }
+}
+
+interface HierarchyNode {
+  board: Board;
+  children: HierarchyNode[];
 }

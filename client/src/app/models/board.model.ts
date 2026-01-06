@@ -26,6 +26,12 @@ export interface CardRelationship {
   createdAt: string;
 }
 
+export interface BoardRelationship {
+  childBoardId: string;
+  parentBoardId: string;
+  createdAt: string;
+}
+
 export interface BoardList {
   id: string;
   title: string;
@@ -63,4 +69,5 @@ export interface BoardsResponse {
   boards: Board[];
   cards: Card[];
   cardRelationships?: CardRelationship[];
+  boardRelationships?: BoardRelationship[];
 }

@@ -235,6 +235,36 @@
         </div>
       </div>
 
+      <div class="board-hierarchy-bar" data-testid="hierarchy-bar">
+        <button
+          type="button"
+          class="board-hierarchy-toggle"
+          (click)="toggleHierarchyPanel()"
+          data-testid="hierarchy-toggle"
+          [attr.aria-expanded]="hierarchyPanelOpen"
+        >
+          Hierarchy
+        </button>
+        @if (isHierarchyBoard) {
+          <nav class="board-breadcrumbs" aria-label="Board hierarchy" data-testid="hierarchy-breadcrumbs">
+            @for (crumb of breadcrumbBoards; track crumb.id; let isLast = $last) {
+              <button
+                type="button"
+                class="board-breadcrumb"
+                [class.current]="isLast"
+                (click)="navigateToBoardRoute(crumb.id)"
+                [disabled]="isLast"
+              >
+                {{ crumb.title }}
+              </button>
+              @if (!isLast) {
+                <span class="board-breadcrumb-separator" aria-hidden="true">/</span>
+              }
+            }
+          </nav>
+        }
+      </div>
+
 
       @if (boardPanelOpen) {
         <aside class="board-panel" data-testid="board-panel">
@@ -430,11 +460,89 @@
           </div>
         </div>
       }
+
+      @if (isNarrowViewport && hierarchyPanelOpen) {
+        <button
+          type="button"
+          class="board-hierarchy-backdrop"
+          aria-label="Close hierarchy"
+          (click)="toggleHierarchyPanel()"
+        ></button>
+        <aside class="board-hierarchy board-hierarchy-drawer" data-testid="hierarchy-panel">
+          <header class="board-hierarchy-header">
+            <div class="board-hierarchy-title">Hierarchy</div>
+            <button
+              type="button"
+              class="board-hierarchy-close"
+              aria-label="Close hierarchy"
+              (click)="toggleHierarchyPanel()"
+            >
+              ×
+            </button>
+          </header>
+          <div class="board-hierarchy-body">
+            @if (isHierarchyBoard) {
+              <ng-container *ngTemplateOutlet="hierarchyTree"></ng-container>
+            } @else {
+              <div class="board-hierarchy-empty" data-testid="hierarchy-empty">
+                <div class="board-hierarchy-empty-title">No hierarchy yet.</div>
+                <div class="board-hierarchy-empty-detail">
+                  Connect this board to goals, initiatives, and teams.
+                </div>
+                <button
+                  type="button"
+                  class="board-hierarchy-cta"
+                  (click)="openHierarchyManager()"
+                  data-testid="hierarchy-cta"
+                >
+                  Create hierarchy
+                </button>
+              </div>
+            }
+          </div>
+        </aside>
+      }
+
       <div
         class="board-layout"
         [class.board-layout-panel-open]="selectedCard"
         [class.board-layout-board-panel-open]="boardPanelOpen"
       >
+        @if (!isNarrowViewport && hierarchyPanelOpen) {
+          <aside class="board-hierarchy" data-testid="hierarchy-panel">
+            <header class="board-hierarchy-header">
+              <div class="board-hierarchy-title">Hierarchy</div>
+              <button
+                type="button"
+                class="board-hierarchy-close"
+                aria-label="Collapse hierarchy"
+                (click)="toggleHierarchyPanel()"
+              >
+                ×
+              </button>
+            </header>
+            <div class="board-hierarchy-body">
+              @if (isHierarchyBoard) {
+                <ng-container *ngTemplateOutlet="hierarchyTree"></ng-container>
+              } @else {
+                <div class="board-hierarchy-empty" data-testid="hierarchy-empty">
+                  <div class="board-hierarchy-empty-title">No hierarchy yet.</div>
+                  <div class="board-hierarchy-empty-detail">
+                    Connect this board to goals, initiatives, and teams.
+                  </div>
+                  <button
+                    type="button"
+                    class="board-hierarchy-cta"
+                    (click)="openHierarchyManager()"
+                    data-testid="hierarchy-cta"
+                  >
+                    Create hierarchy
+                  </button>
+                </div>
+              }
+            </div>
+          </aside>
+        }
         <div
           class="lists"
           #boardLists
@@ -468,6 +576,40 @@
           ></app-card-panel>
         }
       </div>
+
+      <ng-template #hierarchyTree>
+        <div class="board-hierarchy-tree" data-testid="hierarchy-tree">
+          @for (node of hierarchyRoots; track node.board.id) {
+            <ng-container
+              [ngTemplateOutlet]="hierarchyNode"
+              [ngTemplateOutletContext]="{ $implicit: node }"
+            ></ng-container>
+          }
+        </div>
+      </ng-template>
+
+      <ng-template #hierarchyNode let-node>
+        <div class="board-hierarchy-node">
+          <button
+            type="button"
+            class="board-hierarchy-link"
+            [class.current]="isCurrentBoard(node.board.id)"
+            (click)="navigateToBoardRoute(node.board.id)"
+          >
+            {{ node.board.title }}
+          </button>
+        </div>
+        @if (node.children.length) {
+          <div class="board-hierarchy-children">
+            @for (child of node.children; track child.board.id) {
+              <ng-container
+                [ngTemplateOutlet]="hierarchyNode"
+                [ngTemplateOutletContext]="{ $implicit: child }"
+              ></ng-container>
+            }
+          </div>
+        }
+      </ng-template>
     </div>
   }
 

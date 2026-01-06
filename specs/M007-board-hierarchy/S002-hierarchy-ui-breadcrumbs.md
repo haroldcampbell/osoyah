@@ -16,13 +16,20 @@ Enable fast jumps across Goals > Initiatives > Teams > Tasks while staying on a 
 - [ ] Left panel renders the board hierarchy tree.
 - [ ] Top breadcrumb bar shows current path and supports navigation.
 - [ ] Hierarchy UI is visible on boards that are linked into the tree.
+- [ ] Boards outside the hierarchy show an empty state with a management CTA and an option to collapse the hierarchy panel.
 - [ ] UI remains usable on narrow viewports.
 - [ ] Acceptance tests pass.
 
 ## Acceptance tests (exact commands + expected artifacts/output)
+- Log output is stored in `./client/logs/` (for example: `lint.log`, `e2e.log`, `test.log`).
 - `npm run lint` passes.
-- `npm run format:check` passes.
+- `npm run test` passes.
 - `npm run e2e` passes.
 
 ## Notes (edge cases, hazards, perf constraints)
-- Mockup: `designs/mockups/M007-S002-hierarchy-ui-breadcrumbs.svg`.
+- Mockup: `designs/mockups/M007-S002-hierarchy-ui-breadcrumbs.excalidraw`.
+- Tree ordering follows the raw order of `boardRelationships` (no sorting).
+- Tree renders all roots (full forest), not just the current board’s subtree.
+- Option B (alternate): render only the subtree containing the current board (single-root view).
+- Breadcrumbs are derived by walking parents to the root and include the current board as the final crumb.
+- Narrow viewports collapse the hierarchy tree into a toggle; the breadcrumb bar stays visible and the tree opens as an overlay drawer.

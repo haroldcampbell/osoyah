@@ -22,6 +22,7 @@ and focuses on how we work session-to-session.
 -   Work from a single spec in `/specs/`; do not mix specs.
 -   All development starts with the spec review; no coding before the
     spec is reviewed together.
+-   The first step in the spec review process requires the Agent to ask clarifying questions or making recommendations to improve the spec when necessary. The use of numbered lists is preferred.
 -   Keep changes minimal and aligned with `docs/principles.md`.
 -   When ambiguous, prefer existing behavior and document the choice.
 -   Once the agent confirms the spec DoDs are met, check off the spec's DoD items. When all DoD items are checked, mark the spec complete in the corresponding `milestone.md`.
@@ -40,6 +41,7 @@ and focuses on how we work session-to-session.
 -   Add a session entry in `session-hand-offs/` using `yyyy-mm-dd-nn-title.md`.
 -   Update `docs/decisions.md` when decisions change.
 -   After drafting a hand-off, review potential learnings and ask the user which items to save in `docs/learning.md`. If confirmed, append a dated entry.
+-   Before the session hand-offs is written, the Agent must review and update the relevant spec DoDs.
 
 ## Agent Directive
 

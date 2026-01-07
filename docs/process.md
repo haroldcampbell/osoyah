@@ -13,7 +13,7 @@ and focuses on how we work session-to-session.
 ## Session Start
 
 -   Read `AGENTS.md`, `docs/principles.md`, `docs/decisions.md` and `docs/learning.md`.
--   Read the latest entry in `session-hand-offs/` and the index in `session-hand-off.md` for current status and next steps.
+-   Read the latest entry in `session-hand-offs/`, the index in `session-hand-off.md`, and any `session-hand-offs/archive-00x/summary.md` for older context.
 -   Before any implementation, begin with a collaborative review of the target spec to confirm scope, acceptance tests, and open questions.
 -   When asked "Where should we start?", or similar questions, recommend the next product spec to work on. Treat this as a prompt to collaboratively review the next spec (or the one last worked on) before actually starting to code.
 
@@ -42,6 +42,14 @@ and focuses on how we work session-to-session.
 -   Update `docs/decisions.md` when decisions change.
 -   After drafting a hand-off, review potential learnings and ask the user which items to save in `docs/learning.md`. If confirmed, append a dated entry.
 -   Before the session hand-offs is written, the Agent must review and update the relevant spec DoDs.
+-   Archive summaries must include:
+    -   Executive summary (1–2 paragraphs max)
+    -   Highlights by theme
+    -   Key decisions with provenance citations
+    -   Compacted summary of work completed
+    -   Learnings + patterns captured
+    -   Outstanding items and open questions at archive close
+    -   Explicit citation format (e.g., `[2026-01-01-06]`)
 
 ## Agent Directive
 

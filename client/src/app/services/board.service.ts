@@ -630,6 +630,119 @@ export class BoardService {
     );
   }
 
+  getBoardParentId(childBoardId: string): string | null {
+    return this.boardRelationships.find((item) => item.childBoardId === childBoardId)?.parentBoardId ?? null;
+  }
+
+  getBoardParent(childBoardId: string): Board | null {
+    const parentId = this.getBoardParentId(childBoardId);
+    if (!parentId) {
+      return null;
+    }
+    return this.getBoard(parentId);
+  }
+
+  getBoardParentEligibility(
+    childBoardId: string,
+    parentBoardId: string | null,
+    maxDepth: number,
+  ): { allowed: boolean; reason?: 'self' | 'cycle' | 'depth' } {
+    if (parentBoardId && childBoardId === parentBoardId) {
+      return { allowed: false, reason: 'self' };
+    }
+    const child = this.getBoard(childBoardId);
+    if (!child) {
+      return { allowed: false };
+    }
+    if (parentBoardId) {
+      const parent = this.getBoard(parentBoardId);
+      if (!parent) {
+        return { allowed: false };
+      }
+    }
+    const { parentByChild, childrenByParent } = this.getBoardHierarchyMaps();
+    if (parentBoardId && this.wouldCreateBoardCycle(childBoardId, parentBoardId, parentByChild)) {
+      return { allowed: false, reason: 'cycle' };
+    }
+    const subtreeHeight = this.getBoardSubtreeHeight(childBoardId, childrenByParent, new Set());
+    const parentDepth = parentBoardId ? this.getBoardDepth(parentBoardId, parentByChild) : 0;
+    const resultingDepth = parentDepth + 1 + subtreeHeight - 1;
+    if (resultingDepth > maxDepth) {
+      return { allowed: false, reason: 'depth' };
+    }
+    return { allowed: true };
+  }
+
+  setBoardParent(
+    childBoardId: string,
+    parentBoardId: string | null,
+    maxDepth: number,
+  ): { success: boolean; error?: string } {
+    const eligibility = this.getBoardParentEligibility(childBoardId, parentBoardId, maxDepth);
+    if (!eligibility.allowed) {
+      if (eligibility.reason === 'self') {
+        return { success: false, error: 'A board cannot be its own parent.' };
+      }
+      if (eligibility.reason === 'cycle') {
+        return { success: false, error: 'This parent would create a cycle.' };
+      }
+      if (eligibility.reason === 'depth') {
+        return { success: false, error: `This parent would exceed depth ${maxDepth}.` };
+      }
+      return { success: false, error: 'Unable to set parent.' };
+    }
+    const existing = this.boardRelationships.find((item) => item.childBoardId === childBoardId) ?? null;
+    if (!parentBoardId) {
+      if (!existing) {
+        return { success: true };
+      }
+      this.boardRelationships = this.boardRelationships.filter((item) => item.childBoardId !== childBoardId);
+      return { success: true };
+    }
+    if (existing?.parentBoardId === parentBoardId) {
+      return { success: true };
+    }
+    if (existing) {
+      this.boardRelationships = this.boardRelationships.filter((item) => item.childBoardId !== childBoardId);
+    }
+    this.boardRelationships.push({
+      childBoardId,
+      parentBoardId,
+      createdAt: new Date().toISOString(),
+    });
+    return { success: true };
+  }
+
+  reorderBoardChildren(
+    parentBoardId: string,
+    orderedChildIds: string[],
+  ): { success: boolean; error?: string } {
+    if (!parentBoardId) {
+      return { success: false, error: 'Root boards cannot be reordered.' };
+    }
+    const relationships = this.boardRelationships.filter(
+      (item) => item.parentBoardId === parentBoardId,
+    );
+    if (relationships.length < 2) {
+      return { success: true };
+    }
+    if (orderedChildIds.length !== relationships.length) {
+      return { success: false, error: 'Invalid reorder.' };
+    }
+    const relationshipByChild = new Map(
+      relationships.map((relationship) => [relationship.childBoardId, relationship]),
+    );
+    const reordered = orderedChildIds.map((childId) => relationshipByChild.get(childId));
+    if (reordered.some((item) => !item)) {
+      return { success: false, error: 'Invalid reorder.' };
+    }
+    const remaining = this.boardRelationships.filter(
+      (item) => item.parentBoardId !== parentBoardId,
+    );
+    this.boardRelationships = [...remaining, ...(reordered as BoardRelationship[])];
+    return { success: true };
+  }
+
   getBoardForCard(cardId: string): Board | null {
     return this.boards.find((board) => this.isCardOnBoard(cardId, board.id)) ?? null;
   }
@@ -719,6 +832,79 @@ export class BoardService {
       return 'Board';
     }
     return `[${board.title}](/boards/${boardId}/cards/${cardId})`;
+  }
+
+  private getBoardHierarchyMaps(): {
+    parentByChild: Map<string, string>;
+    childrenByParent: Map<string, string[]>;
+  } {
+    const parentByChild = new Map<string, string>();
+    const childrenByParent = new Map<string, string[]>();
+    this.boardRelationships.forEach((relationship) => {
+      parentByChild.set(relationship.childBoardId, relationship.parentBoardId);
+      const children = childrenByParent.get(relationship.parentBoardId) ?? [];
+      if (!children.includes(relationship.childBoardId)) {
+        children.push(relationship.childBoardId);
+        childrenByParent.set(relationship.parentBoardId, children);
+      }
+    });
+    return { parentByChild, childrenByParent };
+  }
+
+  private wouldCreateBoardCycle(
+    childBoardId: string,
+    parentBoardId: string,
+    parentByChild: Map<string, string>,
+  ): boolean {
+    let currentId: string | undefined = parentBoardId;
+    const visited = new Set<string>();
+    while (currentId) {
+      if (currentId === childBoardId) {
+        return true;
+      }
+      if (visited.has(currentId)) {
+        break;
+      }
+      visited.add(currentId);
+      currentId = parentByChild.get(currentId);
+    }
+    return false;
+  }
+
+  private getBoardDepth(boardId: string, parentByChild: Map<string, string>): number {
+    let depth = 1;
+    let currentId: string | undefined = boardId;
+    const visited = new Set<string>();
+    while (currentId && parentByChild.has(currentId)) {
+      if (visited.has(currentId)) {
+        break;
+      }
+      visited.add(currentId);
+      currentId = parentByChild.get(currentId);
+      if (currentId) {
+        depth += 1;
+      }
+    }
+    return depth;
+  }
+
+  private getBoardSubtreeHeight(
+    boardId: string,
+    childrenByParent: Map<string, string[]>,
+    visited: Set<string>,
+  ): number {
+    if (visited.has(boardId)) {
+      return 0;
+    }
+    visited.add(boardId);
+    const children = childrenByParent.get(boardId) ?? [];
+    if (!children.length) {
+      return 1;
+    }
+    const childHeights = children.map((childId) =>
+      this.getBoardSubtreeHeight(childId, childrenByParent, new Set(visited)),
+    );
+    return 1 + Math.max(...childHeights);
   }
 
   private wouldCreateCycle(childCardId: string, parentCardId: string): boolean {

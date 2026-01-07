@@ -67,6 +67,11 @@ export class BoardComponent implements OnInit, AfterViewChecked {
   activeBoardId = '';
   activeCardId = '';
   hierarchyPanelOpen = true;
+  hierarchyEditMode = false;
+  hierarchyParentMenuOpen = false;
+  hierarchyParentError = '';
+  readonly hierarchyMaxDepth = 7;
+  hierarchyNodes: HierarchyNode[] = [];
   isNarrowViewport = window.matchMedia('(max-width: 800px)').matches;
   private lastSelectionId: string | null = null;
 
@@ -81,6 +86,7 @@ export class BoardComponent implements OnInit, AfterViewChecked {
         if (!loaded || this.boardService.error) {
           return;
         }
+        this.refreshHierarchy();
         window.setTimeout(() => {
           this.handleRoute(params.get('boardId'), params.get('cardId'));
         }, 0);
@@ -467,6 +473,10 @@ export class BoardComponent implements OnInit, AfterViewChecked {
       this.closeBoardSettings();
       return;
     }
+    if (this.hierarchyParentMenuOpen) {
+      this.hierarchyParentMenuOpen = false;
+      return;
+    }
     if (this.isNarrowViewport && this.hierarchyPanelOpen) {
       this.hierarchyPanelOpen = false;
       return;
@@ -507,6 +517,14 @@ export class BoardComponent implements OnInit, AfterViewChecked {
         this.resetBoardMenuState();
       }
     }
+    if (this.hierarchyParentMenuOpen) {
+      const clickedHierarchyMenu =
+        !!target.closest('.board-hierarchy-parent-menu') ||
+        !!target.closest('.board-hierarchy-parent-button');
+      if (!clickedHierarchyMenu) {
+        this.hierarchyParentMenuOpen = false;
+      }
+    }
   }
 
   @HostListener('window:resize')
@@ -525,13 +543,129 @@ export class BoardComponent implements OnInit, AfterViewChecked {
   }
 
   openHierarchyManager(): void {
-    if (!this.boardSettingsOpen) {
-      this.toggleBoardSettings();
+    this.hierarchyEditMode = true;
+    this.hierarchyParentMenuOpen = true;
+    this.hierarchyParentError = '';
+    if (this.isNarrowViewport) {
+      this.hierarchyPanelOpen = true;
     }
   }
 
+  toggleHierarchyEdit(): void {
+    this.hierarchyEditMode = !this.hierarchyEditMode;
+    if (!this.hierarchyEditMode) {
+      this.hierarchyParentMenuOpen = false;
+      this.hierarchyParentError = '';
+    }
+  }
+
+  toggleHierarchyParentMenu(): void {
+    this.hierarchyParentMenuOpen = !this.hierarchyParentMenuOpen;
+    if (this.hierarchyParentMenuOpen) {
+      this.hierarchyParentError = '';
+    }
+  }
+
+  isHierarchyRoot(boardId: string): boolean {
+    return !this.getHierarchyMaps().parentByChild.has(boardId);
+  }
+
+  get hierarchyParentLabel(): string {
+    const board = this.boardService.board;
+    if (!board) {
+      return 'No parent';
+    }
+    const parent = this.boardService.getBoardParent(board.id);
+    return parent ? parent.title : 'No parent (root)';
+  }
+
+  get hierarchyParentOptions(): HierarchyParentOption[] {
+    const board = this.boardService.board;
+    if (!board) {
+      return [];
+    }
+    const options: HierarchyParentOption[] = [];
+    const rootEligibility = this.boardService.getBoardParentEligibility(
+      board.id,
+      null,
+      this.hierarchyMaxDepth,
+    );
+    options.push({
+      id: null,
+      label: 'No parent (root)',
+      disabled: !rootEligibility.allowed,
+      helper: this.getHierarchyParentHelper(rootEligibility.reason),
+    });
+    this.boardService.boards.forEach((candidate) => {
+      const eligibility = this.boardService.getBoardParentEligibility(
+        board.id,
+        candidate.id,
+        this.hierarchyMaxDepth,
+      );
+      options.push({
+        id: candidate.id,
+        label: candidate.title,
+        disabled: !eligibility.allowed,
+        helper: this.getHierarchyParentHelper(eligibility.reason),
+      });
+    });
+    return options;
+  }
+
+  get hierarchyReorderItems(): HierarchyNode[] {
+    const board = this.boardService.board;
+    if (!board) {
+      return [];
+    }
+    const node = this.findHierarchyNode(board.id, this.hierarchyNodes);
+    return node?.children ?? [];
+  }
+
+  handleHierarchyReorderDrop(event: CdkDragDrop<HierarchyNode[]>): void {
+    const board = this.boardService.board;
+    if (!board) {
+      return;
+    }
+    if (!this.hierarchyEditMode) {
+      return;
+    }
+    if (event.previousContainer !== event.container) {
+      return;
+    }
+    if (event.previousIndex === event.currentIndex) {
+      return;
+    }
+    moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+    const orderedChildIds = event.container.data.map((child) => child.board.id);
+    const result = this.boardService.reorderBoardChildren(board.id, orderedChildIds);
+    if (!result.success) {
+      moveItemInArray(event.container.data, event.currentIndex, event.previousIndex);
+      return;
+    }
+    this.refreshHierarchy();
+  }
+
+  setHierarchyParent(option: HierarchyParentOption): void {
+    const board = this.boardService.board;
+    if (!board || option.disabled) {
+      return;
+    }
+    const result = this.boardService.setBoardParent(
+      board.id,
+      option.id,
+      this.hierarchyMaxDepth,
+    );
+    if (!result.success) {
+      this.hierarchyParentError = result.error ?? 'Unable to update parent.';
+      return;
+    }
+    this.hierarchyParentMenuOpen = false;
+    this.hierarchyParentError = '';
+    this.refreshHierarchy();
+  }
+
   get hierarchyRoots(): HierarchyNode[] {
-    return this.buildHierarchyRoots();
+    return this.hierarchyNodes;
   }
 
   get breadcrumbBoards(): Board[] {
@@ -583,6 +717,10 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     return [];
   }
 
+  private refreshHierarchy(): void {
+    this.hierarchyNodes = this.buildHierarchyRoots();
+  }
+
   private buildHierarchyNode(
     boardId: string,
     childrenByParent: Map<string, string[]>,
@@ -602,6 +740,20 @@ export class BoardComponent implements OnInit, AfterViewChecked {
       .filter((child): child is HierarchyNode => !!child);
     return { board, children };
   }
+
+  private findHierarchyNode(boardId: string, nodes: HierarchyNode[]): HierarchyNode | null {
+    for (const node of nodes) {
+      if (node.board.id === boardId) {
+        return node;
+      }
+      const found = this.findHierarchyNode(boardId, node.children);
+      if (found) {
+        return found;
+      }
+    }
+    return null;
+  }
+
 
   private getHierarchyMaps(): {
     parentByChild: Map<string, string>;
@@ -635,9 +787,31 @@ export class BoardComponent implements OnInit, AfterViewChecked {
 
     return { parentByChild, childrenByParent, relatedIds, rootIds };
   }
+
+  private getHierarchyParentHelper(
+    reason?: 'self' | 'cycle' | 'depth',
+  ): string | undefined {
+    if (!reason) {
+      return undefined;
+    }
+    if (reason === 'self') {
+      return 'Cannot parent a board to itself.';
+    }
+    if (reason === 'cycle') {
+      return 'Would create a cycle.';
+    }
+    return `Would exceed depth ${this.hierarchyMaxDepth}.`;
+  }
 }
 
 interface HierarchyNode {
   board: Board;
   children: HierarchyNode[];
+}
+
+interface HierarchyParentOption {
+  id: string | null;
+  label: string;
+  disabled: boolean;
+  helper?: string;
 }

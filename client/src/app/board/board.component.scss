@@ -240,6 +240,28 @@
   margin-bottom: tokens.$space-sm;
 }
 
+.board-hierarchy-actions {
+  display: flex;
+  align-items: center;
+  gap: tokens.$space-xs;
+}
+
+.board-hierarchy-edit {
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  background: #fff;
+  border-radius: tokens.$radius-button;
+  padding: 0.2rem 0.65rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.8rem;
+
+  &:hover,
+  &:focus-visible {
+    border-color: rgba(0, 0, 0, 0.25);
+    background: #f8f5ef;
+  }
+}
+
 .board-hierarchy-title {
   font-weight: 700;
   font-size: 0.95rem;
@@ -271,15 +293,153 @@
   padding-right: 0.25rem;
 }
 
+.board-hierarchy-manager {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  padding: tokens.$space-xs;
+  background: #fffdf8;
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$space-xs;
+}
+
+.board-hierarchy-manager-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: tokens.$space-sm;
+}
+
+.board-hierarchy-manager-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: tokens.$color-text-muted;
+}
+
+.board-hierarchy-parent-button {
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  background: #fff;
+  border-radius: tokens.$radius-button;
+  padding: 0.2rem 0.6rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  flex: 1;
+
+  &:hover,
+  &:focus-visible {
+    border-color: rgba(0, 0, 0, 0.3);
+    background: #f9f6ef;
+  }
+}
+
+.board-hierarchy-parent-menu {
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 10px;
+  padding: 0.35rem 0.5rem;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$space-xs;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.board-hierarchy-parent-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.board-hierarchy-parent-option {
+  border: 1px solid transparent;
+  background: transparent;
+  padding: 0.2rem 0.35rem;
+  border-radius: tokens.$radius-button;
+  text-align: left;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    border-color: rgba(0, 0, 0, 0.18);
+    background: #f7f1e6;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+.board-hierarchy-parent-helper {
+  font-size: 0.75rem;
+  color: tokens.$color-text-muted;
+  padding-left: 0.35rem;
+}
+
+.board-hierarchy-parent-error {
+  font-size: 0.8rem;
+  color: tokens.$color-state-error;
+}
+
+.board-hierarchy-reorder {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$space-xs;
+}
+
+.board-hierarchy-reorder-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.board-hierarchy-reorder-item {
+  display: flex;
+  align-items: center;
+  gap: tokens.$space-xs;
+  padding: 0.25rem 0.35rem;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: #fff;
+}
+
+.board-hierarchy-reorder-title {
+  font-weight: 600;
+  color: tokens.$color-text-primary;
+}
+
+.board-hierarchy-manager-help {
+  font-size: 0.78rem;
+  color: tokens.$color-text-muted;
+}
+
 .board-hierarchy-tree {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
 }
 
+.board-hierarchy-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.board-hierarchy-placeholder {
+  min-height: 26px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.12);
+  border: 1px dashed rgba(0, 0, 0, 0.25);
+}
+
 .board-hierarchy-node {
   display: flex;
   align-items: center;
+  gap: tokens.$space-xs;
 }
 
 .board-hierarchy-link {
@@ -291,6 +451,7 @@
   padding: 0.2rem 0.4rem;
   border-radius: tokens.$radius-button;
   cursor: pointer;
+  flex: 1;
 
   &.current {
     background: #f0eadf;
@@ -304,6 +465,21 @@
   }
 }
 
+.board-hierarchy-drag {
+  border: 1px dashed rgba(0, 0, 0, 0.2);
+  background: #fff;
+  border-radius: 999px;
+  padding: 0.1rem 0.45rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
 .board-hierarchy-children {
   margin-left: 1rem;
   padding-left: 0.6rem;
@@ -311,6 +487,14 @@
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
+}
+
+.board-hierarchy-children .cdk-drag-placeholder {
+  min-height: 26px;
+  margin: 0;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.12) !important;
+  border: 1px dashed rgba(0, 0, 0, 0.25);
 }
 
 .board-hierarchy-empty {

@@ -5,6 +5,11 @@ Conform to `docs/principles.md`.
 ## Summary
 Provide UI to attach/detach boards within the hierarchy and reorder sibling boards.
 
+## Why
+Hierarchy edits need to be quick and visible while users navigate boards. Keeping management in the
+sidebar and supporting safe reordering lets users shape the tree without leaving context or risking
+accidental cycles.
+
 ## Goal
 Allow users to manage the board tree without a new project entity.
 
@@ -13,11 +18,11 @@ Allow users to manage the board tree without a new project entity.
 - Import/export of hierarchy configuration.
 
 ## Definition of Done
-- [ ] Users can set a parent board for the current board.
-- [ ] Users can reorder boards within the same parent.
-- [ ] Removing a parent link leaves the board accessible.
-- [ ] UI indicates when a change is not allowed.
-- [ ] Acceptance tests pass.
+- [x] Users can set a parent board for the current board.
+- [x] Users can reorder boards within the same parent.
+- [x] Removing a parent link leaves the board accessible.
+- [x] UI indicates when a change is not allowed.
+- [x] Acceptance tests pass.
 
 ## Acceptance tests (exact commands + expected artifacts/output)
 - `npm run lint` passes.

@@ -89,3 +89,10 @@ Running list of communication/process learnings captured after sessions.
 
 ### Testing learnings
 - E2E assertions should validate the specific entity and the intended state change to avoid false positives (e.g., use `data-card-id` scoped assertions and confirm source/target list changes, not just label updates).
+
+## 2026-01-06
+
+### Drag-and-drop learnings
+- Nested CDK drop lists can fail to register drops; separating drag surfaces is a reliable fallback.
+- Tree drag-and-drop UX may need a dedicated component or flattening strategy to avoid CDK conflicts.
+- Rebuild-on-change can destabilize drag interactions; cache hierarchy data during drag operations.

@@ -20,7 +20,7 @@ Out-of-scope:
 ## Specs
 - [x] S001-Board Hierarchy Model (Derived)
 - [x] S002-Hierarchy UI + Breadcrumbs
-- [ ] S003-Hierarchy Management
+- [x] S003-Hierarchy Management
 
 ## Notes
 - Hierarchy lives in UI + metadata, not a new domain entity.

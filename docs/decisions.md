@@ -31,6 +31,7 @@ Current active decisions, consolidated from session hand-offs. When a decision c
 -   New relationship records capture `createdAt` timestamps and default them via a service helper.
 -   Comment sources are explicit (`user`, `system`, `bot`) to distinguish activity posts.
 -   Relationship changes generate system comments on both parent and child cards.
+-   Angular components that declare `imports` should include `standalone: true` in the `@Component` metadata.
 
 ## Test guidance
 

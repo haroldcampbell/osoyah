@@ -17,8 +17,9 @@ Out-of-scope:
 - Server-side aggregation.
 
 ## Specs
-- [ ] S001-Roll-Up Metrics (Relationship-Scoped)
+- [x] S001-Roll-Up Metrics (Relationship-Scoped)
 - [ ] S002-Roll-Up Configuration (Experiments)
+- [ ] S003-Default Panel States
 
 ## Notes
 - Default roll-up mode: relationship-scoped aggregation.

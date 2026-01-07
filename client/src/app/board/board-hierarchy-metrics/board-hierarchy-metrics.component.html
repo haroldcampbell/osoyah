@@ -1,0 +1,37 @@
+<section class="board-hierarchy-metrics" data-testid="hierarchy-rollups">
+  <header class="board-hierarchy-metrics-header">
+    <div>
+      <div class="board-hierarchy-metrics-title">Roll-up metrics</div>
+      <div class="board-hierarchy-metrics-subtitle">{{ scopeLabel }}</div>
+    </div>
+    <div class="board-hierarchy-metrics-toggle" role="group" aria-label="Metric scope">
+      <button
+        type="button"
+        [class.active]="scope === 'direct'"
+        (click)="setScope('direct')"
+      >
+        Direct
+      </button>
+      <button
+        type="button"
+        [class.active]="scope === 'descendants'"
+        (click)="setScope('descendants')"
+      >
+        All descendants
+      </button>
+    </div>
+  </header>
+
+  @if (totalCount === 0) {
+    <div class="board-hierarchy-metrics-empty">No cards in this scope yet.</div>
+  } @else {
+    <div class="board-hierarchy-metrics-grid">
+      @for (metric of metrics; track metric.id) {
+        <div class="board-hierarchy-metric">
+          <div class="board-hierarchy-metric-value">{{ metric.value }}</div>
+          <div class="board-hierarchy-metric-label">{{ metric.label }}</div>
+        </div>
+      }
+    </div>
+  }
+</section>

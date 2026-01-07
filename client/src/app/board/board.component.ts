@@ -21,6 +21,7 @@ import { BoardHeaderComponent } from '../board-header/board-header.component';
 import { BoardListComponent } from './list/board-list.component';
 import { Board, BoardList, BoardRelationship, Card } from '../models/board.model';
 import { CardPanelComponent } from './card-panel/card-panel.component';
+import { BoardHierarchyMetricsComponent } from './board-hierarchy-metrics/board-hierarchy-metrics.component';
 
 @Component({
     selector: 'app-board',
@@ -33,6 +34,7 @@ import { CardPanelComponent } from './card-panel/card-panel.component';
       CardPanelComponent,
       RouterLink,
       BoardHeaderComponent,
+      BoardHierarchyMetricsComponent,
     ],
     templateUrl: './board.component.html',
     styleUrl: './board.component.scss'
@@ -53,6 +55,7 @@ export class BoardComponent implements OnInit, AfterViewChecked {
   boardSettingsOpen = false;
   boardSettingsTitle = '';
   boardSettingsDescription = '';
+  boardSettingsRollupsEnabled = false;
   boardSettingsError = '';
   boardPanelOpen = false;
   boardPanelSortMode: 'manual' | 'name' | 'name-desc' | 'recent' = 'manual';
@@ -418,6 +421,7 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     if (this.boardSettingsOpen) {
       this.boardSettingsTitle = this.boardService.board?.title ?? '';
       this.boardSettingsDescription = this.boardService.board?.description ?? '';
+      this.boardSettingsRollupsEnabled = this.boardService.board?.rollupsEnabled ?? false;
     } else {
       this.boardSettingsError = '';
     }
@@ -427,6 +431,7 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     this.boardSettingsOpen = false;
     this.boardSettingsTitle = this.boardService.board?.title ?? '';
     this.boardSettingsDescription = this.boardService.board?.description ?? '';
+    this.boardSettingsRollupsEnabled = this.boardService.board?.rollupsEnabled ?? false;
     this.boardSettingsError = '';
   }
 
@@ -439,6 +444,7 @@ export class BoardComponent implements OnInit, AfterViewChecked {
       board.id,
       this.boardSettingsTitle,
       this.boardSettingsDescription,
+      this.boardSettingsRollupsEnabled,
     );
     if (!result.success) {
       this.boardSettingsError = result.error ?? 'Unable to rename board.';

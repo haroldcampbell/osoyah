@@ -1,22 +1,23 @@
-# S001-Roll-Up Metrics (Relationship-Scoped): Default Mode
+# S001-Roll-Up Metrics (Board + Descendants): Default Mode
 
 Conform to `docs/principles.md`.
 
 ## Summary
-Add roll-up metrics that aggregate cards whose parents live within the selected hierarchy subtree.
+Add roll-up metrics that aggregate cards on the current board and its descendants.
 
 ## Goal
-Provide meaningful progress signals without counting unrelated cards.
+Provide meaningful progress signals based on board membership and descendants.
 
 ## Non-goals
-- Direct-membership or subtree-wide roll-ups (future experiments).
 - Historical trend visualization.
 
 ## Definition of Done
-- [ ] Roll-ups aggregate only cards linked by parent/child relationships in the subtree.
-- [ ] Roll-ups display counts by state (e.g., open vs completed).
-- [ ] Roll-ups are visible from the hierarchy view.
-- [ ] Acceptance tests pass.
+- [x] Roll-ups aggregate cards on the board (direct) and on descendant boards (descendants).
+- [x] Roll-ups are produced by a service that ingests roll-up configuration settings.
+- [x] Roll-ups display total cards and completed cards derived from config.
+- [x] Roll-ups are visible from the hierarchy view and toggled on in board settings.
+- [x] Metrics use large centered numbers with smaller labels in rounded boxes.
+- [x] Acceptance tests pass.
 
 ## Acceptance tests (exact commands + expected artifacts/output)
 - `npm run lint` passes.
@@ -24,4 +25,4 @@ Provide meaningful progress signals without counting unrelated cards.
 - `npm run e2e` passes.
 
 ## Notes (edge cases, hazards, perf constraints)
-- Parent/child links can cross boards; aggregation follows links, not board membership.
+- Roll-up configuration settings model future customization (e.g., different properties/filters).

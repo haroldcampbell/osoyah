@@ -45,6 +45,7 @@ export interface Board {
   createdAt: string;
   description?: string;
   lists: BoardList[];
+  rollupsEnabled?: boolean;
   pinned?: boolean;
   archived?: boolean;
 }

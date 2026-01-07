@@ -20,6 +20,7 @@
 
 ## Entries
 
+-   2026-01-06-02-rollup-metrics.md - M008 S001 roll-up metrics complete, S003 spec drafted
 -   2026-01-06-01-hierarchy-management-wrap.md - M007 S003 hierarchy management, reorder workaround, future spec drafted
 -   2026-01-05-06-m007-s001-s002.md - M007 S001/S002 hierarchy model + UI
 -   2026-01-05-05-e2e-assertion-hardening.md - S009 E2E assertion hardening

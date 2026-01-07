@@ -192,6 +192,18 @@
                         data-testid="board-settings-description"
                       />
                     </li>
+                    <li class="board-settings-item board-settings-item-row">
+                      <label class="board-settings-toggle-label" for="board-settings-rollups">
+                        View roll-up metrics
+                      </label>
+                      <input
+                        id="board-settings-rollups"
+                        type="checkbox"
+                        class="board-settings-checkbox"
+                        [(ngModel)]="boardSettingsRollupsEnabled"
+                        data-testid="board-settings-rollups"
+                      />
+                    </li>
                     @if (boardService.board && boardService.board.createdAt) {
                       <li class="board-settings-item" data-testid="board-settings-created">
                         <div class="board-settings-label">Created</div>
@@ -264,6 +276,9 @@
           </nav>
         }
       </div>
+      @if (isHierarchyBoard && boardService.board.rollupsEnabled) {
+        <app-board-hierarchy-metrics [boardId]="boardService.board.id"></app-board-hierarchy-metrics>
+      }
 
 
       @if (boardPanelOpen) {

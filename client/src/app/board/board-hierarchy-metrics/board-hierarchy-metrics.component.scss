@@ -1,0 +1,96 @@
+@use '../../../styles/tokens' as tokens;
+
+.board-hierarchy-metrics {
+  margin: 0 tokens.$space-md tokens.$space-md;
+  padding: tokens.$space-sm tokens.$space-md;
+  border-radius: 14px;
+  background: #fbf8f3;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$space-sm;
+}
+
+.board-hierarchy-metrics-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: tokens.$space-sm;
+  flex-wrap: wrap;
+}
+
+.board-hierarchy-metrics-title {
+  font-weight: 700;
+}
+
+.board-hierarchy-metrics-subtitle {
+  font-size: 0.85rem;
+  color: tokens.$color-text-muted;
+}
+
+.board-hierarchy-metrics-toggle {
+  display: flex;
+  gap: tokens.$space-xs;
+
+  button {
+    border: 1px solid tokens.$color-border;
+    border-radius: 999px;
+    background: #fff;
+    color: tokens.$color-text-primary;
+    padding: 0.25rem 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  button.active {
+    background: #1f2a3b;
+    color: #fff;
+    border-color: #1f2a3b;
+  }
+}
+
+.board-hierarchy-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: tokens.$space-sm;
+}
+
+.board-hierarchy-metric {
+  background: #fff;
+  border-radius: 0.3rem;
+  padding: tokens.$space-sm;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  align-items: center;
+  text-align: center;
+}
+
+.board-hierarchy-metric-value {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.board-hierarchy-metric-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: tokens.$color-text-muted;
+}
+
+.board-hierarchy-metrics-empty {
+  font-size: 0.9rem;
+  color: tokens.$color-text-muted;
+}
+
+@media (max-width: 720px) {
+  .board-hierarchy-metrics {
+    margin: 0 tokens.$space-sm tokens.$space-md;
+    padding: tokens.$space-sm;
+  }
+
+  .board-hierarchy-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+}

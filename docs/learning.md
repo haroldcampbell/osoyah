@@ -96,3 +96,6 @@ Running list of communication/process learnings captured after sessions.
 - Nested CDK drop lists can fail to register drops; separating drag surfaces is a reliable fallback.
 - Tree drag-and-drop UX may need a dedicated component or flattening strategy to avoid CDK conflicts.
 - Rebuild-on-change can destabilize drag interactions; cache hierarchy data during drag operations.
+
+### Angular template warnings
+- Avoid optional chaining on non-null typed values to prevent NG8107 warnings (prefer direct access after checks).

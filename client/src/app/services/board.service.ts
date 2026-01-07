@@ -14,6 +14,22 @@ import {
 } from '../models/board.model';
 import { BoardGalleryStateService } from './board-gallery-state.service';
 
+export type RollupScope = 'direct' | 'descendants';
+
+export interface RollupMetricDefinition {
+  id: string;
+  label: string;
+  rollupFunction: 'count';
+  targetProperty: 'board.cards';
+  propertyFilter?: string;
+}
+
+export interface RollupMetricResult {
+  id: string;
+  label: string;
+  value: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class BoardService {
   private readonly dataUrl = 'assets/data.json';
@@ -27,6 +43,21 @@ export class BoardService {
   private readonly clockId = window.setInterval(() => {
     this.now = new Date();
   }, 60000);
+  private readonly rollupDefinitions: RollupMetricDefinition[] = [
+    {
+      id: 'card-total',
+      label: 'Total cards',
+      rollupFunction: 'count',
+      targetProperty: 'board.cards',
+    },
+    {
+      id: 'card-completed',
+      label: 'Completed',
+      rollupFunction: 'count',
+      targetProperty: 'board.cards',
+      propertyFilter: 'card.status.state == completed',
+    },
+  ];
 
   board: Board | null = null;
   boards: Board[] = [];
@@ -84,6 +115,7 @@ export class BoardService {
             if (!board.createdAt) {
               board.createdAt = new Date().toISOString();
             }
+            board.rollupsEnabled = board.rollupsEnabled ?? false;
             board.lists.forEach((list) => {
               list.isProcessDone = list.isProcessDone ?? false;
             });
@@ -155,6 +187,7 @@ export class BoardService {
       title: title.trim(),
       createdAt: now,
       description: '',
+      rollupsEnabled: false,
       lists: [
         {
           id: listId,
@@ -178,6 +211,7 @@ export class BoardService {
     boardId: string,
     title: string,
     description: string,
+    rollupsEnabled: boolean,
   ): { success: boolean; error?: string } {
     const board = this.getBoard(boardId);
     if (!board) {
@@ -193,7 +227,17 @@ export class BoardService {
     }
     board.title = title.trim();
     board.description = description.trim();
+    board.rollupsEnabled = rollupsEnabled;
     return { success: true };
+  }
+
+  getBoardRollupMetrics(boardId: string, scope: RollupScope): RollupMetricResult[] {
+    const cards = this.getCardsForRollupScope(boardId, scope);
+    return this.rollupDefinitions.map((definition) => ({
+      id: definition.id,
+      label: definition.label,
+      value: this.applyRollupDefinition(definition, cards),
+    }));
   }
 
   deleteBoard(boardId: string): { success: boolean; error?: string } {
@@ -1012,12 +1056,91 @@ export class BoardService {
     return { success: true };
   }
 
+  private getCardsForRollupScope(boardId: string, scope: RollupScope): Card[] {
+    const boardIds =
+      scope === 'direct' ? [boardId] : this.getDescendantBoardIds(boardId);
+    const cardIds = new Set<string>();
+
+    boardIds.forEach((id) => {
+      const board = this.getBoard(id);
+      if (!board) {
+        return;
+      }
+      board.lists.forEach((list) => {
+        list.cardIds.forEach((cardId) => {
+          cardIds.add(cardId);
+        });
+      });
+    });
+
+    return Array.from(cardIds)
+      .map((cardId) => this.cardsById[cardId])
+      .filter((card): card is Card => !!card);
+  }
+
+  private getDescendantBoardIds(boardId: string): string[] {
+    const relationships = this.boardRelationships ?? [];
+    const childrenByParent = new Map<string, string[]>();
+
+    relationships.forEach((relationship) => {
+      const children = childrenByParent.get(relationship.parentBoardId) ?? [];
+      if (!children.includes(relationship.childBoardId)) {
+        children.push(relationship.childBoardId);
+        childrenByParent.set(relationship.parentBoardId, children);
+      }
+    });
+
+    const visited = new Set<string>();
+    const queue = [...(childrenByParent.get(boardId) ?? [])];
+
+    while (queue.length > 0) {
+      const currentId = queue.shift();
+      if (!currentId || visited.has(currentId)) {
+        continue;
+      }
+      visited.add(currentId);
+      const children = childrenByParent.get(currentId) ?? [];
+      children.forEach((childId) => {
+        if (!visited.has(childId)) {
+          queue.push(childId);
+        }
+      });
+    }
+
+    return Array.from(visited);
+  }
+
+  private applyRollupDefinition(definition: RollupMetricDefinition, cards: Card[]): number {
+    if (definition.rollupFunction !== 'count') {
+      return 0;
+    }
+    if (definition.targetProperty !== 'board.cards') {
+      return 0;
+    }
+    const filtered = this.filterCardsForRollup(definition.propertyFilter, cards);
+    return filtered.length;
+  }
+
+  private filterCardsForRollup(filter: string | undefined, cards: Card[]): Card[] {
+    if (!filter) {
+      return cards;
+    }
+    if (filter === 'card.status.state == completed') {
+      return cards.filter((card) => card.status.state === 'completed');
+    }
+    if (filter === 'card.status.state == incomplete') {
+      return cards.filter((card) => card.status.state === 'incomplete');
+    }
+    return cards;
+  }
+
   private createEmptyBoard(): Board {
     return {
       id: 'board-empty',
       title: 'New Board',
       createdAt: new Date().toISOString(),
       description: '',
+      rollupsEnabled: false,
       lists: [],
       pinned: false,
       archived: false,

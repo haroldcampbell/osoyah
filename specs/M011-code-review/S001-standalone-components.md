@@ -1,4 +1,4 @@
-# S005-Standalone Components: Align Imports + Decorators
+# S001-Standalone Components: Align Imports + Decorators
 
 Conform to `docs/principles.md`.
 
@@ -32,4 +32,3 @@ Make component metadata consistent and reduce tooling noise without changing run
 ## Notes (edge cases, hazards, perf constraints)
 
 -   Use minimal, mechanical edits to avoid unrelated diffs.
--   Sequence: tackle after M005-S010.

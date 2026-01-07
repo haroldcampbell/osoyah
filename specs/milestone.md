@@ -18,6 +18,8 @@
 -   [ ] M008-Roll-Up Metrics
 -   [ ] M009-Views and State
 -   [ ] M010-Done Lists
+-   [ ] M011-Code Review
+-   [ ] M012-Backend Support
 
 ## Ideas and future milestones
 

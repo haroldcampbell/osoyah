@@ -127,151 +127,179 @@
             </div>
           }
         </div>
-        <div class="add-list">
-          <input
-            type="text"
-            placeholder="New list title"
-            [(ngModel)]="boardService.newListTitle"
-            (keyup.enter)="boardService.addList()"
-            data-testid="add-list-input"
-          />
-          <button type="button" (click)="boardService.addList()" data-testid="add-list-button">
-            Add list
-          </button>
-          <div class="board-settings-wrap">
+        <div class="board-toolbar-actions">
+          <div class="board-view-toggle" role="group" aria-label="Board view">
             <button
               type="button"
-              class="board-settings-toggle"
-              (click)="toggleBoardSettings()"
-              data-testid="board-settings-toggle"
+              class="board-view-option"
+              [class.active]="viewMode === 'cards'"
+              [attr.aria-pressed]="viewMode === 'cards'"
+              (click)="setViewMode('cards')"
+              data-testid="view-cards"
             >
-              Settings
+              Cards
             </button>
-            @if (boardSettingsOpen) {
+            <span class="board-view-separator" aria-hidden="true">|</span>
+            <button
+              type="button"
+              class="board-view-option"
+              [class.active]="viewMode === 'list'"
+              [attr.aria-pressed]="viewMode === 'list'"
+              (click)="setViewMode('list')"
+              data-testid="view-list"
+            >
+              List
+            </button>
+          </div>
+          <div class="add-list">
+            <input
+              type="text"
+              placeholder="New list title"
+              [(ngModel)]="boardService.newListTitle"
+              (keyup.enter)="boardService.addList()"
+              data-testid="add-list-input"
+            />
+            <button type="button" (click)="boardService.addList()" data-testid="add-list-button">
+              Add list
+            </button>
+            <div class="board-settings-wrap">
               <button
                 type="button"
-                class="board-settings-backdrop"
-                aria-label="Close board settings"
-                (click)="closeBoardSettings()"
-              ></button>
-              <section class="board-settings" data-testid="board-settings">
-                <div class="board-settings-header">
-                  <div class="board-settings-title">Board settings</div>
-                  <button
-                    type="button"
-                    class="board-settings-close"
-                    aria-label="Close board settings"
-                    (click)="closeBoardSettings()"
-                  >
-                    <img src="assets/icons/xmark.svg" alt="" aria-hidden="true" />
-                  </button>
-                </div>
-                <div class="board-settings-body">
-                  <ul class="board-settings-list">
-                    <li class="board-settings-item">
-                      <label class="board-settings-label" for="board-settings-title">
-                        Board name
-                      </label>
-                      <input
-                        #boardSettingsTitleInput
-                        id="board-settings-title"
-                        type="text"
-                        class="board-settings-title-input"
-                        [(ngModel)]="boardSettingsTitle"
-                        (input)="boardSettingsError = ''"
-                        (keydown.escape)="cancelBoardSettingsTitleEdit(); $event.stopPropagation()"
-                        data-testid="board-settings-title"
-                      />
-                    </li>
-                    <li class="board-settings-item">
-                      <label class="board-settings-label" for="board-settings-description">
-                        Description
-                      </label>
-                      <input
-                        #boardSettingsDescriptionInput
-                        id="board-settings-description"
-                        type="text"
-                        class="board-settings-title-input"
-                        placeholder="Short description"
-                        maxlength="30"
-                        [(ngModel)]="boardSettingsDescription"
-                        (input)="boardSettingsError = ''"
-                        (keydown.escape)="cancelBoardSettingsDescriptionEdit(); $event.stopPropagation()"
-                        data-testid="board-settings-description"
-                      />
-                    </li>
-                    <li class="board-settings-item board-settings-item-row">
-                      <label class="board-settings-toggle-label" for="board-settings-rollups">
-                        View roll-up metrics
-                      </label>
-                      <input
-                        id="board-settings-rollups"
-                        type="checkbox"
-                        class="board-settings-checkbox"
-                        [(ngModel)]="boardSettingsRollupsEnabled"
-                        data-testid="board-settings-rollups"
-                      />
-                    </li>
-                    <li class="board-settings-item">
-                      <div class="board-settings-label">Done lists</div>
-                      @if (boardService.board.lists.length) {
-                        <div class="board-settings-done-lists" data-testid="board-settings-done-lists">
-                          @for (list of boardService.board.lists; track list.id) {
-                            <label class="board-settings-done-row">
-                              <input
-                                type="checkbox"
-                                class="board-settings-checkbox"
-                                [checked]="list.isProcessDone"
-                                (change)="toggleDoneList(list, $event)"
-                                [attr.data-testid]="'board-settings-done-' + list.id"
-                              />
-                              <span class="board-settings-done-title">{{ list.title }}</span>
-                            </label>
-                          }
-                        </div>
-                      } @else {
-                        <div class="board-settings-empty">No lists yet.</div>
-                      }
-                    </li>
-                    @if (boardService.board && boardService.board.createdAt) {
-                      <li class="board-settings-item" data-testid="board-settings-created">
-                        <div class="board-settings-label">Created</div>
-                        <div class="board-settings-date">
-                          {{ boardService.formatExactDate(boardService.board.createdAt) }}
-                        </div>
+                class="board-settings-toggle"
+                (click)="toggleBoardSettings()"
+                data-testid="board-settings-toggle"
+              >
+                Settings
+              </button>
+              @if (boardSettingsOpen) {
+                <button
+                  type="button"
+                  class="board-settings-backdrop"
+                  aria-label="Close board settings"
+                  (click)="closeBoardSettings()"
+                ></button>
+                <section class="board-settings" data-testid="board-settings">
+                  <div class="board-settings-header">
+                    <div class="board-settings-title">Board settings</div>
+                    <button
+                      type="button"
+                      class="board-settings-close"
+                      aria-label="Close board settings"
+                      (click)="closeBoardSettings()"
+                    >
+                      <img src="assets/icons/xmark.svg" alt="" aria-hidden="true" />
+                    </button>
+                  </div>
+                  <div class="board-settings-body">
+                    <ul class="board-settings-list">
+                      <li class="board-settings-item">
+                        <label class="board-settings-label" for="board-settings-title">
+                          Board name
+                        </label>
+                        <input
+                          #boardSettingsTitleInput
+                          id="board-settings-title"
+                          type="text"
+                          class="board-settings-title-input"
+                          [(ngModel)]="boardSettingsTitle"
+                          (input)="boardSettingsError = ''"
+                          (keydown.escape)="cancelBoardSettingsTitleEdit(); $event.stopPropagation()"
+                          data-testid="board-settings-title"
+                        />
                       </li>
+                      <li class="board-settings-item">
+                        <label class="board-settings-label" for="board-settings-description">
+                          Description
+                        </label>
+                        <input
+                          #boardSettingsDescriptionInput
+                          id="board-settings-description"
+                          type="text"
+                          class="board-settings-title-input"
+                          placeholder="Short description"
+                          maxlength="30"
+                          [(ngModel)]="boardSettingsDescription"
+                          (input)="boardSettingsError = ''"
+                          (keydown.escape)="cancelBoardSettingsDescriptionEdit(); $event.stopPropagation()"
+                          data-testid="board-settings-description"
+                        />
+                      </li>
+                      <li class="board-settings-item board-settings-item-row">
+                        <label class="board-settings-toggle-label" for="board-settings-rollups">
+                          View roll-up metrics
+                        </label>
+                        <input
+                          id="board-settings-rollups"
+                          type="checkbox"
+                          class="board-settings-checkbox"
+                          [(ngModel)]="boardSettingsRollupsEnabled"
+                          data-testid="board-settings-rollups"
+                        />
+                      </li>
+                      <li class="board-settings-item">
+                        <div class="board-settings-label">Done lists</div>
+                        @if (boardService.board.lists.length) {
+                          <div
+                            class="board-settings-done-lists"
+                            data-testid="board-settings-done-lists"
+                          >
+                            @for (list of boardService.board.lists; track list.id) {
+                              <label class="board-settings-done-row">
+                                <input
+                                  type="checkbox"
+                                  class="board-settings-checkbox"
+                                  [checked]="list.isProcessDone"
+                                  (change)="toggleDoneList(list, $event)"
+                                  [attr.data-testid]="'board-settings-done-' + list.id"
+                                />
+                                <span class="board-settings-done-title">{{ list.title }}</span>
+                              </label>
+                            }
+                          </div>
+                        } @else {
+                          <div class="board-settings-empty">No lists yet.</div>
+                        }
+                      </li>
+                      @if (boardService.board && boardService.board.createdAt) {
+                        <li class="board-settings-item" data-testid="board-settings-created">
+                          <div class="board-settings-label">Created</div>
+                          <div class="board-settings-date">
+                            {{ boardService.formatExactDate(boardService.board.createdAt) }}
+                          </div>
+                        </li>
+                      }
+                    </ul>
+                    @if (boardSettingsError) {
+                      <div class="board-settings-error" data-testid="board-settings-error">
+                        {{ boardSettingsError }}
+                      </div>
                     }
-                  </ul>
-                  @if (boardSettingsError) {
-                    <div class="board-settings-error" data-testid="board-settings-error">
-                      {{ boardSettingsError }}
+                    <div class="board-settings-actions">
+                      <button
+                        type="button"
+                        (click)="saveBoardSettings()"
+                        data-testid="board-settings-save"
+                      >
+                        Save
+                      </button>
                     </div>
-                  }
-                  <div class="board-settings-actions">
-                    <button
-                      type="button"
-                      (click)="saveBoardSettings()"
-                      data-testid="board-settings-save"
-                    >
-                      Save
-                    </button>
-                  </div>
-                  <div class="board-settings-danger">
-                    <div class="board-settings-warning">
-                      Deleting a board is permanent and cannot be undone.
+                    <div class="board-settings-danger">
+                      <div class="board-settings-warning">
+                        Deleting a board is permanent and cannot be undone.
+                      </div>
+                      <button
+                        type="button"
+                        class="delete"
+                        (click)="confirmDeleteCurrentBoard()"
+                        data-testid="board-settings-delete"
+                      >
+                        Delete board
+                      </button>
                     </div>
-                    <button
-                      type="button"
-                      class="delete"
-                      (click)="confirmDeleteCurrentBoard()"
-                      data-testid="board-settings-delete"
-                    >
-                      Delete board
-                    </button>
                   </div>
-                </div>
-              </section>
-            }
+                </section>
+              }
+            </div>
           </div>
         </div>
       </div>
@@ -767,34 +795,118 @@
             </div>
           </aside>
         }
-        <div
-          class="lists"
-          #boardLists
-          cdkDropList
-          cdkDropListOrientation="horizontal"
-          [cdkDropListData]="boardService.board.lists"
-          (cdkDropListDropped)="boardService.dropList($event)"
-        >
-          @for (list of boardService.board.lists; track list.id) {
-            <app-board-list
-              cdkDrag
-              data-testid="list"
-              [attr.data-list-id]="list.id"
-              [attr.data-list-title]="list.title"
-              [list]="list"
-            ></app-board-list>
-          }
+        @if (isListView) {
+          <div class="board-list-view" #boardLists data-testid="list-view">
+            <div class="board-list-header">
+              <div class="board-list-cell board-list-disclosure"></div>
+              <div class="board-list-cell board-list-title-header">Title</div>
+              <div class="board-list-cell board-list-created-header">Created</div>
+              <div class="board-list-cell board-list-status-header">Completed</div>
+            </div>
+            @if (listViewRows.length) {
+              @for (row of listViewRows; track row.card.id) {
+                <div
+                  class="board-list-row"
+                  [class.expanded]="isListRowExpanded(row.card.id)"
+                  data-testid="list-view-row"
+                  [attr.data-card-id]="row.card.id"
+                >
+                  <div class="board-list-cell board-list-disclosure">
+                    <button
+                      type="button"
+                      class="board-list-disclosure-toggle"
+                      (click)="toggleListRow(row.card.id)"
+                      [attr.aria-expanded]="isListRowExpanded(row.card.id)"
+                      [attr.aria-controls]="'list-view-detail-' + row.card.id"
+                      data-testid="list-view-toggle"
+                    >
+                      <span class="board-list-disclosure-icon" aria-hidden="true"></span>
+                    </button>
+                  </div>
+                  <button
+                    type="button"
+                    class="board-list-cell board-list-title"
+                    (click)="openCardFromListView(row.list, row.card)"
+                    data-testid="list-view-title"
+                  >
+                    {{ row.card.title }}
+                  </button>
+                  <div
+                    class="board-list-cell board-list-created"
+                    [title]="boardService.formatExactDate(row.card.createdAt)"
+                  >
+                    {{ boardService.formatExactDate(row.card.createdAt) }}
+                  </div>
+                  <div class="board-list-cell board-list-status">
+                    <span
+                      class="board-list-status-pill"
+                      [class.is-complete]="boardService.isCardCompleted(row.card)"
+                    >
+                      {{ boardService.isCardCompleted(row.card) ? 'Complete' : 'Open' }}
+                    </span>
+                  </div>
+                </div>
+                @if (isListRowExpanded(row.card.id)) {
+                  <div
+                    class="board-list-detail"
+                    [id]="'list-view-detail-' + row.card.id"
+                    data-testid="list-view-detail"
+                  >
+                    <div class="board-list-detail-title">Child cards</div>
+                    @if (boardService.getChildCards(row.card.id).length) {
+                      <div class="board-list-detail-list">
+                        @for (child of boardService.getChildCards(row.card.id); track child.id) {
+                          <div class="board-list-detail-row" [attr.data-card-id]="child.id">
+                            <span class="board-list-detail-name">{{ child.title }}</span>
+                            <span
+                              class="board-list-detail-status"
+                              [class.is-complete]="boardService.isCardCompleted(child)"
+                            >
+                              {{ boardService.isCardCompleted(child) ? 'Complete' : 'Open' }}
+                            </span>
+                          </div>
+                        }
+                      </div>
+                    } @else {
+                      <div class="board-list-detail-empty">No child cards yet.</div>
+                    }
+                  </div>
+                }
+              }
+            } @else {
+              <div class="board-list-empty">No cards yet. Add one to start.</div>
+            }
+          </div>
+        } @else {
+          <div
+            class="lists"
+            #boardLists
+            cdkDropList
+            cdkDropListOrientation="horizontal"
+            [cdkDropListData]="boardService.board.lists"
+            (cdkDropListDropped)="boardService.dropList($event)"
+          >
+            @for (list of boardService.board.lists; track list.id) {
+              <app-board-list
+                cdkDrag
+                data-testid="list"
+                [attr.data-list-id]="list.id"
+                [attr.data-list-title]="list.title"
+                [list]="list"
+              ></app-board-list>
+            }
 
-          @if (boardService.board.lists.length === 0) {
-            <div class="empty-board">No lists yet. Add one to start.</div>
-          }
-        </div>
+            @if (boardService.board.lists.length === 0) {
+              <div class="empty-board">No lists yet. Add one to start.</div>
+            }
+          </div>
+        }
 
         @if (selectedCard && selectedList) {
           <app-card-panel
             [selectedCard]="selectedCard"
             [selectedList]="selectedList"
-            [boardLists]="boardLists"
+            [boardLists]="boardListsElement"
             [activeBoardId]="activeBoardId"
             [activeCardId]="activeCardId"
           ></app-card-panel>

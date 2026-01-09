@@ -19,7 +19,7 @@ Out-of-scope:
 
 ## Specs
 - [x] S001-Configurable Completion Mapping
-- [ ] S002-Board View Modes (List)
+- [x] S002-Board View Modes (List)
 
 ## Notes
 - Boards are pipelines; lists are stages.

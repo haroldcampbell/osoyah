@@ -30,6 +30,8 @@ export interface RollupMetricResult {
   value: number;
 }
 
+export type BoardViewMode = 'cards' | 'list';
+
 @Injectable({ providedIn: 'root' })
 export class BoardService {
   private readonly dataUrl = 'assets/data.json';
@@ -73,6 +75,7 @@ export class BoardService {
   cardsById: Record<string, Card> = {};
   cardRelationships: CardRelationship[] = [];
   boardRelationships: BoardRelationship[] = [];
+  boardViewModes: Record<string, BoardViewMode> = {};
 
   editingListId: string | null = null;
   editingListTitle = '';
@@ -158,6 +161,20 @@ export class BoardService {
 
   getBoard(boardId: string): Board | null {
     return this.boards.find((board) => board.id === boardId) ?? null;
+  }
+
+  getBoardViewMode(boardId: string | null | undefined): BoardViewMode {
+    if (!boardId) {
+      return 'cards';
+    }
+    return this.boardViewModes[boardId] ?? 'cards';
+  }
+
+  setBoardViewMode(boardId: string, mode: BoardViewMode): void {
+    if (!boardId) {
+      return;
+    }
+    this.boardViewModes[boardId] = mode;
   }
 
   getList(boardId: string, listId: string): BoardList | null {

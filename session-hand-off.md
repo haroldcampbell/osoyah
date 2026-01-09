@@ -27,6 +27,7 @@
 
 ## Entries
 
+-   2026-01-09-02-list-view-grid.md - List view grid layout, toggle, and E2E coverage
 -   2026-01-09-01-done-list-config-toast.md - Done list configuration, settings toast, UX patterns added
 -   2026-01-07-01-default-panel-states-wrap.md - Default panel states done, E2E updated, docs clarified
 -   2026-01-06-02-rollup-metrics.md - M008 S001 roll-up metrics complete, S003 spec drafted

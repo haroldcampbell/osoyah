@@ -3,6 +3,8 @@ import { CdkMenuModule } from '@angular/cdk/menu';
 import { CommonModule } from '@angular/common';
 import {
   AfterViewChecked,
+  AfterViewInit,
+  ChangeDetectorRef,
   Component,
   DestroyRef,
   ElementRef,
@@ -16,7 +18,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { combineLatest } from 'rxjs';
 
-import { BoardService } from '../services/board.service';
+import { BoardService, BoardViewMode } from '../services/board.service';
 import { BoardHeaderComponent } from '../board-header/board-header.component';
 import { BoardListComponent } from './list/board-list.component';
 import { Board, BoardList, BoardRelationship, Card } from '../models/board.model';
@@ -39,14 +41,16 @@ import { BoardHierarchyMetricsComponent } from './board-hierarchy-metrics/board-
     templateUrl: './board.component.html',
     styleUrl: './board.component.scss'
 })
-export class BoardComponent implements OnInit, AfterViewChecked {
+export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
   readonly boardService = inject(BoardService);
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
   @ViewChild('boardMenuPanel') boardMenuPanel?: ElementRef<HTMLElement>;
   @ViewChild('boardSettingsTitleInput') boardSettingsTitleInput?: ElementRef<HTMLInputElement>;
   @ViewChild('boardSettingsDescriptionInput') boardSettingsDescriptionInput?: ElementRef<HTMLInputElement>;
+  @ViewChild('boardLists') boardListsRef?: ElementRef<HTMLElement>;
   @ViewChild(CardPanelComponent) cardPanel?: CardPanelComponent;
   boardMenuOpen = false;
   boardSearchTerm = '';
@@ -78,6 +82,8 @@ export class BoardComponent implements OnInit, AfterViewChecked {
   readonly hierarchyMaxDepth = 7;
   hierarchyNodes: HierarchyNode[] = [];
   isNarrowViewport = window.matchMedia('(max-width: 800px)').matches;
+  private readonly expandedListRows = new Set<string>();
+  boardListsElement: HTMLElement | null = null;
   private lastSelectionId: string | null = null;
   private boardSettingsToastTimeoutId?: number;
 
@@ -117,6 +123,11 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     }, 0);
   }
 
+  ngAfterViewInit(): void {
+    this.boardListsElement = this.boardListsRef?.nativeElement ?? null;
+    this.changeDetectorRef.detectChanges();
+  }
+
   get selectedList(): BoardList | null {
     const selection = this.boardService.selectedCard;
     if (!selection || !this.boardService.board) {
@@ -135,6 +146,32 @@ export class BoardComponent implements OnInit, AfterViewChecked {
       return null;
     }
     return this.boardService.getCardFromList(list, selection.cardId);
+  }
+
+  get viewMode(): BoardViewMode {
+    return this.boardService.getBoardViewMode(this.boardService.board?.id);
+  }
+
+  get isListView(): boolean {
+    return this.viewMode === 'list';
+  }
+
+  get listViewRows(): { card: Card; list: BoardList }[] {
+    const board = this.boardService.board;
+    if (!board) {
+      return [];
+    }
+    const rows: { card: Card; list: BoardList }[] = [];
+    board.lists.forEach((list) => {
+      list.cardIds.forEach((cardId) => {
+        const card = this.boardService.getCardFromList(list, cardId);
+        if (!card) {
+          return;
+        }
+        rows.push({ card, list });
+      });
+    });
+    return rows;
   }
 
   get pinnedBoards(): Board[] {
@@ -389,6 +426,7 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     }
 
     if (this.boardService.board?.id !== board.id) {
+      this.expandedListRows.clear();
       this.boardService.setActiveBoard(board.id);
       this.boardSettingsTitle = board.title;
     } else {
@@ -410,6 +448,37 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     }
 
     this.boardService.openCardPanel(list, card);
+  }
+
+  setViewMode(mode: BoardViewMode): void {
+    const boardId = this.boardService.board?.id;
+    if (!boardId) {
+      return;
+    }
+    this.boardService.setBoardViewMode(boardId, mode);
+    window.setTimeout(() => {
+      this.boardListsElement = this.boardListsRef?.nativeElement ?? null;
+    }, 0);
+  }
+
+  toggleListRow(cardId: string): void {
+    if (this.expandedListRows.has(cardId)) {
+      this.expandedListRows.delete(cardId);
+      return;
+    }
+    this.expandedListRows.add(cardId);
+  }
+
+  isListRowExpanded(cardId: string): boolean {
+    return this.expandedListRows.has(cardId);
+  }
+
+  openCardFromListView(list: BoardList, card: Card): void {
+    const boardId = this.boardService.board?.id;
+    if (!boardId) {
+      return;
+    }
+    this.router.navigate(['/boards', boardId, 'cards', card.id]);
   }
 
   createBoardFromNotFound(): void {

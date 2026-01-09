@@ -16,7 +16,7 @@
 -   [x] M006-Card Relationships
 -   [x] M007-Board Hierarchy
 -   [x] M008-Roll-Up Metrics
--   [ ] M009-Views and State
+-   [x] M009-Views and State
 -   [ ] M010-Done Lists
 -   [ ] M011-Code Review
 -   [ ] M012-Backend Support

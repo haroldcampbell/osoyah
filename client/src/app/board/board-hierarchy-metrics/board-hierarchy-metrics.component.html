@@ -5,11 +5,7 @@
       <div class="board-hierarchy-metrics-subtitle">{{ scopeLabel }}</div>
     </div>
     <div class="board-hierarchy-metrics-toggle" role="group" aria-label="Metric scope">
-      <button
-        type="button"
-        [class.active]="scope === 'direct'"
-        (click)="setScope('direct')"
-      >
+      <button type="button" [class.active]="scope === 'direct'" (click)="setScope('direct')">
         Direct
       </button>
       <button

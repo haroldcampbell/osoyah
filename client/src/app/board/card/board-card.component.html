@@ -36,9 +36,7 @@
       (keydown.enter)="$event.stopPropagation()"
       (keydown.space)="$event.stopPropagation()"
     >
-      <label class="card-edit-label" [attr.for]="'card-title-input-' + card.id">
-        Card title
-      </label>
+      <label class="card-edit-label" [attr.for]="'card-title-input-' + card.id"> Card title </label>
       <input
         #titleInput
         [id]="'card-title-input-' + card.id"
@@ -118,10 +116,7 @@
             ></span>
           }
         </div>
-        <div
-          class="card-progress-count"
-          [title]="childProgress.percent + '% complete'"
-        >
+        <div class="card-progress-count" [title]="childProgress.percent + '% complete'">
           {{ childProgress.completed }}/{{ childProgress.total }}
         </div>
       </div>

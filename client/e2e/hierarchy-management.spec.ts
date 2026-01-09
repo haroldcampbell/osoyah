@@ -2,7 +2,18 @@ import { expect, type Locator, test } from '@playwright/test';
 
 // Spec: M007-S003
 
-async function dragToCenter(page: { mouse: { move: (x: number, y: number, options?: { steps?: number }) => Promise<void>; down: () => Promise<void>; up: () => Promise<void> }; waitForTimeout: (ms: number) => Promise<void> }, source: Locator, target: Locator): Promise<void> {
+async function dragToCenter(
+  page: {
+    mouse: {
+      move: (x: number, y: number, options?: { steps?: number }) => Promise<void>;
+      down: () => Promise<void>;
+      up: () => Promise<void>;
+    };
+    waitForTimeout: (ms: number) => Promise<void>;
+  },
+  source: Locator,
+  target: Locator,
+): Promise<void> {
   await source.scrollIntoViewIfNeeded();
   await target.scrollIntoViewIfNeeded();
   const sourceBox = await source.boundingBox();
@@ -10,10 +21,14 @@ async function dragToCenter(page: { mouse: { move: (x: number, y: number, option
   if (!sourceBox || !targetBox) {
     throw new Error('Drag-and-drop targets not visible.');
   }
-  await page.mouse.move(sourceBox.x + sourceBox.width / 2, sourceBox.y + sourceBox.height / 2, { steps: 10 });
+  await page.mouse.move(sourceBox.x + sourceBox.width / 2, sourceBox.y + sourceBox.height / 2, {
+    steps: 10,
+  });
   await page.mouse.down();
   await page.waitForTimeout(100);
-  await page.mouse.move(targetBox.x + targetBox.width / 2, targetBox.y + targetBox.height / 2, { steps: 10 });
+  await page.mouse.move(targetBox.x + targetBox.width / 2, targetBox.y + targetBox.height / 2, {
+    steps: 10,
+  });
   await page.waitForTimeout(100);
   await page.mouse.up();
 }
@@ -36,9 +51,9 @@ test('M007-S003 manages hierarchy parents and sibling ordering', async ({ page }
   await expect(parentMenu).toBeVisible();
   const selfOption = parentMenu.locator('[data-parent-board-id="board-3"]');
   await expect(selfOption).toBeDisabled();
-  await expect(
-    selfOption.locator('..').locator('.board-hierarchy-parent-helper'),
-  ).toHaveText('Cannot parent a board to itself.');
+  await expect(selfOption.locator('..').locator('.board-hierarchy-parent-helper')).toHaveText(
+    'Cannot parent a board to itself.',
+  );
   await parentMenu.locator('[data-parent-board-id="root"]').click();
 
   const hierarchyTree = hierarchyPanel.locator('[data-testid="hierarchy-tree"]');
@@ -46,9 +61,7 @@ test('M007-S003 manages hierarchy parents and sibling ordering', async ({ page }
     hierarchyTree.locator('[data-testid="hierarchy-node"][data-board-id="board-3"]'),
   ).toBeVisible();
   await expect(
-    hierarchyTree.locator(
-      ':scope > [data-testid="hierarchy-node"][data-board-id="board-3"]',
-    ),
+    hierarchyTree.locator(':scope > [data-testid="hierarchy-node"][data-board-id="board-3"]'),
   ).toHaveCount(1);
 
   const reorderList = hierarchyPanel.locator('[data-testid="hierarchy-reorder"]');
@@ -74,9 +87,7 @@ test('M007-S003 manages hierarchy parents and sibling ordering', async ({ page }
   const childrenContainer = hierarchyPanel.locator(
     '[data-testid="hierarchy-children"][data-parent-board-id="board-3"]',
   );
-  const directChildren = childrenContainer.locator(
-    ':scope > [data-testid="hierarchy-node"]',
-  );
+  const directChildren = childrenContainer.locator(':scope > [data-testid="hierarchy-node"]');
   const treeFirstId = await directChildren.first().getAttribute('data-board-id');
   expect(treeFirstId).toBe(secondChildId);
 });

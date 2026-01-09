@@ -77,8 +77,9 @@ describe('BoardService relationships', () => {
 
     const attempt = service.addCardRelationship(cardParent.id, cardOther.id);
     expect(attempt.success).toBe(false);
-    expect(service.getValidParentOptions(cardParent.id).some((card) => card.id === cardOther.id))
-      .toBe(false);
+    expect(
+      service.getValidParentOptions(cardParent.id).some((card) => card.id === cardOther.id),
+    ).toBe(false);
   });
 
   it('records system comments when linking relationships', () => {
@@ -123,7 +124,9 @@ describe('BoardService relationships', () => {
     expect(service.cardRelationships).toHaveSize(0);
     const childComment = cardChild.comments.at(-1);
     expect(childComment?.authorType).toBe('system');
-    expect(childComment?.message).toBe(`Parent card unlinked: **${cardParent.id} - ${cardParent.title}**`);
+    expect(childComment?.message).toBe(
+      `Parent card unlinked: **${cardParent.id} - ${cardParent.title}**`,
+    );
   });
 });
 

@@ -70,9 +70,6 @@ export class MarkdownService {
   }
 
   private normalizeMarkdown(markdown: string): string {
-    return markdown.replace(
-      /(?<!\\)\*(?!\s|\*)([^*\n]+?)(?<!\s)\*(?!\*)/g,
-      '**$1**',
-    );
+    return markdown.replace(/(?<!\\)\*(?!\s|\*)([^*\n]+?)(?<!\s)\*(?!\*)/g, '**$1**');
   }
 }

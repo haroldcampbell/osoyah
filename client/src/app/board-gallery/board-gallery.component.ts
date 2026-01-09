@@ -12,6 +12,7 @@ type GallerySection = 'recent' | 'pinned' | 'all';
 
 @Component({
   selector: 'app-board-gallery',
+  standalone: true,
   imports: [CommonModule, FormsModule, BoardHeaderComponent],
   templateUrl: './board-gallery.component.html',
   styleUrl: './board-gallery.component.scss',

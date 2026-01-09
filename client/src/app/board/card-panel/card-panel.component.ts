@@ -18,10 +18,11 @@ import { BoardService } from '../../services/board.service';
 import { MarkdownService } from '../../services/markdown.service';
 
 @Component({
-    selector: 'app-card-panel',
-    imports: [CommonModule, FormsModule, CdkMenuModule],
-    templateUrl: './card-panel.component.html',
-    styleUrl: './card-panel.component.scss'
+  selector: 'app-card-panel',
+  standalone: true,
+  imports: [CommonModule, FormsModule, CdkMenuModule],
+  templateUrl: './card-panel.component.html',
+  styleUrl: './card-panel.component.scss',
 })
 export class CardPanelComponent implements OnChanges {
   @Input({ required: true }) selectedCard!: Card;
@@ -724,8 +725,7 @@ export class CardPanelComponent implements OnChanges {
       const panelRect = panel?.getBoundingClientRect();
       const buffer = 12;
       const visibleLeft = listsRect.left + buffer;
-      const visibleRight =
-        Math.min(listsRect.right, panelRect?.left ?? listsRect.right) - buffer;
+      const visibleRight = Math.min(listsRect.right, panelRect?.left ?? listsRect.right) - buffer;
       let nextScrollLeft = lists.scrollLeft;
       if (cardRect.left < visibleLeft) {
         nextScrollLeft -= visibleLeft - cardRect.left;

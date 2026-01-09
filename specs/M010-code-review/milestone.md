@@ -21,8 +21,9 @@ In-scope:
 
 ## Specs
 
--   [ ] S001-Standalone Components
+-   [x] S001-Standalone Components
 -   [ ] S002-UX patterns
+-   [ ] S003-UI component extraction
 
 ## Notes
 

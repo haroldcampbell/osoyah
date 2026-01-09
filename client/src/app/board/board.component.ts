@@ -26,20 +26,21 @@ import { CardPanelComponent } from './card-panel/card-panel.component';
 import { BoardHierarchyMetricsComponent } from './board-hierarchy-metrics/board-hierarchy-metrics.component';
 
 @Component({
-    selector: 'app-board',
-    imports: [
-      CommonModule,
-      FormsModule,
-      DragDropModule,
-      CdkMenuModule,
-      BoardListComponent,
-      CardPanelComponent,
-      RouterLink,
-      BoardHeaderComponent,
-      BoardHierarchyMetricsComponent,
-    ],
-    templateUrl: './board.component.html',
-    styleUrl: './board.component.scss'
+  selector: 'app-board',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    DragDropModule,
+    CdkMenuModule,
+    BoardListComponent,
+    CardPanelComponent,
+    RouterLink,
+    BoardHeaderComponent,
+    BoardHierarchyMetricsComponent,
+  ],
+  templateUrl: './board.component.html',
+  styleUrl: './board.component.scss',
 })
 export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
   readonly boardService = inject(BoardService);
@@ -49,7 +50,8 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
   private readonly destroyRef = inject(DestroyRef);
   @ViewChild('boardMenuPanel') boardMenuPanel?: ElementRef<HTMLElement>;
   @ViewChild('boardSettingsTitleInput') boardSettingsTitleInput?: ElementRef<HTMLInputElement>;
-  @ViewChild('boardSettingsDescriptionInput') boardSettingsDescriptionInput?: ElementRef<HTMLInputElement>;
+  @ViewChild('boardSettingsDescriptionInput')
+  boardSettingsDescriptionInput?: ElementRef<HTMLInputElement>;
   @ViewChild('boardLists') boardListsRef?: ElementRef<HTMLElement>;
   @ViewChild(CardPanelComponent) cardPanel?: CardPanelComponent;
   boardMenuOpen = false;
@@ -758,11 +760,7 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
     if (!board || option.disabled) {
       return;
     }
-    const result = this.boardService.setBoardParent(
-      board.id,
-      option.id,
-      this.hierarchyMaxDepth,
-    );
+    const result = this.boardService.setBoardParent(board.id, option.id, this.hierarchyMaxDepth);
     if (!result.success) {
       this.hierarchyParentError = result.error ?? 'Unable to update parent.';
       return;
@@ -862,7 +860,6 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
     return null;
   }
 
-
   private getHierarchyMaps(): {
     parentByChild: Map<string, string>;
     childrenByParent: Map<string, string[]>;
@@ -896,9 +893,7 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
     return { parentByChild, childrenByParent, relatedIds, rootIds };
   }
 
-  private getHierarchyParentHelper(
-    reason?: 'self' | 'cycle' | 'depth',
-  ): string | undefined {
+  private getHierarchyParentHelper(reason?: 'self' | 'cycle' | 'depth'): string | undefined {
     if (!reason) {
       return undefined;
     }

@@ -1,7 +1,13 @@
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { ActivatedRoute, convertToParamMap, ParamMap, provideRouter, Router } from '@angular/router';
+import {
+  ActivatedRoute,
+  convertToParamMap,
+  ParamMap,
+  provideRouter,
+  Router,
+} from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 
 import { BoardComponent } from './board.component';

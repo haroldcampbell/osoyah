@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-board-header',
+  standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './board-header.component.html',
   styleUrl: './board-header.component.scss',

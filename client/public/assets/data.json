@@ -7,64 +7,43 @@
         {
           "id": "list-1",
           "title": "Backlog",
-          "cardIds": [
-            "card-1",
-            "card-2",
-            "card-14"
-          ],
+          "cardIds": ["card-1", "card-2", "card-14"],
           "isProcessDone": false
         },
         {
           "id": "list-2",
           "title": "In Progress",
-          "cardIds": [
-            "card-3"
-          ],
+          "cardIds": ["card-3"],
           "isProcessDone": false
         },
         {
           "id": "list-4",
           "title": "Review",
-          "cardIds": [
-            "card-5",
-            "card-6"
-          ],
+          "cardIds": ["card-5", "card-6"],
           "isProcessDone": false
         },
         {
           "id": "list-5",
           "title": "QA",
-          "cardIds": [
-            "card-7",
-            "card-8"
-          ],
+          "cardIds": ["card-7", "card-8"],
           "isProcessDone": false
         },
         {
           "id": "list-6",
           "title": "Blocked",
-          "cardIds": [
-            "card-9",
-            "card-10",
-            "card-11"
-          ],
+          "cardIds": ["card-9", "card-10", "card-11"],
           "isProcessDone": false
         },
         {
           "id": "list-7",
           "title": "Ideas",
-          "cardIds": [
-            "card-12",
-            "card-13"
-          ],
+          "cardIds": ["card-12", "card-13"],
           "isProcessDone": false
         },
         {
           "id": "list-3",
           "title": "Done",
-          "cardIds": [
-            "card-4"
-          ],
+          "cardIds": ["card-4"],
           "isProcessDone": true
         }
       ],
@@ -77,36 +56,25 @@
         {
           "id": "list-8",
           "title": "Leads",
-          "cardIds": [
-            "card-12",
-            "card-1"
-          ],
+          "cardIds": ["card-12", "card-1"],
           "isProcessDone": false
         },
         {
           "id": "list-9",
           "title": "Discovery",
-          "cardIds": [
-            "card-2",
-            "card-5",
-            "card-15"
-          ],
+          "cardIds": ["card-2", "card-5", "card-15"],
           "isProcessDone": false
         },
         {
           "id": "list-10",
           "title": "Negotiation",
-          "cardIds": [
-            "card-3"
-          ],
+          "cardIds": ["card-3"],
           "isProcessDone": false
         },
         {
           "id": "list-11",
           "title": "Closed",
-          "cardIds": [
-            "card-4"
-          ],
+          "cardIds": ["card-4"],
           "isProcessDone": false
         }
       ],

@@ -26,15 +26,12 @@
     <div class="board-not-found-wrap">
       <div class="board-alert board-alert-plain error" data-testid="board-not-found">
         <h2 class="board-alert-title board-alert-title-large">Board not found.</h2>
-        <div class="board-alert-detail">
-          The board ID "{{ missingBoardId }}" does not exist.
-        </div>
+        <div class="board-alert-detail">The board ID "{{ missingBoardId }}" does not exist.</div>
       </div>
       <div class="board-not-found-actions" data-testid="board-not-found-actions">
         Return to
         <a class="board-link" routerLink="/boards">Boards</a>
-        |
-        Create a
+        | Create a
         <button type="button" class="board-not-found-button" (click)="createBoardFromNotFound()">
           New board
         </button>
@@ -203,7 +200,9 @@
                           class="board-settings-title-input"
                           [(ngModel)]="boardSettingsTitle"
                           (input)="boardSettingsError = ''"
-                          (keydown.escape)="cancelBoardSettingsTitleEdit(); $event.stopPropagation()"
+                          (keydown.escape)="
+                            cancelBoardSettingsTitleEdit(); $event.stopPropagation()
+                          "
                           data-testid="board-settings-title"
                         />
                       </li>
@@ -220,7 +219,9 @@
                           maxlength="30"
                           [(ngModel)]="boardSettingsDescription"
                           (input)="boardSettingsError = ''"
-                          (keydown.escape)="cancelBoardSettingsDescriptionEdit(); $event.stopPropagation()"
+                          (keydown.escape)="
+                            cancelBoardSettingsDescriptionEdit(); $event.stopPropagation()
+                          "
                           data-testid="board-settings-description"
                         />
                       </li>
@@ -315,7 +316,11 @@
           Hierarchy
         </button>
         @if (isHierarchyBoard) {
-          <nav class="board-breadcrumbs" aria-label="Board hierarchy" data-testid="hierarchy-breadcrumbs">
+          <nav
+            class="board-breadcrumbs"
+            aria-label="Board hierarchy"
+            data-testid="hierarchy-breadcrumbs"
+          >
             @for (crumb of breadcrumbBoards; track crumb.id; let isLast = $last) {
               <button
                 type="button"
@@ -334,9 +339,10 @@
         }
       </div>
       @if (isHierarchyBoard && boardService.board.rollupsEnabled) {
-        <app-board-hierarchy-metrics [boardId]="boardService.board.id"></app-board-hierarchy-metrics>
+        <app-board-hierarchy-metrics
+          [boardId]="boardService.board.id"
+        ></app-board-hierarchy-metrics>
       }
-
 
       @if (boardPanelOpen) {
         <aside class="board-panel" data-testid="board-panel">
@@ -391,10 +397,7 @@
                   </summary>
                   <div class="board-panel-list">
                     @for (board of archivedBoards; track board.id) {
-                      <div
-                        class="board-panel-row"
-                        [class.current]="isCurrentBoard(board.id)"
-                      >
+                      <div class="board-panel-row" [class.current]="isCurrentBoard(board.id)">
                         <button
                           type="button"
                           class="board-panel-board"
@@ -448,8 +451,7 @@
                           <span class="board-panel-name" [attr.title]="board.title">
                             {{ board.title }}
                           </span>
-                          <span class="board-panel-badges">
-                          </span>
+                          <span class="board-panel-badges"> </span>
                         </button>
                         <details class="board-panel-menu">
                           <summary class="board-panel-menu-trigger" aria-label="Board actions">
@@ -477,11 +479,7 @@
                   (cdkDropListDropped)="handleBoardDrop($event)"
                 >
                   @for (board of visibleBoards; track board.id) {
-                    <div
-                      class="board-panel-row"
-                      cdkDrag
-                      [class.current]="isCurrentBoard(board.id)"
-                    >
+                    <div class="board-panel-row" cdkDrag [class.current]="isCurrentBoard(board.id)">
                       <span class="board-panel-grip" cdkDragHandle aria-hidden="true"></span>
                       <button
                         type="button"
@@ -491,21 +489,20 @@
                         <span class="board-panel-name" [attr.title]="board.title">
                           {{ board.title }}
                         </span>
-                        <span class="board-panel-badges">
-                        </span>
-                        </button>
-                        <details class="board-panel-menu">
-                          <summary class="board-panel-menu-trigger" aria-label="Board actions">
-                            <span aria-hidden="true">⋮</span>
-                          </summary>
-                          <div class="board-panel-menu-popover">
-                            <button type="button" (click)="pinBoard(board)">Pin</button>
-                            <button type="button" (click)="archiveBoard(board)">Archive</button>
-                          </div>
-                        </details>
-                      </div>
-                    }
-                  </div>
+                        <span class="board-panel-badges"> </span>
+                      </button>
+                      <details class="board-panel-menu">
+                        <summary class="board-panel-menu-trigger" aria-label="Board actions">
+                          <span aria-hidden="true">⋮</span>
+                        </summary>
+                        <div class="board-panel-menu-popover">
+                          <button type="button" (click)="pinBoard(board)">Pin</button>
+                          <button type="button" (click)="archiveBoard(board)">Archive</button>
+                        </div>
+                      </details>
+                    </div>
+                  }
+                </div>
               </details>
             }
           </div>
@@ -577,10 +574,7 @@
                   </button>
                 </div>
                 @if (hierarchyParentMenuOpen) {
-                  <div
-                    class="board-hierarchy-parent-menu"
-                    data-testid="hierarchy-parent-menu"
-                  >
+                  <div class="board-hierarchy-parent-menu" data-testid="hierarchy-parent-menu">
                     @for (option of hierarchyParentOptions; track option.id ?? option.label) {
                       <div class="board-hierarchy-parent-item">
                         <button
@@ -708,10 +702,7 @@
                     </button>
                   </div>
                   @if (hierarchyParentMenuOpen) {
-                    <div
-                      class="board-hierarchy-parent-menu"
-                      data-testid="hierarchy-parent-menu"
-                    >
+                    <div class="board-hierarchy-parent-menu" data-testid="hierarchy-parent-menu">
                       @for (option of hierarchyParentOptions; track option.id ?? option.label) {
                         <div class="board-hierarchy-parent-item">
                           <button
@@ -1001,5 +992,4 @@
       </footer>
     </section>
   }
-
 </section>

@@ -166,7 +166,9 @@
   box-shadow: tokens.$shadow-card;
   text-decoration: none;
   color: inherit;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
   min-height: 88px;
   max-height: 88px;
   overflow: hidden;
@@ -203,7 +205,10 @@
   font-size: 0.75rem;
   cursor: pointer;
   opacity: 0;
-  transition: opacity 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+  transition:
+    opacity 0.15s ease,
+    background 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .board-gallery-card:hover .board-gallery-pin,

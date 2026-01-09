@@ -58,7 +58,6 @@
   }
 }
 
-
 .board-state {
   padding: 2rem 0;
   font-size: 1rem;
@@ -121,7 +120,6 @@
   }
 }
 
-
 .board-alert-title {
   font-weight: 600;
 }
@@ -158,8 +156,6 @@
   cursor: pointer;
   font-weight: 600;
 }
-
-
 
 .board {
   background: transparent;
@@ -873,7 +869,6 @@
   }
 }
 
-
 .board-panel-grip {
   width: 10px;
   height: 14px;
@@ -891,7 +886,9 @@
     background: tokens.$color-text-muted;
     left: 0;
     top: 2px;
-    box-shadow: 0 4px 0 tokens.$color-text-muted, 0 8px 0 tokens.$color-text-muted;
+    box-shadow:
+      0 4px 0 tokens.$color-text-muted,
+      0 8px 0 tokens.$color-text-muted;
   }
 
   &::after {
@@ -1050,14 +1047,11 @@
 }
 
 .board-panel-card {
-
   &:hover .board-panel-card-actions,
   &:focus-within .board-panel-card-actions {
     opacity: 1;
   }
 }
-
-
 
 .board-selector-caret {
   width: 5px;
@@ -1102,7 +1096,6 @@
     box-sizing: border-box;
   }
 }
-
 
 .board-menu-list {
   display: flex;
@@ -1299,7 +1292,7 @@
 .board-settings-wrap {
   position: relative;
 
-  >.board-settings-backdrop {
+  > .board-settings-backdrop {
     all: unset;
     position: fixed;
     inset: 0;
@@ -1340,7 +1333,6 @@
   padding: 0 tokens.$space-md tokens.$space-sm;
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 }
-
 
 .board-settings-title {
   font-weight: 600;
@@ -1414,7 +1406,6 @@
   font-size: 0.85rem;
   color: tokens.$color-text-muted;
 }
-
 
 .board-settings-error {
   margin-top: -0.35rem;

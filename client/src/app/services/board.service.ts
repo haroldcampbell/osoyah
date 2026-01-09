@@ -508,10 +508,7 @@ export class BoardService {
     this.editingCardDescription = card.description;
   }
 
-  saveCardEdit(
-    list: BoardList,
-    card: Card,
-  ): { success: boolean; error?: string } {
+  saveCardEdit(list: BoardList, card: Card): { success: boolean; error?: string } {
     const title = this.editingCardTitle.trim();
     const error = this.getCardTitleError(title);
     if (error) {
@@ -681,8 +678,7 @@ export class BoardService {
       return { success: false, error: 'No child link to remove.' };
     }
     this.cardRelationships = this.cardRelationships.filter(
-      (item) =>
-        !(item.parentCardId === parentCardId && item.childCardId === childCardId),
+      (item) => !(item.parentCardId === parentCardId && item.childCardId === childCardId),
     );
     this.recordRelationshipUnlink(parentCardId, childCardId);
     return { success: true };
@@ -717,7 +713,10 @@ export class BoardService {
   }
 
   getBoardParentId(childBoardId: string): string | null {
-    return this.boardRelationships.find((item) => item.childBoardId === childBoardId)?.parentBoardId ?? null;
+    return (
+      this.boardRelationships.find((item) => item.childBoardId === childBoardId)?.parentBoardId ??
+      null
+    );
   }
 
   getBoardParent(childBoardId: string): Board | null {
@@ -777,19 +776,24 @@ export class BoardService {
       }
       return { success: false, error: 'Unable to set parent.' };
     }
-    const existing = this.boardRelationships.find((item) => item.childBoardId === childBoardId) ?? null;
+    const existing =
+      this.boardRelationships.find((item) => item.childBoardId === childBoardId) ?? null;
     if (!parentBoardId) {
       if (!existing) {
         return { success: true };
       }
-      this.boardRelationships = this.boardRelationships.filter((item) => item.childBoardId !== childBoardId);
+      this.boardRelationships = this.boardRelationships.filter(
+        (item) => item.childBoardId !== childBoardId,
+      );
       return { success: true };
     }
     if (existing?.parentBoardId === parentBoardId) {
       return { success: true };
     }
     if (existing) {
-      this.boardRelationships = this.boardRelationships.filter((item) => item.childBoardId !== childBoardId);
+      this.boardRelationships = this.boardRelationships.filter(
+        (item) => item.childBoardId !== childBoardId,
+      );
     }
     this.boardRelationships.push({
       childBoardId,
@@ -837,32 +841,16 @@ export class BoardService {
     const timestamp = new Date().toISOString();
     const parentLabel = this.formatCardMarkdown(parentCardId);
     const childLabel = this.formatCardMarkdown(childCardId);
-    this.addSystemComment(
-      childCardId,
-      `Parent card linked: ${parentLabel}`,
-      timestamp,
-    );
-    this.addSystemComment(
-      parentCardId,
-      `Child card linked: ${childLabel}`,
-      timestamp,
-    );
+    this.addSystemComment(childCardId, `Parent card linked: ${parentLabel}`, timestamp);
+    this.addSystemComment(parentCardId, `Child card linked: ${childLabel}`, timestamp);
   }
 
   private recordRelationshipUnlink(parentCardId: string, childCardId: string): void {
     const timestamp = new Date().toISOString();
     const parentLabel = this.formatCardMarkdown(parentCardId);
     const childLabel = this.formatCardMarkdown(childCardId);
-    this.addSystemComment(
-      childCardId,
-      `Parent card unlinked: ${parentLabel}`,
-      timestamp,
-    );
-    this.addSystemComment(
-      parentCardId,
-      `Child card unlinked: ${childLabel}`,
-      timestamp,
-    );
+    this.addSystemComment(childCardId, `Parent card unlinked: ${parentLabel}`, timestamp);
+    this.addSystemComment(parentCardId, `Child card unlinked: ${childLabel}`, timestamp);
   }
 
   private handleDeletedCardRelationships(cardId: string): void {
@@ -897,10 +885,7 @@ export class BoardService {
     return `${card.id} - ${card.title}`;
   }
 
-  private formatCardMarkdown(
-    cardId: string,
-    options: { link?: boolean } = {},
-  ): string {
+  private formatCardMarkdown(cardId: string, options: { link?: boolean } = {}): string {
     const label = this.formatCardLabel(cardId);
     if (options.link === false) {
       return `**${label}**`;
@@ -1099,8 +1084,7 @@ export class BoardService {
   }
 
   private getCardsForRollupScope(boardId: string, scope: RollupScope): Card[] {
-    const boardIds =
-      scope === 'direct' ? [boardId] : this.getDescendantBoardIds(boardId);
+    const boardIds = scope === 'direct' ? [boardId] : this.getDescendantBoardIds(boardId);
     const cardIds = new Set<string>();
 
     boardIds.forEach((id) => {

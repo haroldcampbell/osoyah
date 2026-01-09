@@ -20,17 +20,14 @@ describe('BoardListComponent', () => {
   let fixture: ComponentFixture<BoardListComponent>;
   let boardService: BoardService;
 
-  const mockCards = [
-    makeCard('card-1', 'Card One', 'First'),
-    makeCard('card-2', 'Card Two', ''),
-  ];
+  const mockCards = [makeCard('card-1', 'Card One', 'First'), makeCard('card-2', 'Card Two', '')];
 
   const mockList: BoardList = {
-  id: 'list-1',
-  title: 'Backlog',
-  cardIds: ['card-1', 'card-2'],
-  isProcessDone: false,
-};
+    id: 'list-1',
+    title: 'Backlog',
+    cardIds: ['card-1', 'card-2'],
+    isProcessDone: false,
+  };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({

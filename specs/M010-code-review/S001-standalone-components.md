@@ -18,10 +18,10 @@ Make component metadata consistent and reduce tooling noise without changing run
 
 ## Definition of Done
 
--   [ ] All components using `imports` set `standalone: true`.
--   [ ] No component without `imports` is modified solely for this change.
--   [ ] Build/test warnings for missing `standalone` are resolved.
--   [ ] Acceptance tests pass.
+-   [x] All components using `imports` set `standalone: true`.
+-   [x] No component without `imports` is modified solely for this change.
+-   [x] Build/test warnings for missing `standalone` are resolved.
+-   [x] Acceptance tests pass.
 
 ## Acceptance tests (exact commands + expected artifacts/output)
 

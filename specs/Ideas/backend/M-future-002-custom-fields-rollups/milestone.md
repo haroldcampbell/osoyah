@@ -19,7 +19,8 @@ Out-of-scope:
 - Backend persistence or multi-user collaboration.
 
 ## Specs
-- TBD
+- [ ] S001-Custom Card Properties: Define Card Fields
+- [ ] S002-List View Custom Properties: Capture + Display
 
 ## Notes
 - Consider field types, default values, and migration for existing cards.

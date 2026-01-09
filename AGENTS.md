@@ -50,6 +50,7 @@ Violating any of the above is considered a critical failure.
 1. **Session start**
 
     - Read `docs/process.md` first and follow its instructions before any other work
+    - Ensure `docs/ux-patterns.md` is part of the session start review
 
 1. **Spec-first**
 

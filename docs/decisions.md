@@ -33,6 +33,10 @@ Current active decisions, consolidated from session hand-offs. When a decision c
 -   Relationship changes generate system comments on both parent and child cards.
 -   Angular components that declare `imports` should include `standalone: true` in the `@Component` metadata.
 
+## UX feedback
+
+-   State changes should surface visual feedback; use self-dismissing toasts for both success and failure.
+
 ## Test guidance
 
 -   E2E assertions should target specific entities using stable `data-*` attributes (`data-card-id`, `data-list-id`).

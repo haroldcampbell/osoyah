@@ -5,6 +5,7 @@ Kanban app with FastAPI backend and Angular frontend.
 ## Principles
 
 All specs and milestones must conform to `docs/principles.md`.
+UX consistency guidelines live in `docs/ux-patterns.md`.
 
 ## Structure
 

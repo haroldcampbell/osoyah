@@ -19,6 +19,7 @@
   - Empty state: short explanation + next action when applicable.
   - Error state: clear message + recovery action when possible.
   - Loading state: visible feedback; avoid blank screens.
+- State changes should produce visible user feedback; prefer lightweight, self-dismissing toasts for both success and failure.
 - Prefer warnings and safe fallbacks over hard failures for user-facing behavior.
 - Build accessible interfaces by default (semantic HTML, ARIA when needed).
 - Keep interactions consistent; reduce surprise and friction.

@@ -30,6 +30,13 @@ to keep work auditable, consistent, and easy to hand off.
 - **Triggers:** Selecting a framework, defining data strategy.
 - **Examples:** "Frontend: Angular", "Markdown uses marked + DOMPurify".
 
+## docs/ux-patterns.md
+- **Purpose:** Shared UX patterns and copy guidance for consistent UI feedback.
+- **Use when:** Implementing user-facing feedback like toasts, errors, and confirmations.
+- **Updates:** When UX conventions change or new patterns are added.
+- **Triggers:** New UI feedback patterns, standardizing copy for state changes.
+- **Examples:** "Toast copy rules", "Success vs error messaging".
+
 ## docs/learning.md
 - **Purpose:** Captures session learnings to reduce iteration and errors.
 - **Use when:** A pattern or pitfall recurs across sessions.

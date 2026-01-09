@@ -69,7 +69,7 @@ export class BoardComponent implements OnInit, AfterViewChecked {
   createBoardModalError = '';
   activeBoardId = '';
   activeCardId = '';
-  hierarchyPanelOpen = true;
+  hierarchyPanelOpen = false;
   hierarchyEditMode = false;
   hierarchyParentMenuOpen = false;
   hierarchyParentError = '';
@@ -79,9 +79,6 @@ export class BoardComponent implements OnInit, AfterViewChecked {
   private lastSelectionId: string | null = null;
 
   ngOnInit(): void {
-    if (this.isNarrowViewport) {
-      this.hierarchyPanelOpen = false;
-    }
     this.boardService.loadBoard({ recordActivity: false });
     combineLatest([this.boardService.boardLoaded$, this.route.paramMap])
       .pipe(takeUntilDestroyed(this.destroyRef))

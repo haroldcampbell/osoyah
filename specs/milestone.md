@@ -12,10 +12,10 @@
 -   [x] M002-Core Kanban
 -   [x] M003-Component Refactor
 -   [x] M004-Card Usability
--   [ ] M005-Multi-Board Cards
--   [ ] M006-Card Relationships
--   [ ] M007-Board Hierarchy
--   [ ] M008-Roll-Up Metrics
+-   [x] M005-Multi-Board Cards
+-   [x] M006-Card Relationships
+-   [x] M007-Board Hierarchy
+-   [x] M008-Roll-Up Metrics
 -   [ ] M009-Views and State
 -   [ ] M010-Done Lists
 -   [ ] M011-Code Review

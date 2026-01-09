@@ -13,7 +13,7 @@ import { BoardService, RollupMetricResult, RollupScope } from '../../services/bo
 export class BoardHierarchyMetricsComponent {
   @Input({ required: true }) boardId = '';
   readonly boardService = inject(BoardService);
-  scope: RollupScope = 'descendants';
+  scope: RollupScope = 'direct';
 
   setScope(scope: RollupScope): void {
     this.scope = scope;

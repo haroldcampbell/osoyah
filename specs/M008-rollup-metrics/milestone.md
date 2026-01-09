@@ -3,23 +3,29 @@
 Conform to `docs/principles.md`.
 
 ## Summary
+
 Introduce roll-up metrics that summarize cards across the hierarchy using relationship-scoped rules.
 
 ## Goal
+
 Provide actionable roll-ups while experimenting with relationship-based aggregation.
 
 ## Scope
+
 In-scope:
-- Roll-ups scoped by parent/child relationships.
-- Initial configuration for metric selection.
-Out-of-scope:
-- Advanced analytics or historical trend charts.
-- Server-side aggregation.
+
+-   Roll-ups scoped by parent/child relationships.
+-   Initial configuration for metric selection.
+    Out-of-scope:
+-   Advanced analytics or historical trend charts.
+-   Server-side aggregation.
 
 ## Specs
-- [x] S001-Roll-Up Metrics (Relationship-Scoped)
-- [ ] S002-Roll-Up Configuration (Experiments)
-- [ ] S003-Default Panel States
+
+-   [x] S001-Roll-Up Metrics (Relationship-Scoped)
+-   ~~S002-Roll-Up Configuration (Experiments)~~ (Won't do)
+-   [x] S003-Default Panel States
 
 ## Notes
-- Default roll-up mode: relationship-scoped aggregation.
+
+-   Default roll-up mode: relationship-scoped aggregation.

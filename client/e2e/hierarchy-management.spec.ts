@@ -21,6 +21,9 @@ async function dragToCenter(page: { mouse: { move: (x: number, y: number, option
 test('M007-S003 manages hierarchy parents and sibling ordering', async ({ page }) => {
   await page.goto('/boards/board-3');
 
+  const hierarchyToggle = page.locator('[data-testid="hierarchy-toggle"]');
+  await hierarchyToggle.click();
+
   const hierarchyPanel = page.locator('[data-testid="hierarchy-panel"]');
   await expect(hierarchyPanel).toBeVisible();
 

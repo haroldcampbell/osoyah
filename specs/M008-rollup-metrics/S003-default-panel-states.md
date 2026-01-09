@@ -13,10 +13,10 @@ Reduce initial UI noise while keeping roll-up metrics focused on the current boa
 - Altering hierarchy data, relationships, or edit behavior.
 
 ## Definition of Done
-- [ ] Hierarchy panel is closed by default on board load.
-- [ ] Roll-up metrics default scope is Direct.
-- [ ] Existing toggle controls still allow switching hierarchy open/closed and roll-up scope.
-- [ ] Acceptance tests pass.
+- [x] Hierarchy panel is closed by default on board load.
+- [x] Roll-up metrics default scope is Direct.
+- [x] Existing toggle controls still allow switching hierarchy open/closed and roll-up scope.
+- [x] Acceptance tests pass.
 
 ## Acceptance tests (exact commands + expected artifacts/output)
 - `npm run lint` passes.

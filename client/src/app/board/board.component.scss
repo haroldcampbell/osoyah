@@ -19,6 +19,44 @@
   flex-direction: column;
 }
 
+.board-toast-wrap {
+  position: fixed;
+  top: tokens.$space-lg;
+  right: tokens.$space-lg;
+  z-index: 6;
+  display: flex;
+  justify-content: flex-end;
+  pointer-events: none;
+}
+
+.board-toast {
+  background: tokens.$color-card;
+  border: 1px solid tokens.$color-border;
+  border-radius: 10px;
+  padding: 0.6rem 0.9rem;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+  font-size: 0.9rem;
+  color: tokens.$color-text-primary;
+  animation: board-toast-pop 0.2s ease-out;
+
+  &.is-error {
+    border-color: rgba(156, 44, 44, 0.35);
+    color: tokens.$color-state-error;
+    background: #fff3f3;
+  }
+}
+
+@keyframes board-toast-pop {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 
 .board-state {
   padding: 2rem 0;
@@ -1310,6 +1348,29 @@
 .board-settings-checkbox {
   width: 1rem;
   height: 1rem;
+}
+
+.board-settings-done-lists {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$space-xs;
+}
+
+.board-settings-done-row {
+  display: flex;
+  align-items: center;
+  gap: tokens.$space-xs;
+  font-size: 0.9rem;
+  color: tokens.$color-text-primary;
+}
+
+.board-settings-done-title {
+  line-height: 1.2;
+}
+
+.board-settings-empty {
+  font-size: 0.85rem;
+  color: tokens.$color-text-muted;
 }
 
 

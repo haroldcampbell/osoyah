@@ -57,6 +57,8 @@ export class BoardComponent implements OnInit, AfterViewChecked {
   boardSettingsDescription = '';
   boardSettingsRollupsEnabled = false;
   boardSettingsError = '';
+  boardSettingsToastMessage = '';
+  boardSettingsToastError = false;
   boardPanelOpen = false;
   boardPanelSortMode: 'manual' | 'name' | 'name-desc' | 'recent' = 'manual';
   boardPanelArchivedView = false;
@@ -77,6 +79,7 @@ export class BoardComponent implements OnInit, AfterViewChecked {
   hierarchyNodes: HierarchyNode[] = [];
   isNarrowViewport = window.matchMedia('(max-width: 800px)').matches;
   private lastSelectionId: string | null = null;
+  private boardSettingsToastTimeoutId?: number;
 
   ngOnInit(): void {
     this.boardService.loadBoard({ recordActivity: false });
@@ -445,6 +448,26 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     );
     if (!result.success) {
       this.boardSettingsError = result.error ?? 'Unable to rename board.';
+      this.showBoardSettingsToast(this.boardSettingsError, true);
+      return;
+    }
+    this.boardSettingsError = '';
+    this.showBoardSettingsToast('Board settings saved.');
+    this.closeBoardSettings();
+  }
+
+  toggleDoneList(list: BoardList, event: Event): void {
+    const boardId = this.boardService.board?.id;
+    if (!boardId) {
+      return;
+    }
+    const target = event.target as HTMLInputElement | null;
+    if (!target) {
+      return;
+    }
+    const result = this.boardService.setListProcessDone(boardId, list.id, target.checked);
+    if (!result.success) {
+      this.boardSettingsError = result.error ?? 'Unable to update done list.';
       return;
     }
     this.boardSettingsError = '';
@@ -504,6 +527,19 @@ export class BoardComponent implements OnInit, AfterViewChecked {
     this.boardSettingsDescription = this.boardService.board?.description ?? '';
     this.boardSettingsError = '';
     this.boardSettingsDescriptionInput?.nativeElement.blur();
+  }
+
+  private showBoardSettingsToast(message: string, isError = false): void {
+    this.boardSettingsToastMessage = message;
+    this.boardSettingsToastError = isError;
+    if (this.boardSettingsToastTimeoutId) {
+      window.clearTimeout(this.boardSettingsToastTimeoutId);
+    }
+    this.boardSettingsToastTimeoutId = window.setTimeout(() => {
+      this.boardSettingsToastMessage = '';
+      this.boardSettingsToastError = false;
+      this.boardSettingsToastTimeoutId = undefined;
+    }, 2500);
   }
 
   @HostListener('document:click', ['$event'])

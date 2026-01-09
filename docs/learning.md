@@ -104,3 +104,8 @@ Running list of communication/process learnings captured after sessions.
 
 ### Spec status clarity
 - When marking spec status in milestone checklists, note intent explicitly (e.g., append "Won't do") to avoid ambiguity.
+
+## 2026-01-09
+
+### UX feedback consistency
+- Toast feedback replaces inline status messaging for settings saves.

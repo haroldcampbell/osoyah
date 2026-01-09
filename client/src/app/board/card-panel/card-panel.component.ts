@@ -207,14 +207,18 @@ export class CardPanelComponent implements OnChanges {
       return;
     }
     const board = this.boardService.board;
-    const doneList = board?.lists.find((list) => list.isProcessDone);
-    if (!board || !doneList) {
+    if (!board) {
       return;
     }
-    if (this.selectedList.id === doneList.id) {
+    const doneLists = this.boardService.getDoneLists(board.id);
+    if (!doneLists.length) {
       return;
     }
-    this.boardService.moveCardToList(card.id, this.selectedList.id, doneList.id, {
+    if (doneLists.some((list) => list.id === this.selectedList.id)) {
+      return;
+    }
+    const targetList = doneLists[0];
+    this.boardService.moveCardToList(card.id, this.selectedList.id, targetList.id, {
       skipStatus: true,
     });
   }

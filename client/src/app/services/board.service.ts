@@ -231,6 +231,31 @@ export class BoardService {
     return { success: true };
   }
 
+  getDoneLists(boardId?: string): BoardList[] {
+    const board = boardId ? this.getBoard(boardId) : this.board;
+    if (!board) {
+      return [];
+    }
+    return board.lists.filter((list) => list.isProcessDone);
+  }
+
+  setListProcessDone(
+    boardId: string,
+    listId: string,
+    isProcessDone: boolean,
+  ): { success: boolean; error?: string } {
+    const board = this.getBoard(boardId);
+    if (!board) {
+      return { success: false, error: 'Board not found.' };
+    }
+    const list = board.lists.find((item) => item.id === listId);
+    if (!list) {
+      return { success: false, error: 'List not found.' };
+    }
+    list.isProcessDone = isProcessDone;
+    return { success: true };
+  }
+
   getBoardRollupMetrics(boardId: string, scope: RollupScope): RollupMetricResult[] {
     const cards = this.getCardsForRollupScope(boardId, scope);
     return this.rollupDefinitions.map((definition) => ({

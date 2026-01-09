@@ -25,11 +25,17 @@ test('M008-S003 defaults hierarchy closed and roll-up metrics off', async ({ pag
   await expect(rollupsToggle).not.toBeChecked();
   await rollupsToggle.check();
   await settings.locator('[data-testid="board-settings-save"]').click();
+  await expect(settings).toHaveCount(0);
 
   await expect(rollups).toBeVisible();
   await expect(rollups.getByRole('button', { name: 'Direct' })).toHaveClass(/active/);
 
-  await rollupsToggle.uncheck();
-  await settings.locator('[data-testid="board-settings-save"]').click();
+  await settingsToggle.click();
+  const reopenedSettings = page.locator('[data-testid="board-settings"]');
+  await expect(reopenedSettings).toBeVisible();
+  const reopenedRollupsToggle = reopenedSettings.locator('[data-testid="board-settings-rollups"]');
+  await reopenedRollupsToggle.uncheck();
+  await reopenedSettings.locator('[data-testid="board-settings-save"]').click();
+  await expect(reopenedSettings).toHaveCount(0);
   await expect(rollups).toHaveCount(0);
 });

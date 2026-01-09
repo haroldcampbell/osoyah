@@ -59,9 +59,13 @@ test('S004 creates, renames, and deletes boards with validation', async ({ page 
 	const settingsTitle = settings.locator('[data-testid="board-settings-title"]');
 	await settingsTitle.fill('Launch Roadmap');
 	await settings.locator('[data-testid="board-settings-save"]').click();
+	await expect(settings).toHaveCount(0);
 	await expect(page.locator('[data-testid="board-name"]')).toContainText('Launch Roadmap');
 
+	await settingsToggle.click();
+	const reopenedSettings = page.locator('[data-testid="board-settings"]');
+	await expect(reopenedSettings).toBeVisible();
 	page.once('dialog', (dialog) => dialog.accept());
-	await settings.locator('[data-testid="board-settings-delete"]').click();
+	await reopenedSettings.locator('[data-testid="board-settings-delete"]').click();
 	await expect(page.locator('[data-testid="board-name"]')).not.toContainText('Launch Roadmap');
 });

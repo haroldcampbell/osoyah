@@ -8,6 +8,14 @@
     (panelToggle)="toggleBoardPanel()"
   ></app-board-header>
 
+  @if (boardSettingsToastMessage) {
+    <div class="board-toast-wrap" data-testid="board-settings-toast">
+      <div class="board-toast" [class.is-error]="boardSettingsToastError">
+        {{ boardSettingsToastMessage }}
+      </div>
+    </div>
+  }
+
   @if (boardService.loading) {
     <div class="board-state">Loading board...</div>
   }
@@ -203,6 +211,27 @@
                         [(ngModel)]="boardSettingsRollupsEnabled"
                         data-testid="board-settings-rollups"
                       />
+                    </li>
+                    <li class="board-settings-item">
+                      <div class="board-settings-label">Done lists</div>
+                      @if (boardService.board.lists.length) {
+                        <div class="board-settings-done-lists" data-testid="board-settings-done-lists">
+                          @for (list of boardService.board.lists; track list.id) {
+                            <label class="board-settings-done-row">
+                              <input
+                                type="checkbox"
+                                class="board-settings-checkbox"
+                                [checked]="list.isProcessDone"
+                                (change)="toggleDoneList(list, $event)"
+                                [attr.data-testid]="'board-settings-done-' + list.id"
+                              />
+                              <span class="board-settings-done-title">{{ list.title }}</span>
+                            </label>
+                          }
+                        </div>
+                      } @else {
+                        <div class="board-settings-empty">No lists yet.</div>
+                      }
                     </li>
                     @if (boardService.board && boardService.board.createdAt) {
                       <li class="board-settings-item" data-testid="board-settings-created">

@@ -1,4 +1,4 @@
-# S003-Board View Modes (List): Account Boards
+# S002-Board View Modes (List): Account Boards
 
 Conform to `docs/principles.md`.
 
@@ -25,4 +25,4 @@ Support CRM-style account tracking while keeping card view available for pipelin
 - `npm run e2e` passes.
 
 ## Notes (edge cases, hazards, perf constraints)
-- Mockup: `designs/mockups/M009-S003-account-list-view.svg`.
+- Mockup: `designs/mockups/M009-S002-account-list-view.excalidraw`.

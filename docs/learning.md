@@ -99,3 +99,8 @@ Running list of communication/process learnings captured after sessions.
 
 ### Angular template warnings
 - Avoid optional chaining on non-null typed values to prevent NG8107 warnings (prefer direct access after checks).
+
+## 2026-01-07
+
+### Spec status clarity
+- When marking spec status in milestone checklists, note intent explicitly (e.g., append "Won't do") to avoid ambiguity.

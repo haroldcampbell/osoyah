@@ -26,6 +26,7 @@ and focuses on how we work session-to-session.
 -   Keep changes minimal and aligned with `docs/principles.md`.
 -   When ambiguous, prefer existing behavior and document the choice.
 -   Once the agent confirms the spec DoDs are met, check off the spec's DoD items. When all DoD items are checked, mark the spec complete in the corresponding `milestone.md`.
+-   When dropping a spec in a milestone checklist, use Markdown strike-through on the spec title (e.g., `~~S002-Example~~`) and note the status (e.g., "Won't do") to make intent explicit.
 
 ## Testing Loop
 

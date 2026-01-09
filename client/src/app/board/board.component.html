@@ -787,110 +787,19 @@
           </aside>
         }
         @if (isListView) {
-          <div class="board-list-view" #boardLists data-testid="list-view">
-            <div class="board-list-header">
-              <div class="board-list-cell board-list-disclosure"></div>
-              <div class="board-list-cell board-list-title-header">Title</div>
-              <div class="board-list-cell board-list-created-header">Created</div>
-              <div class="board-list-cell board-list-status-header">Completed</div>
-            </div>
-            @if (listViewRows.length) {
-              @for (row of listViewRows; track row.card.id) {
-                <div
-                  class="board-list-row"
-                  [class.expanded]="isListRowExpanded(row.card.id)"
-                  data-testid="list-view-row"
-                  [attr.data-card-id]="row.card.id"
-                >
-                  <div class="board-list-cell board-list-disclosure">
-                    <button
-                      type="button"
-                      class="board-list-disclosure-toggle"
-                      (click)="toggleListRow(row.card.id)"
-                      [attr.aria-expanded]="isListRowExpanded(row.card.id)"
-                      [attr.aria-controls]="'list-view-detail-' + row.card.id"
-                      data-testid="list-view-toggle"
-                    >
-                      <span class="board-list-disclosure-icon" aria-hidden="true"></span>
-                    </button>
-                  </div>
-                  <button
-                    type="button"
-                    class="board-list-cell board-list-title"
-                    (click)="openCardFromListView(row.list, row.card)"
-                    data-testid="list-view-title"
-                  >
-                    {{ row.card.title }}
-                  </button>
-                  <div
-                    class="board-list-cell board-list-created"
-                    [title]="boardService.formatExactDate(row.card.createdAt)"
-                  >
-                    {{ boardService.formatExactDate(row.card.createdAt) }}
-                  </div>
-                  <div class="board-list-cell board-list-status">
-                    <span
-                      class="board-list-status-pill"
-                      [class.is-complete]="boardService.isCardCompleted(row.card)"
-                    >
-                      {{ boardService.isCardCompleted(row.card) ? 'Complete' : 'Open' }}
-                    </span>
-                  </div>
-                </div>
-                @if (isListRowExpanded(row.card.id)) {
-                  <div
-                    class="board-list-detail"
-                    [id]="'list-view-detail-' + row.card.id"
-                    data-testid="list-view-detail"
-                  >
-                    <div class="board-list-detail-title">Child cards</div>
-                    @if (boardService.getChildCards(row.card.id).length) {
-                      <div class="board-list-detail-list">
-                        @for (child of boardService.getChildCards(row.card.id); track child.id) {
-                          <div class="board-list-detail-row" [attr.data-card-id]="child.id">
-                            <span class="board-list-detail-name">{{ child.title }}</span>
-                            <span
-                              class="board-list-detail-status"
-                              [class.is-complete]="boardService.isCardCompleted(child)"
-                            >
-                              {{ boardService.isCardCompleted(child) ? 'Complete' : 'Open' }}
-                            </span>
-                          </div>
-                        }
-                      </div>
-                    } @else {
-                      <div class="board-list-detail-empty">No child cards yet.</div>
-                    }
-                  </div>
-                }
-              }
-            } @else {
-              <div class="board-list-empty">No cards yet. Add one to start.</div>
-            }
-          </div>
+          <app-board-list-view
+            [listViewRows]="listViewRows"
+            [expandedRowIds]="expandedListRows"
+            (toggleRow)="toggleListRow($event)"
+            (openCard)="openCardFromListView($event.list, $event.card)"
+            (listsElementReady)="setBoardListsElement($event)"
+          ></app-board-list-view>
         } @else {
-          <div
-            class="lists"
-            #boardLists
-            cdkDropList
-            cdkDropListOrientation="horizontal"
-            [cdkDropListData]="boardService.board.lists"
-            (cdkDropListDropped)="boardService.dropList($event)"
-          >
-            @for (list of boardService.board.lists; track list.id) {
-              <app-board-list
-                cdkDrag
-                data-testid="list"
-                [attr.data-list-id]="list.id"
-                [attr.data-list-title]="list.title"
-                [list]="list"
-              ></app-board-list>
-            }
-
-            @if (boardService.board.lists.length === 0) {
-              <div class="empty-board">No lists yet. Add one to start.</div>
-            }
-          </div>
+          <app-board-cards-view
+            [lists]="boardService.board.lists"
+            (listDropped)="boardService.dropList($event)"
+            (listsElementReady)="setBoardListsElement($event)"
+          ></app-board-cards-view>
         }
 
         @if (selectedCard && selectedList) {

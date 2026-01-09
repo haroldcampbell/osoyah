@@ -109,3 +109,6 @@ Running list of communication/process learnings captured after sessions.
 
 ### UX feedback consistency
 - Toast feedback replaces inline status messaging for settings saves.
+
+### Layout extraction
+- Extracting view containers into child components can break horizontal scroll unless the host and scroll container enforce min-width: 0 and flex sizing.

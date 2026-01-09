@@ -1,0 +1,31 @@
+@use '../../../../styles/tokens' as tokens;
+
+:host {
+  display: flex;
+  flex: 1 1 auto;
+  align-self: stretch;
+  min-width: 0;
+}
+
+.lists {
+  display: flex;
+  gap: 1.25rem;
+  align-items: flex-start;
+  overflow-x: auto;
+  width: 100%;
+  min-width: 0;
+  padding-bottom: tokens.$space-md;
+  padding-right: 2.6rem;
+  flex: 1 1 auto;
+  align-self: stretch;
+  scrollbar-gutter: stable both-edges;
+}
+
+:host-context(.board-layout-panel-open) .lists {
+  padding-right: 2.6rem;
+}
+
+.empty-board {
+  font-size: 0.85rem;
+  color: tokens.$color-text-soft;
+}

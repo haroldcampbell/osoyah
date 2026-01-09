@@ -23,7 +23,11 @@ In-scope:
 
 -   [x] S001-Standalone Components
 -   [ ] S002-UX patterns
--   [ ] S003-UI component extraction
+-   [x] S003-00-UI component extraction
+-   [ ] S003-01-Board Toolbar
+-   [ ] S003-02-Board Panel
+-   [ ] S003-03-Hierarchy Panel
+-   [ ] S003-04-Hierarchy Panel Drawer
 
 ## Notes
 

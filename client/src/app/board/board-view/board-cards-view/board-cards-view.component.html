@@ -1,0 +1,23 @@
+<div
+  data-testid="cards-view"
+  class="lists"
+  #boardLists
+  cdkDropList
+  cdkDropListOrientation="horizontal"
+  [cdkDropListData]="lists"
+  (cdkDropListDropped)="listDropped.emit($event)"
+>
+  @for (list of lists; track list.id) {
+    <app-board-list
+      cdkDrag
+      data-testid="list"
+      [attr.data-list-id]="list.id"
+      [attr.data-list-title]="list.title"
+      [list]="list"
+    ></app-board-list>
+  }
+
+  @if (lists.length === 0) {
+    <div class="empty-board">No lists yet. Add one to start.</div>
+  }
+</div>

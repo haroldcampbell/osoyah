@@ -1,4 +1,4 @@
-# S003-UI Component Extraction: Large Board Views
+# S003-00-UI Component Extraction: Large Board Views
 
 Conform to `docs/principles.md`.
 
@@ -18,11 +18,11 @@ Make the board UI easier to reason about by isolating large template sections in
 
 ## Definition of Done
 
--   [ ] The list view block (`.board-list-view` in `client/src/app/board/board.component.html`) is moved into its own component and renders identically.
--   [ ] The main board canvas/card view block (the list columns with the `cdkDropList` for lists) is moved into its own component and renders identically.
--   [ ] Extracted components are `standalone: true` if they declare `imports`.
--   [ ] Drag-and-drop, selection, and panel interactions behave the same as before.
--   [ ] Acceptance tests pass.
+-   [x] The list view block (`.board-list-view` in `client/src/app/board/board.component.html`) is moved into its own component and renders identically.
+-   [x] The main board canvas/card view block (the list columns with the `cdkDropList` for lists) is moved into its own component and renders identically.
+-   [x] Extracted components are `standalone: true` if they declare `imports`.
+-   [x] Drag-and-drop, selection, and panel interactions behave the same as before.
+-   [x] Acceptance tests pass.
 
 ## Acceptance tests (exact commands + expected artifacts/output)
 

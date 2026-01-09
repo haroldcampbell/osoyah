@@ -20,10 +20,11 @@ import { combineLatest } from 'rxjs';
 
 import { BoardService, BoardViewMode } from '../services/board.service';
 import { BoardHeaderComponent } from '../board-header/board-header.component';
-import { BoardListComponent } from './list/board-list.component';
 import { Board, BoardList, BoardRelationship, Card } from '../models/board.model';
 import { CardPanelComponent } from './card-panel/card-panel.component';
 import { BoardHierarchyMetricsComponent } from './board-hierarchy-metrics/board-hierarchy-metrics.component';
+import { BoardCardsViewComponent } from './board-view/board-cards-view/board-cards-view.component';
+import { BoardListViewComponent } from './board-view/board-list-view/board-list-view.component';
 
 @Component({
   selector: 'app-board',
@@ -33,11 +34,12 @@ import { BoardHierarchyMetricsComponent } from './board-hierarchy-metrics/board-
     FormsModule,
     DragDropModule,
     CdkMenuModule,
-    BoardListComponent,
     CardPanelComponent,
     RouterLink,
     BoardHeaderComponent,
     BoardHierarchyMetricsComponent,
+    BoardCardsViewComponent,
+    BoardListViewComponent,
   ],
   templateUrl: './board.component.html',
   styleUrl: './board.component.scss',
@@ -52,7 +54,6 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
   @ViewChild('boardSettingsTitleInput') boardSettingsTitleInput?: ElementRef<HTMLInputElement>;
   @ViewChild('boardSettingsDescriptionInput')
   boardSettingsDescriptionInput?: ElementRef<HTMLInputElement>;
-  @ViewChild('boardLists') boardListsRef?: ElementRef<HTMLElement>;
   @ViewChild(CardPanelComponent) cardPanel?: CardPanelComponent;
   boardMenuOpen = false;
   boardSearchTerm = '';
@@ -84,7 +85,7 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
   readonly hierarchyMaxDepth = 7;
   hierarchyNodes: HierarchyNode[] = [];
   isNarrowViewport = window.matchMedia('(max-width: 800px)').matches;
-  private readonly expandedListRows = new Set<string>();
+  readonly expandedListRows = new Set<string>();
   boardListsElement: HTMLElement | null = null;
   private lastSelectionId: string | null = null;
   private boardSettingsToastTimeoutId?: number;
@@ -126,7 +127,6 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.boardListsElement = this.boardListsRef?.nativeElement ?? null;
     this.changeDetectorRef.detectChanges();
   }
 
@@ -457,10 +457,11 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
     if (!boardId) {
       return;
     }
+    if (this.viewMode === mode) {
+      return;
+    }
     this.boardService.setBoardViewMode(boardId, mode);
-    window.setTimeout(() => {
-      this.boardListsElement = this.boardListsRef?.nativeElement ?? null;
-    }, 0);
+    this.boardListsElement = null;
   }
 
   toggleListRow(cardId: string): void {
@@ -471,16 +472,16 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
     this.expandedListRows.add(cardId);
   }
 
-  isListRowExpanded(cardId: string): boolean {
-    return this.expandedListRows.has(cardId);
-  }
-
   openCardFromListView(list: BoardList, card: Card): void {
     const boardId = this.boardService.board?.id;
     if (!boardId) {
       return;
     }
     this.router.navigate(['/boards', boardId, 'cards', card.id]);
+  }
+
+  setBoardListsElement(element: HTMLElement | null): void {
+    this.boardListsElement = element;
   }
 
   createBoardFromNotFound(): void {

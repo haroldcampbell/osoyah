@@ -25,8 +25,10 @@ and focuses on how we work session-to-session.
 -   The first step in the spec review process requires the Agent to ask clarifying questions or making recommendations to improve the spec when necessary. The use of numbered lists is preferred.
 -   Keep changes minimal and aligned with `docs/principles.md`.
 -   When ambiguous, prefer existing behavior and document the choice.
--   Once the agent confirms the spec DoDs are met, check off the spec's DoD items. When all DoD items are checked, mark the spec complete in the corresponding `milestone.md`.
+-   Once the agent confirms the spec DoDs are met, check off the spec's DoD items.
+-   When all DoD items are checked, mark the spec complete in the corresponding `milestone.md`.
 -   When dropping a spec in a milestone checklist, use Markdown strike-through on the spec title (e.g., `~~S002-Example~~`) and note the status (e.g., "Won't do") to make intent explicit.
+-   When all the specs in a milestone.md are done, update the /specs/milestone.md ("Won't do" should not be considers as a blocker to this criteria)
 
 ## Testing Loop
 

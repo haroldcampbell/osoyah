@@ -1,4 +1,4 @@
-# M012-Backend Support: Discovery + Draft Plan
+# M011-Backend Support: Discovery + Draft Plan
 
 Conform to `docs/principles.md`.
 

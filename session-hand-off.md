@@ -27,6 +27,7 @@
 
 ## Entries
 
+-   2026-01-09-03-milestone-renumber.md - Remove obsolete done-lists milestone and renumber M010/M011
 -   2026-01-09-02-list-view-grid.md - List view grid layout, toggle, and E2E coverage
 -   2026-01-09-01-done-list-config-toast.md - Done list configuration, settings toast, UX patterns added
 -   2026-01-07-01-default-panel-states-wrap.md - Default panel states done, E2E updated, docs clarified
@@ -38,7 +39,7 @@
 -   2026-01-05-03-card-panel-component.md - S006 card panel component extraction
 -   2026-01-05-02-parent-selector-search.md - S005 parent selector dropdown search + debounce, E2E adjustment
 -   2026-01-05-01-list-picker-wrap.md - S007 list picker wrap, E2E stabilization, new S008 spec draft
--   2026-01-04-01-card-completion-progress.md - S004 completion status, progress indicators, done-list sync, new M010 and S007 specs
+-   2026-01-04-01-card-completion-progress.md - S004 completion status, progress indicators, done-list sync, new done-list spec (now M009) and S007 specs
 -   2026-01-03-01-card-relationships-ux.md - M006 S002/S003 relationship integrity + side-panel UX, modal unlink, system comments, new S004/S005 specs
 
 ### Archives

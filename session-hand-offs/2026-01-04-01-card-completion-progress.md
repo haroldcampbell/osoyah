@@ -2,13 +2,13 @@
 
 ## Summary
 - Completed S004 child completion status + progress indicators with done-list sync and system comments.
-- Added M010 done-lists milestone + S007 list picker spec; updated docs and mock data.
+- Added done-lists milestone (now M009) + S007 list picker spec; updated docs and mock data.
 
 ## Work Completed
 - Added card `status` model, list `isProcessDone`, and done-list movement logic with comments.
 - Implemented card panel done toggle, child progress bars (board + panel), child status dots, and divider layout tweaks.
 - Updated mock data relationships/statuses and moved Product Roadmap Done list to the right.
-- Added M010 milestone + specs and updated architecture and learning docs.
+- Added done-lists milestone + specs (now M009) and updated architecture and learning docs.
 
 ## Decisions
 - None.

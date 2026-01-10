@@ -4,4 +4,4 @@ Backend read endpoints for the FastAPI service.
 
 ## Index
 
-- `docs/api/boards.md` - Board read endpoints and snapshot payloads.
+- `backend/server/app/api/boards.md` - Board endpoints and snapshot payloads.

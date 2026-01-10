@@ -33,7 +33,7 @@ def main() -> int:
     commands = [
         ["ruff", "check", target],
         ["ruff", "format", "--check", target],
-        ["mypy", target],
+        ["mypy", "--config-file", "backend/server/pyproject.toml", target],
     ]
 
     exit_code = 0

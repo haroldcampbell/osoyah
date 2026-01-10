@@ -125,6 +125,10 @@ Running list of communication/process learnings captured after sessions.
 
 ## 2026-01-10
 
+### Backend testing + tooling
+- Reset SQLite test state by truncating/reseeding instead of deleting the DB file to avoid readonly/disk I/O errors.
+- For CLI helpers, stream colored output to the console while writing ANSI-stripped logs to files for review.
+
 ### Backend tooling
 - AnyIO defaults to running async tests against trio; pin `anyio_backend` to `asyncio` in backend tests to avoid missing trio dependency.
 - Tooling scripts should resolve paths from the repo root so they work from any working directory.

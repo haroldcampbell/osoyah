@@ -71,3 +71,13 @@ async def test_get_board_missing_returns_error_shape() -> None:
     payload = response.json()
     assert payload["error"]["code"] == "not_found"
     assert payload["error"]["message"] == "Board not found."
+
+
+@pytest.mark.anyio
+async def test_get_board_snapshot_missing_returns_error_shape() -> None:
+    async with _make_client() as client:
+        response = await client.get("/api/boards/missing-board/snapshot")
+    assert response.status_code == 404
+    payload = response.json()
+    assert payload["error"]["code"] == "not_found"
+    assert payload["error"]["message"] == "Board not found."

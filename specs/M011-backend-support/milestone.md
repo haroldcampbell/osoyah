@@ -25,8 +25,8 @@ Out-of-scope:
 - [x] S001-Backend Support Discovery + Plan
 - [x] S002-JSON to SQLite Migration Plan
 - [x] S003-Read Endpoints + Board Snapshot
-- [ ] S004-Client Data Source Flag
-- [ ] S005-Board/List/Card CRUD Endpoints
+- [ ] ~~S004-Client Data Source Flag~~ (Won't do)
+- [x] S005-Board/List/Card CRUD Endpoints
 - [ ] S006-Relationship Endpoints + Validation
 - [ ] S007-Client Optimistic Updates + Reconciliation
 - [ ] S008-Remove Mock Data + Retry/Error States

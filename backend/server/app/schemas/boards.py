@@ -81,3 +81,50 @@ class BoardSnapshotResponse(BaseModel):
     cards: List[Card]
     cardRelationships: List[CardRelationship]
     boardRelationships: List[BoardRelationship]
+
+
+class BoardCreateRequest(BaseModel):
+    title: str
+    description: Optional[str] = None
+
+
+class BoardUpdateRequest(BaseModel):
+    title: str
+    description: Optional[str] = None
+    rollupsEnabled: Optional[bool] = None
+    pinned: Optional[bool] = None
+    archived: Optional[bool] = None
+
+
+class ListCreateRequest(BaseModel):
+    title: str
+    isProcessDone: Optional[bool] = None
+
+
+class ListUpdateRequest(BaseModel):
+    title: Optional[str] = None
+    isProcessDone: Optional[bool] = None
+
+
+class CardCreateRequest(BaseModel):
+    title: str
+    description: Optional[str] = None
+
+
+class CardUpdateRequest(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    statusState: Optional[Literal["incomplete", "completed"]] = None
+    completedAt: Optional[str] = None
+
+
+class ListOrderRequest(BaseModel):
+    listIds: List[str]
+
+
+class CardOrderRequest(BaseModel):
+    cardIds: List[str]
+
+
+class ListCardAttachRequest(BaseModel):
+    cardId: str

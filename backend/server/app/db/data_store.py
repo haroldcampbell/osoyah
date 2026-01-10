@@ -3,13 +3,13 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 from uuid import uuid4
 
+from backend.server.app.core.config import get_settings
+
 
 class DataStore:
     def __init__(self, data_path: Optional[Path] = None) -> None:
-        repo_root = Path(__file__).resolve().parents[3]
-        self._data_path = (
-            data_path or repo_root / "client" / "public" / "assets" / "data.json"
-        )
+        settings = get_settings()
+        self._data_path = data_path or settings.data_json_path
         self._data: Dict[str, Any] = self._load_data()
         self._ensure_guids()
 

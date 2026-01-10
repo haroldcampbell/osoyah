@@ -33,3 +33,24 @@ Usage:
 ```bash
 python backend/scripts/pytest.py
 ```
+
+## `app.py`
+
+Runs the FastAPI application with `uvicorn`, ensuring the repo root is on
+`PYTHONPATH`.
+
+Usage:
+```bash
+python backend/scripts/app.py
+```
+
+## `coverage.py`
+
+Runs backend tests with coverage reporting. Output is streamed to the console
+with color, and a plain-text log is written to
+`backend/server/logs/coverage.log`.
+
+Usage:
+```bash
+python backend/scripts/coverage.py
+```

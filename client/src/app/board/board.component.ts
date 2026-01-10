@@ -21,10 +21,16 @@ import { BoardHeaderComponent } from '../board-header/board-header.component';
 import { Board, BoardList, BoardRelationship, Card } from '../models/board.model';
 import { CardPanelComponent } from './card-panel/card-panel.component';
 import { BoardHierarchyMetricsComponent } from './board-hierarchy-metrics/board-hierarchy-metrics.component';
+import {
+  BoardHierarchyPanelAction,
+  BoardHierarchyPanelComponent,
+  BoardHierarchyPanelState,
+} from './board-hierarchy-panel/board-hierarchy-panel.component';
 import { BoardCardsViewComponent } from './board-view/board-cards-view/board-cards-view.component';
 import { BoardListViewComponent } from './board-view/board-list-view/board-list-view.component';
 import { BoardToolbarComponent } from './board-toolbar/board-toolbar.component';
 import { BoardPanelComponent } from './board-panel/board-panel.component';
+import { HierarchyNode, HierarchyParentOption } from './board-hierarchy.types';
 
 @Component({
   selector: 'app-board',
@@ -37,6 +43,7 @@ import { BoardPanelComponent } from './board-panel/board-panel.component';
     RouterLink,
     BoardHeaderComponent,
     BoardHierarchyMetricsComponent,
+    BoardHierarchyPanelComponent,
     BoardCardsViewComponent,
     BoardListViewComponent,
     BoardToolbarComponent,
@@ -147,6 +154,18 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
     return this.viewMode === 'list';
   }
 
+  get hierarchyPanelState(): BoardHierarchyPanelState {
+    return {
+      editMode: this.hierarchyEditMode,
+      parentLabel: this.hierarchyParentLabel,
+      parentMenuOpen: this.hierarchyParentMenuOpen,
+      parentOptions: this.hierarchyParentOptions,
+      parentError: this.hierarchyParentError,
+      reorderItems: this.hierarchyReorderItems,
+      isHierarchyBoard: this.isHierarchyBoard,
+    };
+  }
+
   get listViewRows(): { card: Card; list: BoardList }[] {
     const board = this.boardService.board;
     if (!board) {
@@ -219,6 +238,31 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
 
   toggleArchivedView(): void {
     this.boardPanelArchivedView = !this.boardPanelArchivedView;
+  }
+
+  handleHierarchyPanelAction(action: BoardHierarchyPanelAction): void {
+    switch (action.type) {
+      case 'toggleEdit':
+        this.toggleHierarchyEdit();
+        return;
+      case 'togglePanel':
+        this.toggleHierarchyPanel();
+        return;
+      case 'toggleParentMenu':
+        this.toggleHierarchyParentMenu();
+        return;
+      case 'setParent':
+        this.setHierarchyParent(action.option);
+        return;
+      case 'reorder':
+        this.handleHierarchyReorderDrop(action.event);
+        return;
+      case 'openManager':
+        this.openHierarchyManager();
+        return;
+      default:
+        return;
+    }
   }
 
   setBoardSortMode(mode: 'manual' | 'name' | 'name-desc' | 'recent'): void {
@@ -737,16 +781,4 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
     }
     return `Would exceed depth ${this.hierarchyMaxDepth}.`;
   }
-}
-
-interface HierarchyNode {
-  board: Board;
-  children: HierarchyNode[];
-}
-
-interface HierarchyParentOption {
-  id: string | null;
-  label: string;
-  disabled: boolean;
-  helper?: string;
 }

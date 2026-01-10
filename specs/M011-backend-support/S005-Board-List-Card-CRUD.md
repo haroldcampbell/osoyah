@@ -22,6 +22,7 @@ Provide API coverage for all board/list/card mutations currently performed in th
 -   [ ] Ordering updates are supported for lists and list cards.
 -   [ ] Server validations align with existing client constraints (title length, required fields).
 -   [ ] Error responses follow the agreed JSON error shape.
+-   [ ] `guid` fields are generated server-side, required, and unique per table.
 
 ## Acceptance tests (exact commands + expected artifacts/output)
 
@@ -32,3 +33,4 @@ Provide API coverage for all board/list/card mutations currently performed in th
 
 -   Ensure deletes clean up list membership to avoid orphaned references.
 -   Preserve card multi-board membership semantics.
+-   Enforce `guid` uniqueness with database constraints.

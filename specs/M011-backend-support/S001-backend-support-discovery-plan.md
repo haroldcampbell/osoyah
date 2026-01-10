@@ -89,15 +89,19 @@ Deliver a concrete plan that outlines what to build, in what order, with clear t
     }
     ```
 -   Auth: none (placeholder). If needed later, include an optional `X-Actor-Id` header to tag activity without enforcing permissions.
+-   `guid` fields are UUID4 strings, required and unique per table.
 
 ### Boards
 
 -   `GET /api/boards`
     -   Returns lightweight board summaries for gallery (id, title, createdAt, description, pinned, archived, rollupsEnabled).
+-   `guid` is included in all board responses.
 -   `GET /api/boards/{boardId}`
     -   Returns a single board with `lists` and `cardIds` for list ordering.
+-   `guid` is included for boards and lists.
 -   `POST /api/boards`
     -   Creates a new board (title, description optional). Returns full board.
+-   `guid` is generated server-side and returned in the payload.
 -   `PATCH /api/boards/{boardId}`
     -   Updates title, description, rollupsEnabled, pinned, archived.
 -   `DELETE /api/boards/{boardId}`
@@ -109,6 +113,7 @@ Deliver a concrete plan that outlines what to build, in what order, with clear t
 
 -   `POST /api/boards/{boardId}/lists`
     -   Creates list on a board (title, isProcessDone).
+-   `guid` is generated server-side and returned in the payload.
 -   `PATCH /api/lists/{listId}`
     -   Updates list title and done-state.
 -   `DELETE /api/lists/{listId}`
@@ -120,8 +125,10 @@ Deliver a concrete plan that outlines what to build, in what order, with clear t
 
 -   `POST /api/cards`
     -   Creates a card (title, description). Returns full card.
+-   `guid` is generated server-side and returned in the payload.
 -   `GET /api/cards/{cardId}`
     -   Returns a single card (title, description, status, comments, timestamps).
+-   `guid` is included in card and comment payloads.
 -   `PATCH /api/cards/{cardId}`
     -   Updates title, description, status, timestamps.
 -   `DELETE /api/cards/{cardId}`
@@ -147,6 +154,7 @@ Deliver a concrete plan that outlines what to build, in what order, with clear t
 -   `GET /api/boards/{boardId}/snapshot`
     -   Returns `{ board, cards, cardRelationships, boardRelationships }` for the board view, matching frontend needs.
     -   Intended to reduce initial load latency and aligns with current `BoardsResponse` shape.
+-   `guid` is included for boards, lists, cards, and comments in the snapshot payload.
 
 ## Data model mapping (frontend -> backend)
 
@@ -161,18 +169,19 @@ Deliver a concrete plan that outlines what to build, in what order, with clear t
 
 | Concept            | Frontend            | Backend                                                                                    |
 | ------------------ | ------------------- | ------------------------------------------------------------------------------------------ |
-| Board              | `Board`             | `boards` table (id, title, description, created_at, pinned, archived, rollups_enabled)     |
-| List               | `BoardList`         | `lists` table (id, board_id, title, is_process_done, position)                             |
-| Card               | `Card`              | `cards` table (id, title, description, status_state, completed_at, created_at, updated_at) |
+| Board              | `Board`             | `boards` table (id, guid, title, description, created_at, pinned, archived, rollups_enabled) |
+| List               | `BoardList`         | `lists` table (id, guid, board_id, title, is_process_done, position)                       |
+| Card               | `Card`              | `cards` table (id, guid, title, description, status_state, completed_at, created_at, updated_at) |
 | List membership    | `BoardList.cardIds` | `list_cards` join table (list_id, card_id, position)                                       |
 | Card relationship  | `CardRelationship`  | `card_relationships` table (parent_card_id, child_card_id, created_at)                     |
 | Board relationship | `BoardRelationship` | `board_relationships` table (parent_board_id, child_board_id, created_at)                  |
-| Comments           | `CardComment[]`     | `card_comments` table (id, card_id, message, author_type, created_at)                      |
+| Comments           | `CardComment[]`     | `card_comments` table (id, guid, card_id, message, author_type, created_at)                |
 
 Notes:
 
 -   The backend should preserve ordering via explicit `position` fields for lists and list cards.
 -   `BoardService` currently creates ids in-memory; backend must own id generation once migration starts.
+-   `guid` fields are UUID4 compliant identifiers used for cross-system uniqueness; they do not replace existing ids.
 
 ## Migration sequencing overview (high level)
 

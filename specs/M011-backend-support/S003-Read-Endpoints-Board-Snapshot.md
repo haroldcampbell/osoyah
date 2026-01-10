@@ -23,6 +23,7 @@ Serve board data from FastAPI with a response shape compatible with current fron
 -   [ ] `GET /api/boards/{boardId}/snapshot` returns `board`, `cards`, `cardRelationships`, `boardRelationships`.
 -   [ ] Error responses conform to the agreed JSON error shape.
 -   [ ] Response shapes are documented with example payloads.
+-   [ ] `guid` fields are included in all board/list/card/comment payloads.
 
 ## Acceptance tests (exact commands + expected artifacts/output)
 
@@ -33,3 +34,4 @@ Serve board data from FastAPI with a response shape compatible with current fron
 
 -   Preserve list and card ordering explicitly in response payloads.
 -   Snapshot response should be performant for current board sizes.
+-   `guid` values are UUID4 and unique per table.

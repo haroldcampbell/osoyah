@@ -33,6 +33,7 @@ Current active decisions, consolidated from session hand-offs. When a decision c
 -   Relationship changes generate system comments on both parent and child cards.
 -   Angular components that declare `imports` should include `standalone: true` in the `@Component` metadata.
 -   Feature-specific UI types stay co-located with the feature; only shared domain models go in `models/`.
+-   Backend tables include a `guid` column that is UUID4 compliant and unique (required in API payloads).
 
 ## UX feedback
 

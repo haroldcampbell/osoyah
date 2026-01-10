@@ -122,3 +122,8 @@ Running list of communication/process learnings captured after sessions.
 - Keep event wiring explicit (inputs/outputs or direct service injection) and avoid hidden side effects.
 - Update component imports (`standalone: true` + `imports`) and remove unused imports from parent.
 - Re-run lint/e2e/test and confirm logs under `client/logs/`.
+
+## 2026-01-10
+
+### Backend planning conventions
+- Backend tables require a UUID4-compliant, unique `guid` column; include `guid` in API payloads and contract checks.

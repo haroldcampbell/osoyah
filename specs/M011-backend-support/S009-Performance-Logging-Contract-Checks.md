@@ -21,6 +21,7 @@ Ensure backend responses are observable, consistent, and do not regress performa
 -   [ ] Logging conventions are defined for server and client (including error cases).
 -   [ ] Contract checks validate response shape and ordering rules.
 -   [ ] Locations for logs and artifacts are documented.
+-   [ ] Contract checks validate `guid` presence, UUID4 format, and uniqueness.
 
 ## Acceptance tests (exact commands + expected artifacts/output)
 
@@ -30,3 +31,4 @@ Ensure backend responses are observable, consistent, and do not regress performa
 ## Notes (edge cases, hazards, perf constraints)
 
 -   Keep checks lightweight to avoid slowing local iteration.
+-   Ensure `guid` checks do not require full table scans in production paths.

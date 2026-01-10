@@ -27,6 +27,7 @@
 
 ## Entries
 
+-   2026-01-10-02-m011-planning-specs.md - M011 S001/S002 complete, S003-S012 drafts + GUID requirements
 -   2026-01-10-01-ux-patterns-docs.md - Marked S002 DoDs + M010 milestone complete
 -   2026-01-09-05-component-extraction-wrap.md - S003-01/03/04/05 extraction wrap + panel state services
 -   2026-01-09-04-board-views-refactor.md - Extracted list/cards views into components, drafted S003 sub-specs

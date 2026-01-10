@@ -22,6 +22,7 @@ Support parent/child relationships with cycle prevention and depth checks consis
 -   [ ] Validation prevents self-links, cycles, and depth violations.
 -   [ ] Relationship creation timestamps are stored server-side.
 -   [ ] Error responses follow the agreed JSON error shape.
+-   [ ] Relationship payloads include `guid` values when returned.
 
 ## Acceptance tests (exact commands + expected artifacts/output)
 
@@ -32,3 +33,4 @@ Support parent/child relationships with cycle prevention and depth checks consis
 
 -   Ensure unlink operations cleanly remove references without side effects.
 -   Maintain consistency with frontend helper rules in `BoardService`.
+-   If relationship rows include `guid`, enforce UUID4 format and uniqueness.

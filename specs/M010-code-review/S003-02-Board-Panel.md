@@ -18,11 +18,11 @@ Isolate the board panel UI and interactions into a focused component while prese
 
 ## Definition of Done
 
--   [ ] The `.board-panel` block in `client/src/app/board/board.component.html` is moved into its own component and renders identically.
--   [ ] Existing `data-testid` attributes and DOM structure are preserved.
--   [ ] Panel actions (sort, archive toggle, board menus, drag reorder) behave the same as before.
--   [ ] Extracted component is `standalone: true` if it declares `imports`.
--   [ ] Acceptance tests pass.
+-   [x] The `.board-panel` block in `client/src/app/board/board.component.html` is moved into its own component and renders identically.
+-   [x] Existing `data-testid` attributes and DOM structure are preserved.
+-   [x] Panel actions (sort, archive toggle, board menus, drag reorder) behave the same as before.
+-   [x] Extracted component is `standalone: true` if it declares `imports`.
+-   [x] Acceptance tests pass.
 
 ## Acceptance tests (exact commands + expected artifacts/output)
 

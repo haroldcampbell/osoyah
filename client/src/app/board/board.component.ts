@@ -24,6 +24,7 @@ import { BoardHierarchyMetricsComponent } from './board-hierarchy-metrics/board-
 import { BoardCardsViewComponent } from './board-view/board-cards-view/board-cards-view.component';
 import { BoardListViewComponent } from './board-view/board-list-view/board-list-view.component';
 import { BoardToolbarComponent } from './board-toolbar/board-toolbar.component';
+import { BoardPanelComponent } from './board-panel/board-panel.component';
 
 @Component({
   selector: 'app-board',
@@ -39,6 +40,7 @@ import { BoardToolbarComponent } from './board-toolbar/board-toolbar.component';
     BoardCardsViewComponent,
     BoardListViewComponent,
     BoardToolbarComponent,
+    BoardPanelComponent,
   ],
   templateUrl: './board.component.html',
   styleUrl: './board.component.scss',

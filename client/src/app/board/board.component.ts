@@ -26,6 +26,7 @@ import {
   BoardHierarchyPanelComponent,
   BoardHierarchyPanelState,
 } from './board-hierarchy-panel/board-hierarchy-panel.component';
+import { BoardHierarchyDrawerComponent } from './board-hierarchy-drawer/board-hierarchy-drawer.component';
 import { BoardCardsViewComponent } from './board-view/board-cards-view/board-cards-view.component';
 import { BoardListViewComponent } from './board-view/board-list-view/board-list-view.component';
 import { BoardToolbarComponent } from './board-toolbar/board-toolbar.component';
@@ -44,6 +45,7 @@ import { HierarchyNode, HierarchyParentOption } from './board-hierarchy.types';
     BoardHeaderComponent,
     BoardHierarchyMetricsComponent,
     BoardHierarchyPanelComponent,
+    BoardHierarchyDrawerComponent,
     BoardCardsViewComponent,
     BoardListViewComponent,
     BoardToolbarComponent,

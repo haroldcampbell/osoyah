@@ -311,3 +311,23 @@
     background: #fdfbf7;
   }
 }
+
+.board-hierarchy-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(24, 16, 8, 0.35);
+  border: none;
+  z-index: 90;
+}
+
+.board-hierarchy-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: min(320px, 85vw);
+  z-index: 100;
+  border-radius: 0 16px 16px 0;
+  padding: tokens.$space-md;
+  box-shadow: 12px 0 30px rgba(24, 16, 8, 0.2);
+}

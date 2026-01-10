@@ -27,7 +27,7 @@ In-scope:
 -   [x] S003-01-Board Toolbar
 -   [x] S003-02-Board Panel
 -   [x] S003-03-Hierarchy Panel
--   [ ] S003-04-Hierarchy Panel Drawer
+-   [x] S003-04-Hierarchy Panel Drawer
 -   [ ] S003-05-BoardService Panel State
 
 ## Notes

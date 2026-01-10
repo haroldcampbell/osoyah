@@ -18,11 +18,11 @@ Isolate the hierarchy drawer UI and interactions into a focused component while 
 
 ## Definition of Done
 
--   [ ] The drawer `.board-hierarchy` block in `client/src/app/board/board.component.html` (with `.board-hierarchy-drawer`) is moved into its own component and renders identically.
--   [ ] Existing `data-testid` attributes and DOM structure are preserved.
--   [ ] Drawer actions (toggle edit, parent menu, reorder) behave the same as before.
--   [ ] Extracted component is `standalone: true` if it declares `imports`.
--   [ ] Acceptance tests pass.
+-   [x] The drawer `.board-hierarchy` block in `client/src/app/board/board.component.html` (with `.board-hierarchy-drawer`) is moved into its own component and renders identically.
+-   [x] Existing `data-testid` attributes and DOM structure are preserved.
+-   [x] Drawer actions (toggle edit, parent menu, reorder) behave the same as before.
+-   [x] Extracted component is `standalone: true` if it declares `imports`.
+-   [x] Acceptance tests pass.
 
 ## Acceptance tests (exact commands + expected artifacts/output)
 

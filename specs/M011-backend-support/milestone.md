@@ -22,8 +22,18 @@ Out-of-scope:
 - Auth/permissions beyond placeholder assumptions.
 
 ## Specs
-- [ ] S001-Backend Support Discovery + Plan
+- [x] S001-Backend Support Discovery + Plan
 - [ ] S002-JSON to SQLite Migration Plan
+- [ ] S003-Read Endpoints + Board Snapshot
+- [ ] S004-Client Data Source Flag
+- [ ] S005-Board/List/Card CRUD Endpoints
+- [ ] S006-Relationship Endpoints + Validation
+- [ ] S007-Client Optimistic Updates + Reconciliation
+- [ ] S008-Remove Mock Data + Retry/Error States
+- [ ] S009-Performance + Logging + Contract Checks
+- [ ] S010-Hallucination Guardrails + Source Validation
+- [ ] S011-Regression Verification Strategy
+- [ ] S012-Data Consistency Checks
 
 ## Notes
 - Keep this milestone focused on planning; implementation belongs in later milestones.

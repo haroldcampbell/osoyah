@@ -22,12 +22,12 @@ Deliver a concrete plan that outlines what to build, in what order, with clear t
 
 ## Definition of Done
 
--   [ ] Document current frontend data flow and service boundaries.
--   [ ] Draft API contract for core entities (boards, lists, cards, relationships).
--   [ ] Outline data model mapping between frontend and backend at a high level (entities + relationships).
--   [ ] Define a migration sequencing overview (phases and handoff points only, no JSON/SQLite details).
--   [ ] Define updated testing strategy and logging expectations.
--   [ ] Identify risks/dependencies and propose a milestone breakdown for implementation.
+-   [x] Document current frontend data flow and service boundaries.
+-   [x] Draft API contract for core entities (boards, lists, cards, relationships).
+-   [x] Outline data model mapping between frontend and backend at a high level (entities + relationships).
+-   [x] Define a migration sequencing overview (phases and handoff points only, no JSON/SQLite details).
+-   [x] Define updated testing strategy and logging expectations.
+-   [x] Identify risks/dependencies and propose a milestone breakdown for implementation.
 
 ## Acceptance tests (exact commands + expected artifacts/output)
 

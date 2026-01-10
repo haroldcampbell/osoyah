@@ -4,11 +4,11 @@ Conform to `docs/principles.md`.
 
 ## Summary
 
-Introduce client-side optimistic updates for backend writes with reconciliation on server responses.
+Introduce client-side optimistic updates for backend writes with reconciliation on server responses from SQLite-backed persistence.
 
 ## Goal
 
-Maintain fast UI feedback while ensuring client state stays consistent with backend data.
+Maintain fast UI feedback while ensuring client state stays consistent with backend data stored in SQLite.
 
 ## Non-goals
 
@@ -31,3 +31,4 @@ Maintain fast UI feedback while ensuring client state stays consistent with back
 
 -   Avoid double-applying updates when optimistic and server states converge.
 -   Confirm list/card ordering remains stable after reconciliation.
+-   Reconciliation must respect server-assigned SQLite primary keys/guids where applicable.

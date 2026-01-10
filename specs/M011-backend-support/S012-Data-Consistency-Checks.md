@@ -8,7 +8,7 @@ Define consistency checks that ensure board/list/card data stays coherent during
 
 ## Goal
 
-Document the required consistency validations for ordering, membership, and relationships, and where those checks should live.
+Document the required consistency validations for ordering, membership, and relationships, and where those checks should live across SQLite constraints and application logic.
 
 ## Non-goals
 
@@ -31,3 +31,4 @@ Document the required consistency validations for ordering, membership, and rela
 
 -   Multi-board card membership must remain consistent with list membership records.
 -   Relationship integrity must prevent cycles and orphaned links.
+-   Identify which invariants are enforced via SQLite constraints vs. ORM-level validation.

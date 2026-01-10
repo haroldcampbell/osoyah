@@ -4,11 +4,11 @@ Conform to `docs/principles.md`.
 
 ## Summary
 
-Remove the mock data path and harden error and retry handling for backend-backed data loading.
+Remove the mock data path and harden error and retry handling for backend-backed data loading from SQLite persistence.
 
 ## Goal
 
-Ensure the app is fully backed by the API with resilient error handling that matches UX patterns.
+Ensure the app is fully backed by the API with resilient error handling that matches UX patterns and is powered by SQLite.
 
 ## Non-goals
 
@@ -25,8 +25,9 @@ Ensure the app is fully backed by the API with resilient error handling that mat
 ## Acceptance tests (exact commands + expected artifacts/output)
 
 -   Define exact frontend test command(s); store logs under `client/logs/`.
--   Define exact backend test command(s); store logs under `server/logs/`.
+-   Define exact backend test command(s); store logs under `backend/server/logs/`.
 
 ## Notes (edge cases, hazards, perf constraints)
 
 -   Avoid infinite retry loops; define clear termination conditions.
+-   Surface clear errors for SQLite connectivity failures (e.g., missing DB file).

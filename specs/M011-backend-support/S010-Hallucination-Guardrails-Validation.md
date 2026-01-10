@@ -8,7 +8,7 @@ Define guardrails that prevent unverified claims during backend planning and imp
 
 ## Goal
 
-Ensure every backend plan and implementation decision is traceable to code, specs, or docs, with a repeatable validation checklist.
+Ensure every backend plan and implementation decision is traceable to code, specs, or docs (including SQLite schema and ORM models), with a repeatable validation checklist.
 
 ## Non-goals
 
@@ -29,5 +29,5 @@ Ensure every backend plan and implementation decision is traceable to code, spec
 
 ## Notes (edge cases, hazards, perf constraints)
 
--   Keep references scoped to repo files (`client/`, `server/`, `docs/`, `specs/`).
+-   Keep references scoped to repo files (`client/`, `backend/server/`, `docs/`, `specs/`).
 -   If a claim cannot be tied to a source, it must be tagged as an assumption with an owner and follow-up step.

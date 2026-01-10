@@ -4,11 +4,11 @@ Conform to `docs/principles.md`.
 
 ## Summary
 
-Add baseline performance expectations, logging conventions, and contract checks for backend integration.
+Add baseline performance expectations, logging conventions, and contract checks for backend integration with SQLite persistence.
 
 ## Goal
 
-Ensure backend responses are observable, consistent, and do not regress performance or data shape expectations.
+Ensure backend responses are observable, consistent, and do not regress performance or data shape expectations for SQLite-backed reads.
 
 ## Non-goals
 
@@ -22,13 +22,15 @@ Ensure backend responses are observable, consistent, and do not regress performa
 -   [ ] Contract checks validate response shape and ordering rules.
 -   [ ] Locations for logs and artifacts are documented.
 -   [ ] Contract checks validate `guid` presence, UUID4 format, and uniqueness.
+-   [ ] SQLite query timings are captured for key endpoints (boards, snapshot).
 
 ## Acceptance tests (exact commands + expected artifacts/output)
 
--   Define exact backend test command(s); store logs under `server/logs/`.
+-   Define exact backend test command(s); store logs under `backend/server/logs/`.
 -   Define any required frontend checks; store logs under `client/logs/`.
 
 ## Notes (edge cases, hazards, perf constraints)
 
 -   Keep checks lightweight to avoid slowing local iteration.
 -   Ensure `guid` checks do not require full table scans in production paths.
+-   Prefer indexed SQLite queries when defining performance budgets.

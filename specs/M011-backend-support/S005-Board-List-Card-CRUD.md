@@ -4,11 +4,11 @@ Conform to `docs/principles.md`.
 
 ## Summary
 
-Implement backend write endpoints for boards, lists, and cards to support creation, updates, deletion, and ordering.
+Implement backend write endpoints for boards, lists, and cards to support creation, updates, deletion, and ordering, persisted in SQLite via SQLAlchemy ORM.
 
 ## Goal
 
-Provide API coverage for all board/list/card mutations currently performed in the client.
+Provide API coverage for all board/list/card mutations currently performed in the client, backed by SQLite persistence.
 
 ## Non-goals
 
@@ -23,10 +23,11 @@ Provide API coverage for all board/list/card mutations currently performed in th
 -   [ ] Server validations align with existing client constraints (title length, required fields).
 -   [ ] Error responses follow the agreed JSON error shape.
 -   [ ] `guid` fields are generated server-side, required, and unique per table.
+-   [ ] Writes persist via SQLAlchemy models to the SQLite database defined in S002.
 
 ## Acceptance tests (exact commands + expected artifacts/output)
 
--   Define exact backend test command(s); store logs under `server/logs/`.
+-   Define exact backend test command(s); store logs under `backend/server/logs/`.
 -   Document any manual verification steps.
 
 ## Notes (edge cases, hazards, perf constraints)
@@ -34,3 +35,4 @@ Provide API coverage for all board/list/card mutations currently performed in th
 -   Ensure deletes clean up list membership to avoid orphaned references.
 -   Preserve card multi-board membership semantics.
 -   Enforce `guid` uniqueness with database constraints.
+-   Use SQLAlchemy transactions to keep list/card ordering updates consistent.

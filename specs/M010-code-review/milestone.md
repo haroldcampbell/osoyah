@@ -22,7 +22,7 @@ In-scope:
 ## Specs
 
 -   [x] S001-Standalone Components
--   [ ] S002-UX patterns
+-   [x] S002-UX patterns
 -   [x] S003-00-UI component extraction
 -   [x] S003-01-Board Toolbar
 -   [x] S003-02-Board Panel

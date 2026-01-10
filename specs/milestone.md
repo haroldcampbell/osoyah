@@ -17,7 +17,7 @@
 -   [x] M007-Board Hierarchy
 -   [x] M008-Roll-Up Metrics
 -   [x] M009-Views and State
--   [ ] M010-Code Review
+-   [x] M010-Code Review
 -   [ ] M011-Backend Support
 
 ## Ideas and future milestones

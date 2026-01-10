@@ -27,6 +27,7 @@
 
 ## Entries
 
+-   2026-01-09-05-component-extraction-wrap.md - S003-01/03/04/05 extraction wrap + panel state services
 -   2026-01-09-04-board-views-refactor.md - Extracted list/cards views into components, drafted S003 sub-specs
 -   2026-01-09-03-milestone-renumber.md - Remove obsolete done-lists milestone and renumber M010/M011
 -   2026-01-09-02-list-view-grid.md - List view grid layout, toggle, and E2E coverage

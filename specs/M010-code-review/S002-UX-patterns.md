@@ -10,3 +10,13 @@ Identify UX patterns and capture them in documentation
 
 -   Capture existing UX patterns in codebase.
 -   Ensure consistent application of UX patterns.
+
+## Definition of Done
+
+-   [ ] `docs/ux-patterns.md` includes the patterns observed in the current codebase with examples and file references.
+-   [ ] Gaps/inconsistencies are called out explicitly as candidates for future alignment (no new behavior in this spec).
+-   [ ] Documentation changes remain scoped to UX pattern capture (no refactors or feature changes).
+
+## Acceptance tests (exact commands + expected artifacts/output)
+
+-   Docs-only change; no automated tests required.

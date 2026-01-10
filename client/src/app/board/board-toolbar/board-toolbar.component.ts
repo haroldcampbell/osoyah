@@ -24,13 +24,7 @@ import { BoardService, BoardViewMode } from '../../services/board.service';
   styleUrl: './board-toolbar.component.scss',
 })
 export class BoardToolbarComponent {
-  @Input() activeBoardId = '';
-  @Input() activeCardId = '';
-  @Input() boardNotFound = false;
   @Input() viewMode: BoardViewMode = 'cards';
-  @Input() boardTitle = '';
-  @Input() boardLists: BoardList[] = [];
-  @Input() boardCreatedAt?: string;
   @Output() viewModeChange = new EventEmitter<BoardViewMode>();
   @Output() closePanelRequested = new EventEmitter<boolean>();
   @Output() boardCreated = new EventEmitter<void>();
@@ -63,10 +57,19 @@ export class BoardToolbarComponent {
   }
 
   isCurrentBoard(boardId: string): boolean {
-    if (this.activeBoardId) {
-      return this.activeBoardId === boardId;
-    }
     return this.boardService.board?.id === boardId;
+  }
+
+  get boardTitle(): string {
+    return this.boardService.board?.title ?? '';
+  }
+
+  get boardLists(): BoardList[] {
+    return this.boardService.board?.lists ?? [];
+  }
+
+  get boardCreatedAt(): string | undefined {
+    return this.boardService.board?.createdAt;
   }
 
   toggleBoardMenu(event: MouseEvent): void {
@@ -78,7 +81,9 @@ export class BoardToolbarComponent {
   }
 
   selectBoard(board: Board): void {
-    if (this.activeBoardId === board.id && !this.activeCardId && !this.boardNotFound) {
+    const currentBoardId = this.boardService.board?.id ?? '';
+    const hasActiveCard = !!this.boardService.selectedCard;
+    if (currentBoardId === board.id && !hasActiveCard) {
       return;
     }
     this.boardMenuOpen = false;
@@ -217,7 +222,9 @@ export class BoardToolbarComponent {
     if (!boardId) {
       return;
     }
-    if (this.activeBoardId === boardId && !this.activeCardId) {
+    const currentBoardId = this.boardService.board?.id ?? '';
+    const hasActiveCard = !!this.boardService.selectedCard;
+    if (currentBoardId === boardId && !hasActiveCard) {
       return;
     }
     this.router.navigate(['/boards', boardId]);

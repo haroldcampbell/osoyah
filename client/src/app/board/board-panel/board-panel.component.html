@@ -1,21 +1,21 @@
 <aside class="board-panel" data-testid="board-panel">
   <header class="board-panel-header">
     <div class="board-panel-title">
-      {{ archivedView ? 'Archived boards' : 'Boards' }}
+      {{ panelState.archivedView ? 'Archived boards' : 'Boards' }}
     </div>
     <div class="board-panel-header-actions">
       <button
         type="button"
         class="board-panel-header-button"
-        (click)="archivedViewToggle.emit()"
+        (click)="panelState.toggleArchivedView()"
         data-testid="board-panel-archive-toggle"
       >
-        {{ archivedView ? 'All boards' : 'Archived' }}
+        {{ panelState.archivedView ? 'All boards' : 'Archived' }}
       </button>
       <button
         type="button"
         class="board-panel-close"
-        (click)="closePanel.emit()"
+        (click)="panelState.closePanel()"
         aria-label="Close board panel"
         data-testid="board-panel-close"
       >
@@ -28,7 +28,7 @@
     <label class="board-panel-label" for="board-panel-sort">Sort</label>
     <select
       id="board-panel-sort"
-      [ngModel]="sortMode"
+      [ngModel]="panelState.sortMode"
       (ngModelChange)="handleSortModeChange($event)"
     >
       <option value="manual">Manual</option>
@@ -39,22 +39,22 @@
   </div>
 
   <div class="board-panel-body board-panel-compact">
-    @if (archivedView) {
-      @if (archivedBoards.length === 0) {
+    @if (panelState.archivedView) {
+      @if (panelState.archivedBoards.length === 0) {
         <div class="board-panel-empty">No archived boards yet.</div>
       } @else {
         <details class="board-panel-section board-panel-section-collapsible" open>
           <summary class="board-panel-section-title">
-            <span class="board-panel-section-count">{{ archivedBoards.length }}</span>
+            <span class="board-panel-section-count">{{ panelState.archivedBoards.length }}</span>
             <span class="board-panel-section-label">Archived</span>
           </summary>
           <div class="board-panel-list">
-            @for (board of archivedBoards; track board.id) {
+            @for (board of panelState.archivedBoards; track board.id) {
               <div class="board-panel-row" [class.current]="isCurrentBoard(board.id)">
                 <button
                   type="button"
                   class="board-panel-board"
-                  (click)="selectBoard.emit(board)"
+                  (click)="selectBoard(board)"
                 >
                   <span class="board-panel-name" [attr.title]="board.title">
                     {{ board.title }}
@@ -68,7 +68,7 @@
                     <span aria-hidden="true">⋮</span>
                   </summary>
                   <div class="board-panel-menu-popover">
-                    <button type="button" (click)="restoreBoard.emit(board)">Restore</button>
+                    <button type="button" (click)="restoreBoard(board)">Restore</button>
                   </div>
                 </details>
               </div>
@@ -77,22 +77,22 @@
         </details>
       }
     } @else {
-      @if (pinnedBoards.length) {
+      @if (panelState.pinnedBoards.length) {
         <details class="board-panel-section board-panel-section-collapsible" open>
           <summary class="board-panel-section-title">
-            <span class="board-panel-section-count">{{ pinnedBoards.length }}</span>
+            <span class="board-panel-section-count">{{ panelState.pinnedBoards.length }}</span>
             <span class="board-panel-section-label">Pinned</span>
           </summary>
           <div
             class="board-panel-list"
             cdkDropList
-            [cdkDropListData]="pinnedBoards"
-            (cdkDropListDropped)="pinnedDrop.emit($event)"
+            [cdkDropListData]="panelState.pinnedBoards"
+            (cdkDropListDropped)="handlePinnedDrop($event)"
           >
-            @for (board of pinnedBoards; track board.id) {
+            @for (board of panelState.pinnedBoards; track board.id) {
               <div class="board-panel-row pinned" cdkDrag [class.current]="isCurrentBoard(board.id)">
                 <span class="board-panel-grip" cdkDragHandle aria-hidden="true"></span>
-                <button type="button" class="board-panel-board" (click)="selectBoard.emit(board)">
+                <button type="button" class="board-panel-board" (click)="selectBoard(board)">
                   <span class="board-panel-name" [attr.title]="board.title">
                     {{ board.title }}
                   </span>
@@ -103,7 +103,7 @@
                     <span aria-hidden="true">⋮</span>
                   </summary>
                   <div class="board-panel-menu-popover">
-                    <button type="button" (click)="unpinBoard.emit(board)">Unpin</button>
+                    <button type="button" (click)="unpinBoard(board)">Unpin</button>
                   </div>
                 </details>
               </div>
@@ -114,19 +114,19 @@
 
       <details class="board-panel-section board-panel-section-collapsible" open>
         <summary class="board-panel-section-title">
-          <span class="board-panel-section-count">{{ visibleBoards.length }}</span>
+          <span class="board-panel-section-count">{{ panelState.visibleBoards.length }}</span>
           <span class="board-panel-section-label">Boards</span>
         </summary>
         <div
           class="board-panel-list"
           cdkDropList
-          [cdkDropListData]="visibleBoards"
-          (cdkDropListDropped)="boardDrop.emit($event)"
+          [cdkDropListData]="panelState.visibleBoards"
+          (cdkDropListDropped)="handleBoardDrop($event)"
         >
-          @for (board of visibleBoards; track board.id) {
+          @for (board of panelState.visibleBoards; track board.id) {
             <div class="board-panel-row" cdkDrag [class.current]="isCurrentBoard(board.id)">
               <span class="board-panel-grip" cdkDragHandle aria-hidden="true"></span>
-              <button type="button" class="board-panel-board" (click)="selectBoard.emit(board)">
+              <button type="button" class="board-panel-board" (click)="selectBoard(board)">
                 <span class="board-panel-name" [attr.title]="board.title">
                   {{ board.title }}
                 </span>
@@ -137,8 +137,8 @@
                   <span aria-hidden="true">⋮</span>
                 </summary>
                 <div class="board-panel-menu-popover">
-                  <button type="button" (click)="pinBoard.emit(board)">Pin</button>
-                  <button type="button" (click)="archiveBoard.emit(board)">Archive</button>
+                  <button type="button" (click)="pinBoard(board)">Pin</button>
+                  <button type="button" (click)="archiveBoard(board)">Archive</button>
                 </div>
               </details>
             </div>

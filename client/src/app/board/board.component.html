@@ -4,7 +4,7 @@
     subtitle="Minimal board for focused flow."
     titleLink="/boards"
     [showPanelTrigger]="true"
-    [panelExpanded]="boardPanelOpen"
+    [panelExpanded]="boardPanelState.panelOpen"
     (panelToggle)="toggleBoardPanel()"
   ></app-board-header>
 
@@ -39,16 +39,10 @@
     </div>
   }
 
-  @if (boardService.board && !boardService.loading && !boardNotFound) {
+      @if (boardService.board && !boardService.loading && !boardNotFound) {
     <div class="board" data-testid="board">
       <app-board-toolbar
-        [activeBoardId]="activeBoardId"
-        [activeCardId]="activeCardId"
-        [boardNotFound]="boardNotFound"
         [viewMode]="viewMode"
-        [boardTitle]="boardService.board.title"
-        [boardLists]="boardService.board.lists"
-        [boardCreatedAt]="boardService.board.createdAt"
         (viewModeChange)="setViewMode($event)"
         (closePanelRequested)="closePanel($event)"
         (boardCreated)="handleBoardCreated()"
@@ -59,19 +53,19 @@
         <button
           type="button"
           class="board-hierarchy-toggle"
-          (click)="toggleHierarchyPanel()"
+          (click)="hierarchyPanelState.togglePanel()"
           data-testid="hierarchy-toggle"
-          [attr.aria-expanded]="hierarchyPanelOpen"
+          [attr.aria-expanded]="hierarchyPanelState.panelOpen"
         >
           Hierarchy
         </button>
-        @if (isHierarchyBoard) {
+        @if (hierarchyPanelState.isHierarchyBoard) {
           <nav
             class="board-breadcrumbs"
             aria-label="Board hierarchy"
             data-testid="hierarchy-breadcrumbs"
           >
-            @for (crumb of breadcrumbBoards; track crumb.id; let isLast = $last) {
+            @for (crumb of hierarchyPanelState.breadcrumbBoards; track crumb.id; let isLast = $last) {
               <button
                 type="button"
                 class="board-breadcrumb"
@@ -88,32 +82,12 @@
           </nav>
         }
       </div>
-      @if (isHierarchyBoard && boardService.board.rollupsEnabled) {
-        <app-board-hierarchy-metrics
-          [boardId]="boardService.board.id"
-        ></app-board-hierarchy-metrics>
+      @if (hierarchyPanelState.isHierarchyBoard && boardService.board.rollupsEnabled) {
+        <app-board-hierarchy-metrics></app-board-hierarchy-metrics>
       }
 
-      @if (boardPanelOpen) {
-        <app-board-panel
-          [activeBoardId]="activeBoardId"
-          [currentBoardId]="boardService.board.id"
-          [archivedView]="boardPanelArchivedView"
-          [sortMode]="boardPanelSortMode"
-          [archivedBoards]="archivedBoards"
-          [pinnedBoards]="pinnedBoards"
-          [visibleBoards]="visibleBoards"
-          (archivedViewToggle)="toggleArchivedView()"
-          (closePanel)="closeBoardPanel()"
-          (sortModeChange)="setBoardSortMode($event)"
-          (pinnedDrop)="handlePinnedDrop($event)"
-          (boardDrop)="handleBoardDrop($event)"
-          (selectBoard)="selectBoardFromPanel($event)"
-          (pinBoard)="pinBoard($event)"
-          (unpinBoard)="unpinBoard($event)"
-          (archiveBoard)="archiveBoard($event)"
-          (restoreBoard)="restoreBoard($event)"
-        ></app-board-panel>
+      @if (boardPanelState.panelOpen) {
+        <app-board-panel></app-board-panel>
       }
 
       @if (cardNotFound) {
@@ -137,24 +111,20 @@
         </div>
       }
 
-      @if (isNarrowViewport && hierarchyPanelOpen) {
+      @if (hierarchyPanelState.isNarrowViewport && hierarchyPanelState.panelOpen) {
         <app-board-hierarchy-drawer
-          [state]="hierarchyPanelState"
           [treeTemplate]="hierarchyTree"
-          (action)="handleHierarchyPanelAction($event)"
         ></app-board-hierarchy-drawer>
       }
 
       <div
         class="board-layout"
         [class.board-layout-panel-open]="selectedCard"
-        [class.board-layout-board-panel-open]="boardPanelOpen"
+        [class.board-layout-board-panel-open]="boardPanelState.panelOpen"
       >
-        @if (!isNarrowViewport && hierarchyPanelOpen) {
+        @if (!hierarchyPanelState.isNarrowViewport && hierarchyPanelState.panelOpen) {
           <app-board-hierarchy-panel
-            [state]="hierarchyPanelState"
             [treeTemplate]="hierarchyTree"
-            (action)="handleHierarchyPanelAction($event)"
           ></app-board-hierarchy-panel>
         }
         @if (isListView) {
@@ -186,7 +156,7 @@
 
       <ng-template #hierarchyTree>
         <div class="board-hierarchy-tree" data-testid="hierarchy-tree">
-          @for (node of hierarchyRoots; track node.board.id) {
+          @for (node of hierarchyPanelState.hierarchyRoots; track node.board.id) {
             <ng-container
               [ngTemplateOutlet]="hierarchyNode"
               [ngTemplateOutletContext]="{ $implicit: node }"

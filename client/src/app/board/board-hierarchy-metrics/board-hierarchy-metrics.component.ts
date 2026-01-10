@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 
 import { BoardService, RollupMetricResult, RollupScope } from '../../services/board.service';
+import { HierarchyPanelStateService } from '../../services/hierarchy-panel-state.service';
 
 @Component({
   selector: 'app-board-hierarchy-metrics',
@@ -11,8 +12,8 @@ import { BoardService, RollupMetricResult, RollupScope } from '../../services/bo
   styleUrl: './board-hierarchy-metrics.component.scss',
 })
 export class BoardHierarchyMetricsComponent {
-  @Input({ required: true }) boardId = '';
   readonly boardService = inject(BoardService);
+  readonly hierarchyState = inject(HierarchyPanelStateService);
   scope: RollupScope = 'direct';
 
   setScope(scope: RollupScope): void {
@@ -24,10 +25,11 @@ export class BoardHierarchyMetricsComponent {
   }
 
   get metrics(): RollupMetricResult[] {
-    if (!this.boardId) {
+    const boardId = this.hierarchyState.boardId;
+    if (!boardId) {
       return [];
     }
-    return this.boardService.getBoardRollupMetrics(this.boardId, this.scope);
+    return this.boardService.getBoardRollupMetrics(boardId, this.scope);
   }
 
   get totalCount(): number {

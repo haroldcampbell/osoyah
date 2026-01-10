@@ -14,7 +14,7 @@
         data-testid="hierarchy-edit-toggle"
         (click)="handleToggleEdit()"
       >
-        {{ state.editMode ? 'Done' : 'Edit' }}
+        {{ hierarchyState.editMode ? 'Done' : 'Edit' }}
       </button>
       <button
         type="button"
@@ -27,7 +27,7 @@
     </div>
   </header>
   <div class="board-hierarchy-body">
-    @if (state.editMode) {
+    @if (hierarchyState.editMode) {
       <div class="board-hierarchy-manager" data-testid="hierarchy-manager">
         <div class="board-hierarchy-manager-row">
           <div class="board-hierarchy-manager-label">Parent</div>
@@ -37,12 +37,12 @@
             data-testid="hierarchy-parent-button"
             (click)="handleToggleParentMenu()"
           >
-            {{ state.parentLabel }}
+            {{ hierarchyState.hierarchyParentLabel }}
           </button>
         </div>
-        @if (state.parentMenuOpen) {
+        @if (hierarchyState.parentMenuOpen) {
           <div class="board-hierarchy-parent-menu" data-testid="hierarchy-parent-menu">
-            @for (option of state.parentOptions; track option.id ?? option.label) {
+            @for (option of hierarchyState.hierarchyParentOptions; track option.id ?? option.label) {
               <div class="board-hierarchy-parent-item">
                 <button
                   type="button"
@@ -60,19 +60,19 @@
             }
           </div>
         }
-        @if (state.parentError) {
-          <div class="board-hierarchy-parent-error">{{ state.parentError }}</div>
+        @if (hierarchyState.parentError) {
+          <div class="board-hierarchy-parent-error">{{ hierarchyState.parentError }}</div>
         }
-        @if (state.reorderItems.length > 1) {
+        @if (hierarchyState.hierarchyReorderItems.length > 1) {
           <div class="board-hierarchy-reorder" data-testid="hierarchy-reorder">
             <div class="board-hierarchy-manager-label">Reorder children</div>
             <div
               class="board-hierarchy-reorder-list"
               cdkDropList
-              [cdkDropListData]="state.reorderItems"
+              [cdkDropListData]="hierarchyState.hierarchyReorderItems"
               (cdkDropListDropped)="handleReorderDrop($event)"
             >
-              @for (item of state.reorderItems; track item.board.id) {
+              @for (item of hierarchyState.hierarchyReorderItems; track item.board.id) {
                 <div
                   class="board-hierarchy-reorder-item"
                   data-testid="hierarchy-reorder-item"
@@ -104,7 +104,7 @@
         </div>
       </div>
     }
-    @if (state.isHierarchyBoard) {
+    @if (hierarchyState.isHierarchyBoard) {
       <ng-container *ngTemplateOutlet="treeTemplate"></ng-container>
     } @else {
       <div class="board-hierarchy-empty" data-testid="hierarchy-empty">

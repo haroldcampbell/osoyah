@@ -1,4 +1,3 @@
-import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import {
   AfterViewChecked,
@@ -18,20 +17,17 @@ import { combineLatest } from 'rxjs';
 
 import { BoardService, BoardViewMode } from '../services/board.service';
 import { BoardHeaderComponent } from '../board-header/board-header.component';
-import { Board, BoardList, BoardRelationship, Card } from '../models/board.model';
+import { BoardList, Card } from '../models/board.model';
 import { CardPanelComponent } from './card-panel/card-panel.component';
 import { BoardHierarchyMetricsComponent } from './board-hierarchy-metrics/board-hierarchy-metrics.component';
-import {
-  BoardHierarchyPanelAction,
-  BoardHierarchyPanelComponent,
-  BoardHierarchyPanelState,
-} from './board-hierarchy-panel/board-hierarchy-panel.component';
+import { BoardHierarchyPanelComponent } from './board-hierarchy-panel/board-hierarchy-panel.component';
 import { BoardHierarchyDrawerComponent } from './board-hierarchy-drawer/board-hierarchy-drawer.component';
 import { BoardCardsViewComponent } from './board-view/board-cards-view/board-cards-view.component';
 import { BoardListViewComponent } from './board-view/board-list-view/board-list-view.component';
 import { BoardToolbarComponent } from './board-toolbar/board-toolbar.component';
 import { BoardPanelComponent } from './board-panel/board-panel.component';
-import { HierarchyNode, HierarchyParentOption } from './board-hierarchy.types';
+import { BoardPanelStateService } from '../services/board-panel-state.service';
+import { HierarchyPanelStateService } from '../services/hierarchy-panel-state.service';
 
 @Component({
   selector: 'app-board',
@@ -39,7 +35,6 @@ import { HierarchyNode, HierarchyParentOption } from './board-hierarchy.types';
   imports: [
     CommonModule,
     FormsModule,
-    DragDropModule,
     CardPanelComponent,
     RouterLink,
     BoardHeaderComponent,
@@ -56,6 +51,8 @@ import { HierarchyNode, HierarchyParentOption } from './board-hierarchy.types';
 })
 export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
   readonly boardService = inject(BoardService);
+  readonly boardPanelState = inject(BoardPanelStateService);
+  readonly hierarchyPanelState = inject(HierarchyPanelStateService);
   private readonly changeDetectorRef = inject(ChangeDetectorRef);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
@@ -64,9 +61,6 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
   @ViewChild(CardPanelComponent) cardPanel?: CardPanelComponent;
   boardSettingsToastMessage = '';
   boardSettingsToastError = false;
-  boardPanelOpen = false;
-  boardPanelSortMode: 'manual' | 'name' | 'name-desc' | 'recent' = 'manual';
-  boardPanelArchivedView = false;
   boardNotFound = false;
   cardNotFound = false;
   missingBoardId = '';
@@ -76,13 +70,6 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
   createBoardModalError = '';
   activeBoardId = '';
   activeCardId = '';
-  hierarchyPanelOpen = false;
-  hierarchyEditMode = false;
-  hierarchyParentMenuOpen = false;
-  hierarchyParentError = '';
-  readonly hierarchyMaxDepth = 7;
-  hierarchyNodes: HierarchyNode[] = [];
-  isNarrowViewport = window.matchMedia('(max-width: 800px)').matches;
   readonly expandedListRows = new Set<string>();
   boardListsElement: HTMLElement | null = null;
   private lastSelectionId: string | null = null;
@@ -96,7 +83,7 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
         if (!loaded || this.boardService.error) {
           return;
         }
-        this.refreshHierarchy();
+        this.hierarchyPanelState.refreshHierarchy();
         window.setTimeout(() => {
           this.handleRoute(params.get('boardId'), params.get('cardId'));
         }, 0);
@@ -116,9 +103,8 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
       if (!this.selectedCard || this.selectedCard.id !== activeCardId) {
         return;
       }
-      if (this.boardPanelOpen) {
-        this.boardPanelOpen = false;
-        this.boardPanelArchivedView = false;
+      if (this.boardPanelState.panelOpen) {
+        this.boardPanelState.closePanel();
       }
       this.lastSelectionId = activeCardId;
     }, 0);
@@ -156,18 +142,6 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
     return this.viewMode === 'list';
   }
 
-  get hierarchyPanelState(): BoardHierarchyPanelState {
-    return {
-      editMode: this.hierarchyEditMode,
-      parentLabel: this.hierarchyParentLabel,
-      parentMenuOpen: this.hierarchyParentMenuOpen,
-      parentOptions: this.hierarchyParentOptions,
-      parentError: this.hierarchyParentError,
-      reorderItems: this.hierarchyReorderItems,
-      isHierarchyBoard: this.isHierarchyBoard,
-    };
-  }
-
   get listViewRows(): { card: Card; list: BoardList }[] {
     const board = this.boardService.board;
     if (!board) {
@@ -184,24 +158,6 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
       });
     });
     return rows;
-  }
-
-  get pinnedBoards(): Board[] {
-    return this.boardService.pinnedOrder
-      .map((id) => this.boardService.getBoard(id))
-      .filter((board): board is Board => !!board && !board.archived);
-  }
-
-  get visibleBoards(): Board[] {
-    return this.boardService.boardOrder
-      .map((id) => this.boardService.getBoard(id))
-      .filter((board): board is Board => !!board && !board.archived && !board.pinned);
-  }
-
-  get archivedBoards(): Board[] {
-    return this.boardService.archivedOrder
-      .map((id) => this.boardService.getBoard(id))
-      .filter((board): board is Board => !!board && board.archived === true);
   }
 
   closePanel(navigate = true): void {
@@ -225,117 +181,13 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
   }
 
   toggleBoardPanel(): void {
-    this.boardPanelOpen = !this.boardPanelOpen;
-    if (this.boardPanelOpen) {
-      this.boardToolbar?.closeMenus();
-      this.boardPanelArchivedView = false;
-      this.closePanel();
-    }
-  }
-
-  closeBoardPanel(): void {
-    this.boardPanelOpen = false;
-    this.boardPanelArchivedView = false;
-  }
-
-  toggleArchivedView(): void {
-    this.boardPanelArchivedView = !this.boardPanelArchivedView;
-  }
-
-  handleHierarchyPanelAction(action: BoardHierarchyPanelAction): void {
-    switch (action.type) {
-      case 'toggleEdit':
-        this.toggleHierarchyEdit();
-        return;
-      case 'togglePanel':
-        this.toggleHierarchyPanel();
-        return;
-      case 'toggleParentMenu':
-        this.toggleHierarchyParentMenu();
-        return;
-      case 'setParent':
-        this.setHierarchyParent(action.option);
-        return;
-      case 'reorder':
-        this.handleHierarchyReorderDrop(action.event);
-        return;
-      case 'openManager':
-        this.openHierarchyManager();
-        return;
-      default:
-        return;
-    }
-  }
-
-  setBoardSortMode(mode: 'manual' | 'name' | 'name-desc' | 'recent'): void {
-    this.boardPanelSortMode = mode;
-    if (mode === 'manual') {
+    if (this.boardPanelState.panelOpen) {
+      this.boardPanelState.closePanel();
       return;
     }
-    const sorted = (boards: Board[]): Board[] =>
-      [...boards].sort((left, right) => {
-        if (mode === 'name' || mode === 'name-desc') {
-          return left.title.localeCompare(right.title);
-        }
-        const leftStamp = this.boardService.lastActiveAt[left.id] ?? 0;
-        const rightStamp = this.boardService.lastActiveAt[right.id] ?? 0;
-        if (rightStamp !== leftStamp) {
-          return rightStamp - leftStamp;
-        }
-        return left.title.localeCompare(right.title);
-      });
-    const orderedVisible = sorted(this.visibleBoards);
-    const orderedPinned = sorted(this.pinnedBoards);
-    if (mode === 'name-desc') {
-      orderedVisible.reverse();
-      orderedPinned.reverse();
-    }
-    this.boardService.setBoardOrder(orderedVisible.map((board) => board.id));
-    this.boardService.setPinnedOrder(orderedPinned.map((board) => board.id));
-  }
-
-  private applyCurrentBoardSort(): void {
-    if (this.boardPanelSortMode !== 'manual') {
-      this.setBoardSortMode(this.boardPanelSortMode);
-    }
-  }
-
-  selectBoardFromPanel(board: Board): void {
-    this.navigateToBoardRoute(board.id);
-  }
-
-  handleBoardDrop(event: CdkDragDrop<Board[]>): void {
-    const order = [...this.visibleBoards.map((board) => board.id)];
-    moveItemInArray(order, event.previousIndex, event.currentIndex);
-    this.boardService.setBoardOrder(order);
-    this.boardPanelSortMode = 'manual';
-  }
-
-  handlePinnedDrop(event: CdkDragDrop<Board[]>): void {
-    const order = [...this.pinnedBoards.map((board) => board.id)];
-    moveItemInArray(order, event.previousIndex, event.currentIndex);
-    this.boardService.setPinnedOrder(order);
-    this.boardPanelSortMode = 'manual';
-  }
-
-  pinBoard(board: Board): void {
-    this.boardService.pinBoard(board.id);
-    this.applyCurrentBoardSort();
-  }
-
-  unpinBoard(board: Board): void {
-    this.boardService.unpinBoard(board.id);
-    this.applyCurrentBoardSort();
-  }
-
-  archiveBoard(board: Board): void {
-    this.boardService.archiveBoard(board.id);
-    this.applyCurrentBoardSort();
-  }
-
-  restoreBoard(board: Board): void {
-    this.boardService.restoreBoard(board.id);
-    this.applyCurrentBoardSort();
+    this.boardToolbar?.closeMenus();
+    this.closePanel();
+    this.boardPanelState.openPanel();
   }
 
   openCreateBoardModal(): void {
@@ -453,9 +305,7 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
   }
 
   handleBoardCreated(): void {
-    if (this.boardPanelSortMode !== 'manual') {
-      this.setBoardSortMode(this.boardPanelSortMode);
-    }
+    this.boardPanelState.applyCurrentSort();
   }
 
   handleBoardSettingsToast(event: { message: string; isError?: boolean }): void {
@@ -472,17 +322,16 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
     if (this.boardService.selectedCard) {
       this.closePanel();
     }
-    if (this.hierarchyParentMenuOpen) {
-      this.hierarchyParentMenuOpen = false;
+    if (this.hierarchyPanelState.parentMenuOpen) {
+      this.hierarchyPanelState.closeParentMenu();
       return;
     }
-    if (this.isNarrowViewport && this.hierarchyPanelOpen) {
-      this.hierarchyPanelOpen = false;
+    if (this.hierarchyPanelState.isNarrowViewport && this.hierarchyPanelState.panelOpen) {
+      this.hierarchyPanelState.closePanel();
       return;
     }
-    if (this.boardPanelOpen) {
-      this.boardPanelOpen = false;
-      this.boardPanelArchivedView = false;
+    if (this.boardPanelState.panelOpen) {
+      this.boardPanelState.closePanel();
     }
   }
 
@@ -505,12 +354,12 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
     if (!target) {
       return;
     }
-    if (this.hierarchyParentMenuOpen) {
+    if (this.hierarchyPanelState.parentMenuOpen) {
       const clickedHierarchyMenu =
         !!target.closest('.board-hierarchy-parent-menu') ||
         !!target.closest('.board-hierarchy-parent-button');
       if (!clickedHierarchyMenu) {
-        this.hierarchyParentMenuOpen = false;
+        this.hierarchyPanelState.closeParentMenu();
       }
     }
   }
@@ -518,269 +367,6 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
   @HostListener('window:resize')
   handleWindowResize(): void {
     const isNarrow = window.matchMedia('(max-width: 800px)').matches;
-    if (isNarrow !== this.isNarrowViewport) {
-      this.isNarrowViewport = isNarrow;
-      if (isNarrow) {
-        this.hierarchyPanelOpen = false;
-      }
-    }
-  }
-
-  toggleHierarchyPanel(): void {
-    this.hierarchyPanelOpen = !this.hierarchyPanelOpen;
-  }
-
-  openHierarchyManager(): void {
-    this.hierarchyEditMode = true;
-    this.hierarchyParentMenuOpen = true;
-    this.hierarchyParentError = '';
-    if (this.isNarrowViewport) {
-      this.hierarchyPanelOpen = true;
-    }
-  }
-
-  toggleHierarchyEdit(): void {
-    this.hierarchyEditMode = !this.hierarchyEditMode;
-    if (!this.hierarchyEditMode) {
-      this.hierarchyParentMenuOpen = false;
-      this.hierarchyParentError = '';
-    }
-  }
-
-  toggleHierarchyParentMenu(): void {
-    this.hierarchyParentMenuOpen = !this.hierarchyParentMenuOpen;
-    if (this.hierarchyParentMenuOpen) {
-      this.hierarchyParentError = '';
-    }
-  }
-
-  isHierarchyRoot(boardId: string): boolean {
-    return !this.getHierarchyMaps().parentByChild.has(boardId);
-  }
-
-  get hierarchyParentLabel(): string {
-    const board = this.boardService.board;
-    if (!board) {
-      return 'No parent';
-    }
-    const parent = this.boardService.getBoardParent(board.id);
-    return parent ? parent.title : 'No parent (root)';
-  }
-
-  get hierarchyParentOptions(): HierarchyParentOption[] {
-    const board = this.boardService.board;
-    if (!board) {
-      return [];
-    }
-    const options: HierarchyParentOption[] = [];
-    const rootEligibility = this.boardService.getBoardParentEligibility(
-      board.id,
-      null,
-      this.hierarchyMaxDepth,
-    );
-    options.push({
-      id: null,
-      label: 'No parent (root)',
-      disabled: !rootEligibility.allowed,
-      helper: this.getHierarchyParentHelper(rootEligibility.reason),
-    });
-    this.boardService.boards.forEach((candidate) => {
-      const eligibility = this.boardService.getBoardParentEligibility(
-        board.id,
-        candidate.id,
-        this.hierarchyMaxDepth,
-      );
-      options.push({
-        id: candidate.id,
-        label: candidate.title,
-        disabled: !eligibility.allowed,
-        helper: this.getHierarchyParentHelper(eligibility.reason),
-      });
-    });
-    return options;
-  }
-
-  get hierarchyReorderItems(): HierarchyNode[] {
-    const board = this.boardService.board;
-    if (!board) {
-      return [];
-    }
-    const node = this.findHierarchyNode(board.id, this.hierarchyNodes);
-    return node?.children ?? [];
-  }
-
-  handleHierarchyReorderDrop(event: CdkDragDrop<HierarchyNode[]>): void {
-    const board = this.boardService.board;
-    if (!board) {
-      return;
-    }
-    if (!this.hierarchyEditMode) {
-      return;
-    }
-    if (event.previousContainer !== event.container) {
-      return;
-    }
-    if (event.previousIndex === event.currentIndex) {
-      return;
-    }
-    moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-    const orderedChildIds = event.container.data.map((child) => child.board.id);
-    const result = this.boardService.reorderBoardChildren(board.id, orderedChildIds);
-    if (!result.success) {
-      moveItemInArray(event.container.data, event.currentIndex, event.previousIndex);
-      return;
-    }
-    this.refreshHierarchy();
-  }
-
-  setHierarchyParent(option: HierarchyParentOption): void {
-    const board = this.boardService.board;
-    if (!board || option.disabled) {
-      return;
-    }
-    const result = this.boardService.setBoardParent(board.id, option.id, this.hierarchyMaxDepth);
-    if (!result.success) {
-      this.hierarchyParentError = result.error ?? 'Unable to update parent.';
-      return;
-    }
-    this.hierarchyParentMenuOpen = false;
-    this.hierarchyParentError = '';
-    this.refreshHierarchy();
-  }
-
-  get hierarchyRoots(): HierarchyNode[] {
-    return this.hierarchyNodes;
-  }
-
-  get breadcrumbBoards(): Board[] {
-    const board = this.boardService.board;
-    if (!board) {
-      return [];
-    }
-    const { parentByChild, relatedIds } = this.getHierarchyMaps();
-    if (!relatedIds.has(board.id)) {
-      return [];
-    }
-    const path: Board[] = [];
-    const visited = new Set<string>();
-    let currentId: string | undefined = board.id;
-    while (currentId) {
-      if (visited.has(currentId)) {
-        break;
-      }
-      visited.add(currentId);
-      const currentBoard = this.boardService.getBoard(currentId);
-      if (currentBoard) {
-        path.unshift(currentBoard);
-      }
-      currentId = parentByChild.get(currentId);
-    }
-    return path;
-  }
-
-  get isHierarchyBoard(): boolean {
-    const board = this.boardService.board;
-    if (!board) {
-      return false;
-    }
-    return this.getHierarchyMaps().relatedIds.has(board.id);
-  }
-
-  private buildHierarchyRoots(): HierarchyNode[] {
-    const { childrenByParent, rootIds } = this.getHierarchyMaps();
-    const roots: HierarchyNode[] = [];
-    rootIds.forEach((rootId) => {
-      const node = this.buildHierarchyNode(rootId, childrenByParent, new Set());
-      if (node) {
-        roots.push(node);
-      }
-    });
-    if (roots.length > 0) {
-      return roots;
-    }
-    return [];
-  }
-
-  private refreshHierarchy(): void {
-    this.hierarchyNodes = this.buildHierarchyRoots();
-  }
-
-  private buildHierarchyNode(
-    boardId: string,
-    childrenByParent: Map<string, string[]>,
-    visited: Set<string>,
-  ): HierarchyNode | null {
-    if (visited.has(boardId)) {
-      return null;
-    }
-    visited.add(boardId);
-    const board = this.boardService.getBoard(boardId);
-    if (!board) {
-      return null;
-    }
-    const childrenIds = childrenByParent.get(boardId) ?? [];
-    const children = childrenIds
-      .map((childId) => this.buildHierarchyNode(childId, childrenByParent, new Set(visited)))
-      .filter((child): child is HierarchyNode => !!child);
-    return { board, children };
-  }
-
-  private findHierarchyNode(boardId: string, nodes: HierarchyNode[]): HierarchyNode | null {
-    for (const node of nodes) {
-      if (node.board.id === boardId) {
-        return node;
-      }
-      const found = this.findHierarchyNode(boardId, node.children);
-      if (found) {
-        return found;
-      }
-    }
-    return null;
-  }
-
-  private getHierarchyMaps(): {
-    parentByChild: Map<string, string>;
-    childrenByParent: Map<string, string[]>;
-    relatedIds: Set<string>;
-    rootIds: string[];
-  } {
-    const relationships = this.boardService.boardRelationships ?? [];
-    const parentByChild = new Map<string, string>();
-    const childrenByParent = new Map<string, string[]>();
-    const relatedIds = new Set<string>();
-
-    relationships.forEach((relationship) => {
-      parentByChild.set(relationship.childBoardId, relationship.parentBoardId);
-      relatedIds.add(relationship.childBoardId);
-      relatedIds.add(relationship.parentBoardId);
-      const children = childrenByParent.get(relationship.parentBoardId) ?? [];
-      if (!children.includes(relationship.childBoardId)) {
-        children.push(relationship.childBoardId);
-        childrenByParent.set(relationship.parentBoardId, children);
-      }
-    });
-
-    const rootIds: string[] = [];
-    relationships.forEach((relationship: BoardRelationship) => {
-      const parentId = relationship.parentBoardId;
-      if (!parentByChild.has(parentId) && !rootIds.includes(parentId)) {
-        rootIds.push(parentId);
-      }
-    });
-
-    return { parentByChild, childrenByParent, relatedIds, rootIds };
-  }
-
-  private getHierarchyParentHelper(reason?: 'self' | 'cycle' | 'depth'): string | undefined {
-    if (!reason) {
-      return undefined;
-    }
-    if (reason === 'self') {
-      return 'Cannot parent a board to itself.';
-    }
-    if (reason === 'cycle') {
-      return 'Would create a cycle.';
-    }
-    return `Would exceed depth ${this.hierarchyMaxDepth}.`;
+    this.hierarchyPanelState.updateViewport(isNarrow);
   }
 }

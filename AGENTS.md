@@ -74,6 +74,9 @@ Violating any of the above is considered a critical failure.
 
     - Run the acceptance test(s) specified in the spec
     - If tests fail, fix before committing
+    - Backend specs exception: the agent may iteratively run `python backend/scripts/lint.py` and
+      `python backend/scripts/pytest.py`, read logs under `backend/server/logs/`, and attempt fixes
+      until tests pass without warnings or after 5 attempts (whichever comes first).
 
 1. **Commit discipline**
 
@@ -92,7 +95,7 @@ Violating any of the above is considered a critical failure.
 
 ## File & Directory Conventions
 
--   `/scripts/`
+-   `/backend/scripts/`
     Primary executable scripts
 
 -   `/specs/`

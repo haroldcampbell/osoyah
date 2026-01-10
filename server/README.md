@@ -1,3 +1,0 @@
-# Server
-
-FastAPI backend.

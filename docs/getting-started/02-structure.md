@@ -2,10 +2,10 @@
 
 High-level folders
 - `client/`: Angular UI.
-- `server/`: FastAPI backend (future).
+- `backend/server/`: FastAPI backend (future).
 - `specs/`: Requirements and milestones.
 - `docs/`: Principles, process, decisions, architecture.
-- `scripts/`: Helper scripts.
+- `backend/scripts/`: Helper scripts.
 - `designs/`: Mockups and visual references.
 - `session-hand-offs/`: Session summaries.
 - `out/`: Generated artifacts.

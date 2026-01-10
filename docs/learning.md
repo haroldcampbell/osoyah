@@ -125,5 +125,10 @@ Running list of communication/process learnings captured after sessions.
 
 ## 2026-01-10
 
+### Backend tooling
+- AnyIO defaults to running async tests against trio; pin `anyio_backend` to `asyncio` in backend tests to avoid missing trio dependency.
+- Tooling scripts should resolve paths from the repo root so they work from any working directory.
+- For colored CLI output with clean logs, force color in the process env and strip ANSI codes before writing log files.
+
 ### Backend planning conventions
 - Backend tables require a UUID4-compliant, unique `guid` column; include `guid` in API payloads and contract checks.

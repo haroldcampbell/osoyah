@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=68.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "osoyah-server"
+version = "0.1.0"
+description = "FastAPI backend for Osoyah"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi>=0.110.0",
+  "httpx>=0.25.0",
+  "mypy>=1.10.0",
+  "pytest>=7.4.0",
+  "ruff>=0.6.0",
+  "uvicorn>=0.24.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["backend/server/tests"]
+
+[tool.anyio]
+backend = "asyncio"
+
+[tool.mypy]
+python_version = "3.11"
+ignore_missing_imports = true
+warn_unused_ignores = true
+warn_return_any = false
+
+[tool.setuptools]
+package-dir = {"" = "."}
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app", "app.*"]
+exclude = ["logs", "logs.*", "tests", "tests.*"]

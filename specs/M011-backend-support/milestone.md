@@ -24,7 +24,7 @@ Out-of-scope:
 ## Specs
 - [x] S001-Backend Support Discovery + Plan
 - [x] S002-JSON to SQLite Migration Plan
-- [ ] S003-Read Endpoints + Board Snapshot
+- [x] S003-Read Endpoints + Board Snapshot
 - [ ] S004-Client Data Source Flag
 - [ ] S005-Board/List/Card CRUD Endpoints
 - [ ] S006-Relationship Endpoints + Validation

@@ -4,7 +4,7 @@ Current active decisions, consolidated from session hand-offs. When a decision c
 
 ## Architecture
 
--   Backend: FastAPI (`server/`).
+-   Backend: FastAPI (`backend/server/`).
 -   Frontend: Angular (`client/`).
 
 ## Frontend data strategy
@@ -34,6 +34,10 @@ Current active decisions, consolidated from session hand-offs. When a decision c
 -   Angular components that declare `imports` should include `standalone: true` in the `@Component` metadata.
 -   Feature-specific UI types stay co-located with the feature; only shared domain models go in `models/`.
 -   Backend tables include a `guid` column that is UUID4 compliant and unique (required in API payloads).
+
+## Tooling
+
+-   Prefer Python scripts over bash/shell scripts for developer tooling.
 
 ## UX feedback
 

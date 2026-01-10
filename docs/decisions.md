@@ -34,6 +34,8 @@ Current active decisions, consolidated from session hand-offs. When a decision c
 -   Angular components that declare `imports` should include `standalone: true` in the `@Component` metadata.
 -   Feature-specific UI types stay co-located with the feature; only shared domain models go in `models/`.
 -   Backend tables include a `guid` column that is UUID4 compliant and unique (required in API payloads).
+-   Relationship tables do not add standalone `guid` values unless relationships become first-class entities (metadata, audit, or comments).
+-   Use separate SQLite databases per environment: `osoyah-dev.db`, `osoyah-test.db`, `osoyah-prod.db`. Tests must only write to `osoyah-test.db`.
 
 ## Tooling
 

@@ -25,6 +25,12 @@ Ensure the app is fully backed by the API with resilient error handling that mat
 ## Acceptance tests (exact commands + expected artifacts/output)
 
 -   Define exact frontend test command(s); store logs under `client/logs/`.
+-   `python backend/scripts/lint.py`
+    -   Writes `backend/server/logs/lint.log`.
+-   `python backend/scripts/pytest.py`
+    -   Writes `backend/server/logs/pytest.log`.
+-   `python backend/scripts/coverage.py`
+    -   Writes `backend/server/logs/coverage.log`.
 -   Define exact backend test command(s); store logs under `backend/server/logs/`.
 
 ## Notes (edge cases, hazards, perf constraints)

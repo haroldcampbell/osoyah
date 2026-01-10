@@ -44,6 +44,13 @@ Usage:
 python backend/scripts/app.py
 ```
 
+Use the `--env` flag to select the database environment:
+```bash
+python backend/scripts/app.py --env dev
+python backend/scripts/app.py --env prod
+python backend/scripts/app.py --env test
+```
+
 ## `coverage.py`
 
 Runs backend tests with coverage reporting. Output is streamed to the console

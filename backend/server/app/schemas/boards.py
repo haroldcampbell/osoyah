@@ -128,3 +128,11 @@ class CardOrderRequest(BaseModel):
 
 class ListCardAttachRequest(BaseModel):
     cardId: str
+
+
+class CardRelationshipCreateRequest(BaseModel):
+    childCardId: str
+
+
+class BoardRelationshipCreateRequest(BaseModel):
+    childBoardId: str

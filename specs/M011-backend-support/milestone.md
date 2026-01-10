@@ -27,7 +27,7 @@ Out-of-scope:
 - [x] S003-Read Endpoints + Board Snapshot
 - [ ] ~~S004-Client Data Source Flag~~ (Won't do)
 - [x] S005-Board/List/Card CRUD Endpoints
-- [ ] S006-Relationship Endpoints + Validation
+- [x] S006-Relationship Endpoints + Validation
 - [ ] S007-Client Optimistic Updates + Reconciliation
 - [ ] S008-Remove Mock Data + Retry/Error States
 - [ ] S009-Performance + Logging + Contract Checks

@@ -25,7 +25,12 @@ Maintain fast UI feedback while ensuring client state stays consistent with back
 ## Acceptance tests (exact commands + expected artifacts/output)
 
 -   Define exact frontend test command(s); store logs under `client/logs/`.
--   Document any backend test command(s) if required.
+-   `python backend/scripts/lint.py`
+    -   Writes `backend/server/logs/lint.log`.
+-   `python backend/scripts/pytest.py`
+    -   Writes `backend/server/logs/pytest.log`.
+-   `python backend/scripts/coverage.py`
+    -   Writes `backend/server/logs/coverage.log`.
 
 ## Notes (edge cases, hazards, perf constraints)
 

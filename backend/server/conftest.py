@@ -1,5 +1,9 @@
+import os
+
 import pytest
 from sqlalchemy import delete
+
+os.environ["OSOYAH_ENV"] = "test"
 
 from backend.server.app.core.config import get_settings
 from backend.server.app.db import init_database
@@ -23,6 +27,7 @@ def anyio_backend() -> str:
 
 @pytest.fixture(autouse=True)
 def initialize_database() -> None:
+    get_settings.cache_clear()
     settings = get_settings()
     if not settings.db_path.exists():
         init_database()

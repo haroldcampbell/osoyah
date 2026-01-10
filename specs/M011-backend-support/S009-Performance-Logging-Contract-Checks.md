@@ -26,7 +26,12 @@ Ensure backend responses are observable, consistent, and do not regress performa
 
 ## Acceptance tests (exact commands + expected artifacts/output)
 
--   Define exact backend test command(s); store logs under `backend/server/logs/`.
+-   `python backend/scripts/lint.py`
+    -   Writes `backend/server/logs/lint.log`.
+-   `python backend/scripts/pytest.py`
+    -   Writes `backend/server/logs/pytest.log`.
+-   `python backend/scripts/coverage.py`
+    -   Writes `backend/server/logs/coverage.log`.
 -   Define any required frontend checks; store logs under `client/logs/`.
 
 ## Notes (edge cases, hazards, perf constraints)

@@ -12,6 +12,7 @@
   - "Fail fast" means choosing the simplest viable approach to learn quickly and surface errors early.
 - Keep business logic isolated from transport and persistence.
 - Make dependencies explicit and configuration consistent.
+- Protect data integrity: keep environment data isolated and never run tests against production or development databases.
 
 ## Frontend & UX Engineering
 - Design for clarity and speed of understanding.

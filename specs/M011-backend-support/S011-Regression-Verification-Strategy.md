@@ -26,6 +26,10 @@ Provide a repeatable verification checklist that ties critical state changes to 
 ## Acceptance tests (exact commands + expected artifacts/output)
 
 -   N/A (planning-only). Document changes only.
+-   If backend changes are introduced:
+    -   `python backend/scripts/lint.py` (writes `backend/server/logs/lint.log`)
+    -   `python backend/scripts/pytest.py` (writes `backend/server/logs/pytest.log`)
+    -   `python backend/scripts/coverage.py` (writes `backend/server/logs/coverage.log`)
 
 ## Notes (edge cases, hazards, perf constraints)
 

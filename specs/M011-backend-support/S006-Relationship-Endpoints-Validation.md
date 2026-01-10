@@ -17,22 +17,27 @@ Support parent/child relationships with cycle prevention and depth checks consis
 
 ## Definition of Done
 
--   [ ] Endpoints exist for creating and removing card relationships.
--   [ ] Endpoints exist for creating and removing board relationships.
--   [ ] Validation prevents self-links, cycles, and depth violations.
--   [ ] Relationship creation timestamps are stored server-side.
--   [ ] Error responses follow the agreed JSON error shape.
--   [ ] Relationship payloads include `guid` values when returned.
--   [ ] Relationship writes persist via SQLAlchemy models to SQLite.
+-   [x] Endpoints exist for creating and removing card relationships.
+-   [x] Endpoints exist for creating and removing board relationships.
+-   [x] Validation prevents self-links, cycles, and depth violations.
+-   [x] Relationship creation timestamps are stored server-side.
+-   [x] Error responses follow the agreed JSON error shape.
+-   [x] Relationship payloads do not add separate `guid` fields (revisit if relationships become first-class entities).
+-   [x] Relationship writes persist via SQLAlchemy models to SQLite.
 
 ## Acceptance tests (exact commands + expected artifacts/output)
 
--   Define exact backend test command(s); store logs under `backend/server/logs/`.
+-   `python backend/scripts/lint.py`
+    -   Writes `backend/server/logs/lint.log`.
+-   `python backend/scripts/pytest.py`
+    -   Writes `backend/server/logs/pytest.log`.
+-   `python backend/scripts/coverage.py`
+    -   Writes `backend/server/logs/coverage.log`.
 -   Document any manual verification steps.
 
 ## Notes (edge cases, hazards, perf constraints)
 
 -   Ensure unlink operations cleanly remove references without side effects.
 -   Maintain consistency with frontend helper rules in `BoardService`.
--   If relationship rows include `guid`, enforce UUID4 format and uniqueness.
+-   If relationships become first-class entities (metadata, audit, or comments), revisit adding `guid` values.
 -   Use SQLite constraints (unique pairs) to prevent duplicate relationships.

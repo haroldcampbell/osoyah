@@ -128,6 +128,7 @@ Running list of communication/process learnings captured after sessions.
 ### Backend testing + tooling
 - Reset SQLite test state by truncating/reseeding instead of deleting the DB file to avoid readonly/disk I/O errors.
 - For CLI helpers, stream colored output to the console while writing ANSI-stripped logs to files for review.
+- Use separate SQLite DBs per environment; tests may only write to `osoyah-test.db`. The agent can delete only the test DB and must never mutate or delete production/dev databases.
 
 ### Backend tooling
 - AnyIO defaults to running async tests against trio; pin `anyio_backend` to `asyncio` in backend tests to avoid missing trio dependency.

@@ -13,9 +13,21 @@ From the repo root:
 python -m uvicorn backend.server.app.main:app --reload
 ```
 
+If running `uvicorn` directly, set the environment for DB selection:
+```bash
+OSOYAH_ENV=dev python -m uvicorn backend.server.app.main:app --reload
+```
+
 Or use the helper script:
 ```bash
 python backend/scripts/app.py
+```
+
+Set the environment (controls database selection):
+```bash
+python backend/scripts/app.py --env dev
+python backend/scripts/app.py --env prod
+python backend/scripts/app.py --env test
 ```
 
 Why `python server/app/main.py` fails from `backend/`:

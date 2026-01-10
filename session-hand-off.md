@@ -27,6 +27,7 @@
 
 ## Entries
 
+-   2026-01-10-05-s006-relationships-env-db.md - S006 relationships, env-specific DBs, test isolation
 -   2026-01-10-04-backend-refactor-coverage.md - Coverage tooling, app runner, and backend test expansion
 -   2026-01-10-03-backend-scripts-tests.md - Backend scripts, lint/test workflow, anyio async backend fix
 -   2026-01-10-02-m011-planning-specs.md - M011 S001/S002 complete, S003-S012 drafts + GUID requirements

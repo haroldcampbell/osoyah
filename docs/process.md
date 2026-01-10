@@ -10,6 +10,7 @@ and focuses on how we work session-to-session.
 -   `docs/decisions.md` holds active technical decisions that must be respected.
 -   `docs/ux-patterns.md` defines UX feedback patterns and copy guidelines.
 -   `docs/learning.md` captures process and execution learnings; consult before starting work to reduce iteration.
+    -   See the "Component refactor checklist" entry in `docs/learning.md` when extracting UI sections.
 
 ## Session Start
 

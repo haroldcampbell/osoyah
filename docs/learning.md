@@ -112,3 +112,13 @@ Running list of communication/process learnings captured after sessions.
 
 ### Layout extraction
 - Extracting view containers into child components can break horizontal scroll unless the host and scroll container enforce min-width: 0 and flex sizing.
+
+### Component refactor checklist
+- Preserve DOM structure and `data-testid` attributes to avoid E2E regressions.
+- Keep behavior identical; move logic instead of rewriting it.
+- When a service field is nullable in templates, pass safe inputs from parent or guard in template.
+- For scroll containers extracted into components, ensure host and container enforce min-width: 0 and flex sizing so scroll stays local.
+- Move related styles into the component SCSS; remove originals from parent to avoid conflicts.
+- Keep event wiring explicit (inputs/outputs or direct service injection) and avoid hidden side effects.
+- Update component imports (`standalone: true` + `imports`) and remove unused imports from parent.
+- Re-run lint/e2e/test and confirm logs under `client/logs/`.

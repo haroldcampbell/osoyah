@@ -35,3 +35,4 @@ Isolate the hierarchy panel UI and interactions into a focused component while p
 
 -   This spec targets the inline hierarchy panel within the main board layout, not the drawer variant.
 -   Keep diffs focused on extraction; avoid unrelated refactors.
+-   Follow the "Component refactor checklist" in `docs/learning.md`.

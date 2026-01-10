@@ -1,5 +1,4 @@
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
-import { CdkMenuModule } from '@angular/cdk/menu';
 import { CommonModule } from '@angular/common';
 import {
   AfterViewChecked,
@@ -7,7 +6,6 @@ import {
   ChangeDetectorRef,
   Component,
   DestroyRef,
-  ElementRef,
   HostListener,
   inject,
   OnInit,
@@ -25,6 +23,7 @@ import { CardPanelComponent } from './card-panel/card-panel.component';
 import { BoardHierarchyMetricsComponent } from './board-hierarchy-metrics/board-hierarchy-metrics.component';
 import { BoardCardsViewComponent } from './board-view/board-cards-view/board-cards-view.component';
 import { BoardListViewComponent } from './board-view/board-list-view/board-list-view.component';
+import { BoardToolbarComponent } from './board-toolbar/board-toolbar.component';
 
 @Component({
   selector: 'app-board',
@@ -33,13 +32,13 @@ import { BoardListViewComponent } from './board-view/board-list-view/board-list-
     CommonModule,
     FormsModule,
     DragDropModule,
-    CdkMenuModule,
     CardPanelComponent,
     RouterLink,
     BoardHeaderComponent,
     BoardHierarchyMetricsComponent,
     BoardCardsViewComponent,
     BoardListViewComponent,
+    BoardToolbarComponent,
   ],
   templateUrl: './board.component.html',
   styleUrl: './board.component.scss',
@@ -50,20 +49,8 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
-  @ViewChild('boardMenuPanel') boardMenuPanel?: ElementRef<HTMLElement>;
-  @ViewChild('boardSettingsTitleInput') boardSettingsTitleInput?: ElementRef<HTMLInputElement>;
-  @ViewChild('boardSettingsDescriptionInput')
-  boardSettingsDescriptionInput?: ElementRef<HTMLInputElement>;
+  @ViewChild(BoardToolbarComponent) boardToolbar?: BoardToolbarComponent;
   @ViewChild(CardPanelComponent) cardPanel?: CardPanelComponent;
-  boardMenuOpen = false;
-  boardSearchTerm = '';
-  newBoardTitle = '';
-  createBoardError = '';
-  boardSettingsOpen = false;
-  boardSettingsTitle = '';
-  boardSettingsDescription = '';
-  boardSettingsRollupsEnabled = false;
-  boardSettingsError = '';
   boardSettingsToastMessage = '';
   boardSettingsToastError = false;
   boardPanelOpen = false;
@@ -194,14 +181,6 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
       .filter((board): board is Board => !!board && board.archived === true);
   }
 
-  get filteredBoards(): Board[] {
-    const term = this.boardSearchTerm.trim().toLowerCase();
-    if (!term) {
-      return this.boardService.boards;
-    }
-    return this.boardService.boards.filter((board) => board.title.toLowerCase().includes(term));
-  }
-
   closePanel(navigate = true): void {
     if (this.cardPanel) {
       this.cardPanel.closePanel(navigate);
@@ -225,8 +204,7 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
   toggleBoardPanel(): void {
     this.boardPanelOpen = !this.boardPanelOpen;
     if (this.boardPanelOpen) {
-      this.boardMenuOpen = false;
-      this.boardSettingsOpen = false;
+      this.boardToolbar?.closeMenus();
       this.boardPanelArchivedView = false;
       this.closePanel();
     }
@@ -276,7 +254,6 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
 
   selectBoardFromPanel(board: Board): void {
     this.navigateToBoardRoute(board.id);
-    this.boardSettingsTitle = board.title;
   }
 
   handleBoardDrop(event: CdkDragDrop<Board[]>): void {
@@ -313,37 +290,6 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
     this.applyCurrentBoardSort();
   }
 
-  selectBoard(board: Board): void {
-    if (this.activeBoardId === board.id && !this.activeCardId && !this.boardNotFound) {
-      return;
-    }
-    this.boardMenuOpen = false;
-    this.boardSettingsOpen = false;
-    this.boardSettingsError = '';
-    this.closePanel(false);
-    this.navigateToBoardRoute(board.id);
-    this.boardSettingsTitle = board.title;
-    this.resetBoardMenuState();
-  }
-
-  createBoard(): void {
-    const result = this.boardService.createBoard(this.newBoardTitle);
-    if (!result.success) {
-      this.createBoardError = result.error ?? 'Unable to create board.';
-      return;
-    }
-    if (result.board) {
-      this.navigateToBoardRoute(result.board.id);
-    }
-    this.boardMenuOpen = false;
-    this.newBoardTitle = '';
-    this.createBoardError = '';
-    this.boardSearchTerm = '';
-    if (this.boardPanelSortMode !== 'manual') {
-      this.setBoardSortMode(this.boardPanelSortMode);
-    }
-  }
-
   openCreateBoardModal(): void {
     this.createBoardModalOpen = true;
     this.createBoardModalTitle = '';
@@ -366,35 +312,6 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
     this.createBoardModalTitle = '';
     this.createBoardModalError = '';
     this.navigateToBoardRoute(result.board.id);
-  }
-
-  confirmDeleteCurrentBoard(): void {
-    const board = this.boardService.board;
-    if (!board) {
-      return;
-    }
-    if (!window.confirm(`Delete "${board.title}"?`)) {
-      return;
-    }
-    const result = this.boardService.deleteBoard(board.id);
-    if (!result.success) {
-      this.boardSettingsError = result.error ?? 'Unable to delete board.';
-      return;
-    }
-    this.boardMenuOpen = false;
-    this.boardSettingsOpen = false;
-    this.boardSettingsError = '';
-    this.closePanel();
-    this.boardSearchTerm = '';
-    if (this.boardService.board) {
-      this.navigateToBoardRoute(this.boardService.board.id);
-    }
-  }
-
-  private resetBoardMenuState(): void {
-    this.boardSearchTerm = '';
-    this.newBoardTitle = '';
-    this.createBoardError = '';
   }
 
   navigateToBoardRoute(boardId: string): void {
@@ -430,7 +347,6 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
     if (this.boardService.board?.id !== board.id) {
       this.expandedListRows.clear();
       this.boardService.setActiveBoard(board.id);
-      this.boardSettingsTitle = board.title;
     } else {
       this.boardService.recordBoardActivity(board.id);
     }
@@ -488,69 +404,14 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
     this.openCreateBoardModal();
   }
 
-  toggleBoardSettings(): void {
-    this.boardSettingsOpen = !this.boardSettingsOpen;
-    if (this.boardSettingsOpen) {
-      this.boardSettingsTitle = this.boardService.board?.title ?? '';
-      this.boardSettingsDescription = this.boardService.board?.description ?? '';
-      this.boardSettingsRollupsEnabled = this.boardService.board?.rollupsEnabled ?? false;
-    } else {
-      this.boardSettingsError = '';
+  handleBoardCreated(): void {
+    if (this.boardPanelSortMode !== 'manual') {
+      this.setBoardSortMode(this.boardPanelSortMode);
     }
   }
 
-  closeBoardSettings(): void {
-    this.boardSettingsOpen = false;
-    this.boardSettingsTitle = this.boardService.board?.title ?? '';
-    this.boardSettingsDescription = this.boardService.board?.description ?? '';
-    this.boardSettingsRollupsEnabled = this.boardService.board?.rollupsEnabled ?? false;
-    this.boardSettingsError = '';
-  }
-
-  saveBoardSettings(): void {
-    const board = this.boardService.board;
-    if (!board) {
-      return;
-    }
-    const result = this.boardService.updateBoardSettings(
-      board.id,
-      this.boardSettingsTitle,
-      this.boardSettingsDescription,
-      this.boardSettingsRollupsEnabled,
-    );
-    if (!result.success) {
-      this.boardSettingsError = result.error ?? 'Unable to rename board.';
-      this.showBoardSettingsToast(this.boardSettingsError, true);
-      return;
-    }
-    this.boardSettingsError = '';
-    this.showBoardSettingsToast('Board settings saved.');
-    this.closeBoardSettings();
-  }
-
-  toggleDoneList(list: BoardList, event: Event): void {
-    const boardId = this.boardService.board?.id;
-    if (!boardId) {
-      return;
-    }
-    const target = event.target as HTMLInputElement | null;
-    if (!target) {
-      return;
-    }
-    const result = this.boardService.setListProcessDone(boardId, list.id, target.checked);
-    if (!result.success) {
-      this.boardSettingsError = result.error ?? 'Unable to update done list.';
-      return;
-    }
-    this.boardSettingsError = '';
-  }
-
-  toggleBoardMenu(event: MouseEvent): void {
-    event.stopPropagation();
-    this.boardMenuOpen = !this.boardMenuOpen;
-    if (!this.boardMenuOpen) {
-      this.resetBoardMenuState();
-    }
+  handleBoardSettingsToast(event: { message: string; isError?: boolean }): void {
+    this.showBoardSettingsToast(event.message, event.isError ?? false);
   }
 
   @HostListener('document:keydown.escape')
@@ -562,14 +423,6 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
     this.boardService.cancelCardEdit();
     if (this.boardService.selectedCard) {
       this.closePanel();
-    }
-    if (this.boardMenuOpen) {
-      this.boardMenuOpen = false;
-      this.resetBoardMenuState();
-    }
-    if (this.boardSettingsOpen) {
-      this.closeBoardSettings();
-      return;
     }
     if (this.hierarchyParentMenuOpen) {
       this.hierarchyParentMenuOpen = false;
@@ -583,22 +436,6 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
       this.boardPanelOpen = false;
       this.boardPanelArchivedView = false;
     }
-    const activeElement = document.activeElement as HTMLElement | null;
-    if (activeElement?.classList.contains('board-selector')) {
-      activeElement.blur();
-    }
-  }
-
-  cancelBoardSettingsTitleEdit(): void {
-    this.boardSettingsTitle = this.boardService.board?.title ?? '';
-    this.boardSettingsError = '';
-    this.boardSettingsTitleInput?.nativeElement.blur();
-  }
-
-  cancelBoardSettingsDescriptionEdit(): void {
-    this.boardSettingsDescription = this.boardService.board?.description ?? '';
-    this.boardSettingsError = '';
-    this.boardSettingsDescriptionInput?.nativeElement.blur();
   }
 
   private showBoardSettingsToast(message: string, isError = false): void {
@@ -619,14 +456,6 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
     const target = event.target as HTMLElement | null;
     if (!target) {
       return;
-    }
-    if (this.boardMenuOpen) {
-      const clickedBoardMenu =
-        this.boardMenuPanel?.nativeElement.contains(target) || !!target.closest('.board-selector');
-      if (!clickedBoardMenu) {
-        this.boardMenuOpen = false;
-        this.resetBoardMenuState();
-      }
     }
     if (this.hierarchyParentMenuOpen) {
       const clickedHierarchyMenu =

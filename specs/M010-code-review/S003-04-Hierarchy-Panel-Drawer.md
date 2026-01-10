@@ -35,3 +35,4 @@ Isolate the hierarchy drawer UI and interactions into a focused component while 
 
 -   This spec targets the drawer/overlay hierarchy panel variant.
 -   Keep diffs focused on extraction; avoid unrelated refactors.
+-   Follow the "Component refactor checklist" in `docs/learning.md`.

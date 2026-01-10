@@ -34,3 +34,4 @@ Isolate the board panel UI and interactions into a focused component while prese
 ## Notes (edge cases, hazards, perf constraints)
 
 -   Keep diffs focused on extraction; avoid unrelated refactors.
+-   Follow the "Component refactor checklist" in `docs/learning.md`.

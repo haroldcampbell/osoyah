@@ -26,7 +26,7 @@ The agent is expected to work autonomously within these rules.
     - All actions must be safe to run unattended
 6. **Never run tests or tooling against dev/prod databases**
     - Test runs must use `OSOYAH_ENV=test` and only write to `osoyah-test.db`
-    - Treat this as a non-irreversible rule for data safety
+    - Treat this as an irrevocable rule for data safety
 
 Violating any of the above is considered a critical failure.
 

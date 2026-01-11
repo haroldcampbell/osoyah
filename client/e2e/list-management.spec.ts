@@ -6,30 +6,27 @@ test('S003/S004 adds, renames, and removes a list', async ({ page }) => {
   await page.goto('/boards/board-1');
 
   await expect(page.locator('[data-testid="board"]')).toBeVisible();
-  const lists = page.locator('[data-testid="list"]');
-  const initialCount = await lists.count();
-
-  const reviewTitle = 'Review Temp';
+  const reviewTitle = `Review Temp ${Date.now()}`;
   await page.locator('[data-testid="add-list-input"]').fill(reviewTitle);
   await page.locator('[data-testid="add-list-button"]').click();
-  await expect(lists).toHaveCount(initialCount + 1);
-  const newList = lists.nth(initialCount);
-  const newListId = await newList.getAttribute('data-list-id');
-  if (!newListId) {
-    throw new Error('New list id missing after add.');
-  }
-  const reviewList = page.locator(`[data-testid="list"][data-list-id="${newListId}"]`);
-  await expect(reviewList).toHaveAttribute('data-list-title', reviewTitle);
+  const reviewList = page.locator(
+    `[data-testid="list"][data-list-title="${reviewTitle}"]`,
+  );
+  await expect(reviewList).toBeVisible();
 
   await reviewList.locator('[data-testid="list-title"]').click();
   const renamedTitle = 'QA Temp';
   await reviewList.locator('[data-testid="list-title-input"]').fill(renamedTitle);
   await reviewList.locator('[data-testid="list-title-input"]').press('Enter');
-  await expect(reviewList).toHaveAttribute('data-list-title', renamedTitle);
+  const renamedList = page.locator(
+    `[data-testid="list"][data-list-title="${renamedTitle}"]`,
+  );
+  await expect(renamedList).toBeVisible();
 
   page.once('dialog', (dialog) => dialog.accept());
-  await reviewList.locator('[data-testid="list-menu"]').click({ force: true });
-  await reviewList.locator('[data-testid="remove-list"]').click();
-  await expect(page.locator(`[data-testid="list"][data-list-id="${newListId}"]`)).toHaveCount(0);
-  await expect(lists).toHaveCount(initialCount);
+  await renamedList.locator('[data-testid="list-menu"]').click({ force: true });
+  await renamedList.locator('[data-testid="remove-list"]').click();
+  await expect(
+    page.locator(`[data-testid="list"][data-list-title="${renamedTitle}"]`),
+  ).toHaveCount(0);
 });

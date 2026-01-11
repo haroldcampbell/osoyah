@@ -4,6 +4,7 @@ export default defineConfig({
   testDir: './e2e',
   outputDir: './logs/test-results',
   timeout: 20000,
+  globalSetup: './e2e/global-setup.ts',
   use: {
     baseURL: 'http://127.0.0.1:8723',
   },

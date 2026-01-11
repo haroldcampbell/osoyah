@@ -18,6 +18,7 @@ def main() -> int:
     env.setdefault("PYTHONUNBUFFERED", "1")
     env.setdefault("PYTEST_FORCE_COLOR", "1")
     env.setdefault("OSOYAH_ENV", "test")
+
     command = [
         "pytest",
         "-rA",

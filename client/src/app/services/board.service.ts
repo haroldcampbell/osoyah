@@ -1,7 +1,7 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
-import { BehaviorSubject, Observable, take } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, take } from 'rxjs';
 
 import {
   Board,
@@ -32,15 +32,47 @@ export interface RollupMetricResult {
 
 export type BoardViewMode = 'cards' | 'list';
 
+export type InlineErrorScope =
+  | 'board-create'
+  | 'board-settings'
+  | 'board-parent'
+  | 'list-title'
+  | 'card-create'
+  | 'card-title'
+  | 'card-panel-title'
+  | 'card-attach'
+  | 'card-parent'
+  | 'card-child';
+
+export interface InlineErrorEvent {
+  scope: InlineErrorScope;
+  message: string;
+  boardId?: string;
+  listId?: string;
+  cardId?: string;
+  source?: 'gallery' | 'toolbar' | 'modal';
+}
+
 @Injectable({ providedIn: 'root' })
 export class BoardService {
   private readonly dataUrl = 'assets/data.json';
+  private readonly apiBaseUrl = '/api';
   private readonly http = inject(HttpClient);
   private readonly boardGalleryState = inject(BoardGalleryStateService);
   private idCounter = 0;
   private hasLoaded = false;
   private readonly boardLoadedSubject = new BehaviorSubject(false);
   readonly boardLoaded$ = this.boardLoadedSubject.asObservable();
+  private readonly toastSubject = new Subject<{ message: string; isError?: boolean }>();
+  readonly toast$ = this.toastSubject.asObservable();
+  private readonly inlineErrorSubject = new Subject<InlineErrorEvent>();
+  readonly inlineError$ = this.inlineErrorSubject.asObservable();
+  private readonly pendingBoardIds = new Map<string, { title: string }>();
+  private readonly pendingListIds = new Map<
+    string,
+    { boardId: string; title: string; position: number }
+  >();
+  private readonly pendingCardIds = new Map<string, { listId: string }>();
   now = new Date();
   private readonly clockId = window.setInterval(() => {
     this.now = new Date();
@@ -192,15 +224,19 @@ export class BoardService {
     this.recordBoardActivity(boardId);
   }
 
-  createBoard(title: string): { success: boolean; error?: string; board?: Board } {
+  createBoard(
+    title: string,
+    options: { source?: 'gallery' | 'toolbar' | 'modal' } = {},
+  ): { success: boolean; error?: string; board?: Board } {
     const error = this.getBoardTitleError(title);
     if (error) {
       return { success: false, error };
     }
     const listId = this.createId('list');
     const now = new Date().toISOString();
+    const tempBoardId = this.createId('board');
     const board: Board = {
-      id: this.createId('board'),
+      id: tempBoardId,
       title: title.trim(),
       createdAt: now,
       description: '',
@@ -221,6 +257,79 @@ export class BoardService {
     this.board = board;
     this.recordBoardActivity(board.id);
     this.closeCardPanel();
+    this.pendingBoardIds.set(board.id, { title: board.title });
+    const source = options.source ?? 'toolbar';
+    this.http
+      .post<Board>(`${this.apiBaseUrl}/boards`, {
+        title: board.title,
+        description: board.description ?? '',
+      })
+      .pipe(take(1))
+      .subscribe({
+        next: (serverBoard) => {
+          const boardIndex = this.boards.findIndex((item) => item.id === tempBoardId);
+          if (boardIndex === -1) {
+            return;
+          }
+          this.pendingBoardIds.delete(tempBoardId);
+          this.replaceBoardId(tempBoardId, serverBoard.id);
+          const existing = this.boards[boardIndex];
+          const reconciled: Board = {
+            ...existing,
+            ...serverBoard,
+            lists: existing.lists,
+          };
+          this.boards[boardIndex] = reconciled;
+          if (this.board?.id === serverBoard.id) {
+            this.board = reconciled;
+          }
+          const defaultList = reconciled.lists[0];
+          if (!defaultList) {
+            return;
+          }
+          this.pendingListIds.set(defaultList.id, {
+            boardId: serverBoard.id,
+            title: defaultList.title,
+            position: 0,
+          });
+          this.http
+            .post<Board>(`${this.apiBaseUrl}/boards/${serverBoard.id}/lists`, {
+              title: defaultList.title,
+              isProcessDone: defaultList.isProcessDone,
+            })
+            .pipe(take(1))
+            .subscribe({
+              next: (boardResponse) => {
+                this.reconcileBoardFromServer(boardResponse);
+                this.pendingListIds.delete(defaultList.id);
+              },
+              error: (err) => {
+                const message = this.getErrorMessage(err, 'Unable to create list.');
+                this.emitInlineError({
+                  scope: 'list-title',
+                  message,
+                  boardId: serverBoard.id,
+                  listId: defaultList.id,
+                });
+                this.emitToast(message, true);
+              },
+            });
+        },
+        error: (err) => {
+          const message = this.getErrorMessage(err, 'Unable to create board.');
+          const boardIndex = this.boards.findIndex((item) => item.id === tempBoardId);
+          if (boardIndex !== -1) {
+            this.boards.splice(boardIndex, 1);
+            this.boardOrder = this.boardOrder.filter((id) => id !== tempBoardId);
+          }
+          if (this.board?.id === tempBoardId) {
+            this.board = this.boards[0] ?? null;
+          }
+          this.pendingBoardIds.delete(tempBoardId);
+          this.emitInlineError({ scope: 'board-create', message, source });
+          this.emitToast(message, true);
+        },
+      });
     return { success: true, board };
   }
 
@@ -242,9 +351,34 @@ export class BoardService {
     if (descriptionError) {
       return { success: false, error: descriptionError };
     }
+    const previous = this.cloneBoard(board);
     board.title = title.trim();
     board.description = description.trim();
     board.rollupsEnabled = rollupsEnabled;
+    this.http
+      .patch<Board>(`${this.apiBaseUrl}/boards/${boardId}`, {
+        title: board.title,
+        description: board.description ?? '',
+        rollupsEnabled,
+      })
+      .pipe(take(1))
+      .subscribe({
+        next: (serverBoard) => {
+          this.reconcileBoardFromServer(serverBoard);
+        },
+        error: (err) => {
+          const message = this.getErrorMessage(err, 'Unable to update board.');
+          const boardIndex = this.boards.findIndex((item) => item.id === boardId);
+          if (boardIndex !== -1) {
+            this.boards[boardIndex] = previous;
+          }
+          if (this.board?.id === boardId) {
+            this.board = previous;
+          }
+          this.emitInlineError({ scope: 'board-settings', message, boardId });
+          this.emitToast(message, true);
+        },
+      });
     return { success: true };
   }
 
@@ -269,7 +403,30 @@ export class BoardService {
     if (!list) {
       return { success: false, error: 'List not found.' };
     }
+    const previous = { ...list };
     list.isProcessDone = isProcessDone;
+    this.http
+      .patch<Board>(`${this.apiBaseUrl}/lists/${listId}`, {
+        isProcessDone,
+      })
+      .pipe(take(1))
+      .subscribe({
+        next: (serverBoard) => {
+          this.reconcileBoardFromServer(serverBoard);
+        },
+        error: (err) => {
+          const message = this.getErrorMessage(err, 'Unable to update list.');
+          const boardSnapshot = this.getBoard(boardId);
+          if (boardSnapshot) {
+            const rollbackList = boardSnapshot.lists.find((item) => item.id === listId);
+            if (rollbackList) {
+              rollbackList.isProcessDone = previous.isProcessDone;
+            }
+          }
+          this.emitInlineError({ scope: 'list-title', message, boardId, listId });
+          this.emitToast(message, true);
+        },
+      });
     return { success: true };
   }
 
@@ -287,6 +444,11 @@ export class BoardService {
     if (boardIndex === -1) {
       return { success: false, error: 'Board not found.' };
     }
+    const boardSnapshot = this.cloneBoard(this.boards[boardIndex]);
+    const boardOrderSnapshot = [...this.boardOrder];
+    const pinnedOrderSnapshot = [...this.pinnedOrder];
+    const archivedOrderSnapshot = [...this.archivedOrder];
+    const lastActiveSnapshot = this.lastActiveAt[boardId];
     this.removeBoardFromOrders(boardId);
     this.boardGalleryState.removeBoard(boardId);
     delete this.lastActiveAt[boardId];
@@ -303,6 +465,28 @@ export class BoardService {
       this.board = this.getNextActiveBoard();
       this.closeCardPanel();
     }
+    this.http
+      .delete(`${this.apiBaseUrl}/boards/${boardId}`)
+      .pipe(take(1))
+      .subscribe({
+        next: () => undefined,
+        error: (err) => {
+          const message = this.getErrorMessage(err, 'Unable to delete board.');
+          this.boards.splice(boardIndex, 0, boardSnapshot);
+          this.boardOrder = boardOrderSnapshot;
+          this.pinnedOrder = pinnedOrderSnapshot;
+          this.archivedOrder = archivedOrderSnapshot;
+          if (lastActiveSnapshot !== undefined) {
+            this.lastActiveAt[boardId] = lastActiveSnapshot;
+            this.boardGalleryState.setLastOpened(boardId, lastActiveSnapshot);
+          }
+          if (!this.board || this.board.id !== boardId) {
+            this.board = this.board ?? boardSnapshot;
+          }
+          this.emitInlineError({ scope: 'board-settings', message, boardId });
+          this.emitToast(message, true);
+        },
+      });
     return { success: true };
   }
 
@@ -329,9 +513,16 @@ export class BoardService {
     if (!board || board.archived) {
       return;
     }
+    const previous = { pinned: board.pinned ?? false, archived: board.archived ?? false };
+    const orderSnapshot = {
+      boardOrder: [...this.boardOrder],
+      pinnedOrder: [...this.pinnedOrder],
+      archivedOrder: [...this.archivedOrder],
+    };
     board.pinned = true;
     this.removeBoardFromOrders(boardId);
     this.pinnedOrder.unshift(boardId);
+    this.syncBoardFlags(boardId, previous, orderSnapshot);
   }
 
   unpinBoard(boardId: string): void {
@@ -339,11 +530,18 @@ export class BoardService {
     if (!board) {
       return;
     }
+    const previous = { pinned: board.pinned ?? false, archived: board.archived ?? false };
+    const orderSnapshot = {
+      boardOrder: [...this.boardOrder],
+      pinnedOrder: [...this.pinnedOrder],
+      archivedOrder: [...this.archivedOrder],
+    };
     board.pinned = false;
     this.pinnedOrder = this.pinnedOrder.filter((id) => id !== boardId);
     if (!board.archived) {
       this.boardOrder.unshift(boardId);
     }
+    this.syncBoardFlags(boardId, previous, orderSnapshot);
   }
 
   archiveBoard(boardId: string): void {
@@ -351,6 +549,12 @@ export class BoardService {
     if (!board || board.archived) {
       return;
     }
+    const previous = { pinned: board.pinned ?? false, archived: board.archived ?? false };
+    const orderSnapshot = {
+      boardOrder: [...this.boardOrder],
+      pinnedOrder: [...this.pinnedOrder],
+      archivedOrder: [...this.archivedOrder],
+    };
     board.archived = true;
     board.pinned = false;
     this.removeBoardFromOrders(boardId);
@@ -359,6 +563,7 @@ export class BoardService {
       this.board = this.getNextActiveBoard();
       this.closeCardPanel();
     }
+    this.syncBoardFlags(boardId, previous, orderSnapshot);
   }
 
   restoreBoard(boardId: string): void {
@@ -366,9 +571,16 @@ export class BoardService {
     if (!board) {
       return;
     }
+    const previous = { pinned: board.pinned ?? false, archived: board.archived ?? false };
+    const orderSnapshot = {
+      boardOrder: [...this.boardOrder],
+      pinnedOrder: [...this.pinnedOrder],
+      archivedOrder: [...this.archivedOrder],
+    };
     board.archived = false;
     this.archivedOrder = this.archivedOrder.filter((id) => id !== boardId);
     this.boardOrder.unshift(boardId);
+    this.syncBoardFlags(boardId, previous, orderSnapshot);
   }
 
   isCardOnBoard(cardId: string, boardId: string): boolean {
@@ -408,6 +620,18 @@ export class BoardService {
     }
 
     list.cardIds.push(card.id);
+    this.http
+      .post(`${this.apiBaseUrl}/lists/${listId}/cards`, { cardId })
+      .pipe(take(1))
+      .subscribe({
+        next: () => undefined,
+        error: (err) => {
+          const message = this.getErrorMessage(err, 'Unable to add card to board.');
+          list.cardIds = list.cardIds.filter((id) => id !== cardId);
+          this.emitInlineError({ scope: 'card-attach', message, cardId, listId, boardId });
+          this.emitToast(message, true);
+        },
+      });
     return { success: true };
   }
 
@@ -432,13 +656,42 @@ export class BoardService {
       return;
     }
 
-    this.board.lists.push({
-      id: this.createId('list'),
+    const listId = this.createId('list');
+    const list: BoardList = {
+      id: listId,
       title,
       cardIds: [],
       isProcessDone: false,
-    });
+    };
+    this.board.lists.push(list);
     this.newListTitle = '';
+    this.pendingListIds.set(listId, {
+      boardId: this.board.id,
+      title,
+      position: this.board.lists.length - 1,
+    });
+    this.http
+      .post<Board>(`${this.apiBaseUrl}/boards/${this.board.id}/lists`, {
+        title,
+        isProcessDone: false,
+      })
+      .pipe(take(1))
+      .subscribe({
+        next: (serverBoard) => {
+          this.reconcileBoardFromServer(serverBoard);
+          this.pendingListIds.delete(listId);
+        },
+        error: (err) => {
+          const message = this.getErrorMessage(err, 'Unable to add list.');
+          const board = this.getBoard(this.board?.id ?? '');
+          if (board) {
+            board.lists = board.lists.filter((item) => item.id !== listId);
+          }
+          this.pendingListIds.delete(listId);
+          this.emitInlineError({ scope: 'list-title', message, listId, boardId: this.board?.id });
+          this.emitToast(message, true);
+        },
+      });
   }
 
   startListEdit(list: BoardList): void {
@@ -453,9 +706,25 @@ export class BoardService {
     if (!title) {
       return;
     }
-
+    const previous = { ...list };
     list.title = title;
     this.cancelListEdit();
+    this.http
+      .patch<Board>(`${this.apiBaseUrl}/lists/${list.id}`, {
+        title,
+      })
+      .pipe(take(1))
+      .subscribe({
+        next: (serverBoard) => {
+          this.reconcileBoardFromServer(serverBoard);
+        },
+        error: (err) => {
+          const message = this.getErrorMessage(err, 'Unable to update list.');
+          list.title = previous.title;
+          this.emitInlineError({ scope: 'list-title', message, listId: list.id });
+          this.emitToast(message, true);
+        },
+      });
   }
 
   cancelListEdit(): void {
@@ -467,12 +736,29 @@ export class BoardService {
     if (!this.board) {
       return;
     }
-
+    const boardId = this.board.id;
+    const listIndex = this.board.lists.findIndex((item) => item.id === list.id);
+    const listSnapshot = { ...list, cardIds: [...list.cardIds] };
     this.board.lists = this.board.lists.filter((item) => item.id !== list.id);
     delete this.newCardTitles[list.id];
     if (this.selectedCard?.listId === list.id) {
       this.closeCardPanel();
     }
+    this.http
+      .delete(`${this.apiBaseUrl}/lists/${list.id}`)
+      .pipe(take(1))
+      .subscribe({
+        next: () => undefined,
+        error: (err) => {
+          const message = this.getErrorMessage(err, 'Unable to remove list.');
+          const board = this.getBoard(boardId);
+          if (board) {
+            board.lists.splice(listIndex, 0, listSnapshot);
+          }
+          this.emitInlineError({ scope: 'list-title', message, listId: list.id, boardId });
+          this.emitToast(message, true);
+        },
+      });
   }
 
   addCard(list: BoardList): { success: boolean; error?: string; card?: Card } {
@@ -483,8 +769,9 @@ export class BoardService {
     }
 
     const now = new Date().toISOString();
+    const tempCardId = this.createId('card');
     const card: Card = {
-      id: this.createId('card'),
+      id: tempCardId,
       title,
       description: '',
       createdAt: now,
@@ -498,6 +785,85 @@ export class BoardService {
     this.cardsById[card.id] = card;
     list.cardIds.push(card.id);
     this.newCardTitles[list.id] = '';
+    this.pendingCardIds.set(card.id, { listId: list.id });
+    this.http
+      .post<Card>(`${this.apiBaseUrl}/cards`, {
+        title: card.title,
+        description: card.description,
+      })
+      .pipe(take(1))
+      .subscribe({
+        next: (serverCard) => {
+          const previousId = tempCardId;
+          this.pendingCardIds.delete(previousId);
+          if (serverCard.id !== previousId) {
+            this.replaceCardId(previousId, serverCard.id);
+          }
+          this.cardsById[serverCard.id] = {
+            ...serverCard,
+            comments: serverCard.comments ?? [],
+          };
+          const targetListId = list.id;
+          this.http
+            .post(`${this.apiBaseUrl}/lists/${targetListId}/cards`, {
+              cardId: serverCard.id,
+            })
+            .pipe(take(1))
+            .subscribe({
+              next: () => {
+                if (!list.isProcessDone) {
+                  return;
+                }
+                const completedAt = card.status.completedAt ?? new Date().toISOString();
+                this.http
+                  .patch<Card>(`${this.apiBaseUrl}/cards/${serverCard.id}`, {
+                    statusState: 'completed',
+                    completedAt,
+                  })
+                  .pipe(take(1))
+                  .subscribe({
+                    next: (updatedCard) => {
+                      this.cardsById[updatedCard.id] = {
+                        ...updatedCard,
+                        comments: updatedCard.comments ?? [],
+                      };
+                    },
+                    error: (err) => {
+                      const message = this.getErrorMessage(err, 'Unable to update card status.');
+                      this.emitToast(message, true);
+                    },
+                  });
+              },
+              error: (err) => {
+                const message = this.getErrorMessage(err, 'Unable to add card to list.');
+                const targetList = this.board?.lists.find((item) => item.id === targetListId);
+                if (targetList) {
+                  targetList.cardIds = targetList.cardIds.filter((id) => id !== serverCard.id);
+                }
+                delete this.cardsById[serverCard.id];
+                this.emitInlineError({
+                  scope: 'card-create',
+                  message,
+                  listId: targetListId,
+                  cardId: serverCard.id,
+                });
+                this.emitToast(message, true);
+                this.http.delete(`${this.apiBaseUrl}/cards/${serverCard.id}`).pipe(take(1)).subscribe({
+                  next: () => undefined,
+                  error: () => undefined,
+                });
+              },
+            });
+        },
+        error: (err) => {
+          const message = this.getErrorMessage(err, 'Unable to add card.');
+          list.cardIds = list.cardIds.filter((id) => id !== tempCardId);
+          delete this.cardsById[tempCardId];
+          this.pendingCardIds.delete(tempCardId);
+          this.emitInlineError({ scope: 'card-create', message, listId: list.id });
+          this.emitToast(message, true);
+        },
+      });
     return { success: true, card };
   }
 
@@ -515,6 +881,7 @@ export class BoardService {
       return { success: false, error };
     }
 
+    const previous = this.cloneCard(card);
     card.title = title;
     card.description = this.editingCardDescription.trim();
     card.updatedAt = new Date().toISOString();
@@ -523,6 +890,28 @@ export class BoardService {
       this.panelCardDescription = card.description;
     }
     this.cancelCardEdit();
+    this.http
+      .patch<Card>(`${this.apiBaseUrl}/cards/${card.id}`, {
+        title: card.title,
+        description: card.description,
+      })
+      .pipe(take(1))
+      .subscribe({
+        next: (serverCard) => {
+          this.cardsById[serverCard.id] = {
+            ...serverCard,
+            comments: serverCard.comments ?? [],
+          };
+        },
+        error: (err) => {
+          const message = this.getErrorMessage(err, 'Unable to save card title.');
+          this.cardsById[card.id] = previous;
+          this.panelCardTitle = previous.title;
+          this.panelCardDescription = previous.description;
+          this.emitInlineError({ scope: 'card-title', message, cardId: card.id, listId: list.id });
+          this.emitToast(message, true);
+        },
+      });
     return { success: true };
   }
 
@@ -533,13 +922,79 @@ export class BoardService {
   }
 
   removeCard(list: BoardList, card: Card): void {
+    const listIndex = list.cardIds.findIndex((item) => item === card.id);
+    const cardSnapshot = this.cloneCard(card);
+    const relationshipSnapshot = [...this.cardRelationships];
+    const relatedCommentLengths = new Map<string, number>();
+    this.cardRelationships.forEach((relationship) => {
+      if (relationship.parentCardId === card.id || relationship.childCardId === card.id) {
+        const parentCard = this.getCard(relationship.parentCardId);
+        if (parentCard && !relatedCommentLengths.has(parentCard.id)) {
+          relatedCommentLengths.set(parentCard.id, parentCard.comments.length);
+        }
+        const childCard = this.getCard(relationship.childCardId);
+        if (childCard && !relatedCommentLengths.has(childCard.id)) {
+          relatedCommentLengths.set(childCard.id, childCard.comments.length);
+        }
+      }
+    });
     list.cardIds = list.cardIds.filter((item) => item !== card.id);
     if (this.selectedCard?.cardId === card.id) {
       this.closeCardPanel();
     }
-    if (!this.isCardOnAnyBoard(card.id)) {
+    const shouldDeleteCard = !this.isCardOnAnyBoard(card.id);
+    if (shouldDeleteCard) {
       this.handleDeletedCardRelationships(card.id);
     }
+    this.http
+      .delete(`${this.apiBaseUrl}/lists/${list.id}/cards/${card.id}`)
+      .pipe(take(1))
+      .subscribe({
+        next: () => {
+          if (!shouldDeleteCard) {
+            return;
+          }
+          this.http
+            .delete(`${this.apiBaseUrl}/cards/${card.id}`)
+            .pipe(take(1))
+            .subscribe({
+              next: () => undefined,
+              error: (err) => {
+                const message = this.getErrorMessage(err, 'Unable to remove card.');
+                list.cardIds.splice(listIndex, 0, card.id);
+                this.cardsById[card.id] = cardSnapshot;
+                this.cardRelationships = relationshipSnapshot;
+                relatedCommentLengths.forEach((length, cardId) => {
+                  const relatedCard = this.getCard(cardId);
+                  if (relatedCard) {
+                    relatedCard.comments = relatedCard.comments.slice(0, length);
+                  }
+                });
+                this.emitInlineError({
+                  scope: 'card-title',
+                  message,
+                  cardId: card.id,
+                  listId: list.id,
+                });
+                this.emitToast(message, true);
+              },
+            });
+        },
+        error: (err) => {
+          const message = this.getErrorMessage(err, 'Unable to remove card.');
+          list.cardIds.splice(listIndex, 0, card.id);
+          this.cardsById[card.id] = cardSnapshot;
+          this.cardRelationships = relationshipSnapshot;
+          relatedCommentLengths.forEach((length, cardId) => {
+            const relatedCard = this.getCard(cardId);
+            if (relatedCard) {
+              relatedCard.comments = relatedCard.comments.slice(0, length);
+            }
+          });
+          this.emitInlineError({ scope: 'card-title', message, cardId: card.id, listId: list.id });
+          this.emitToast(message, true);
+        },
+      });
   }
 
   openCardPanel(list: BoardList, card: Card): void {
@@ -563,9 +1018,32 @@ export class BoardService {
       return { success: false, error };
     }
 
+    const previous = this.cloneCard(card);
     card.title = title;
     card.description = this.panelCardDescription.trim();
     card.updatedAt = new Date().toISOString();
+    this.http
+      .patch<Card>(`${this.apiBaseUrl}/cards/${card.id}`, {
+        title: card.title,
+        description: card.description,
+      })
+      .pipe(take(1))
+      .subscribe({
+        next: (serverCard) => {
+          this.cardsById[serverCard.id] = {
+            ...serverCard,
+            comments: serverCard.comments ?? [],
+          };
+        },
+        error: (err) => {
+          const message = this.getErrorMessage(err, 'Unable to save card details.');
+          this.cardsById[card.id] = previous;
+          this.panelCardTitle = previous.title;
+          this.panelCardDescription = previous.description;
+          this.emitInlineError({ scope: 'card-panel-title', message, cardId: card.id });
+          this.emitToast(message, true);
+        },
+      });
     return { success: true };
   }
 
@@ -576,8 +1054,29 @@ export class BoardService {
       return { success: false, error };
     }
 
+    const previous = this.cloneCard(card);
     card.title = title;
     card.updatedAt = new Date().toISOString();
+    this.http
+      .patch<Card>(`${this.apiBaseUrl}/cards/${card.id}`, {
+        title: card.title,
+      })
+      .pipe(take(1))
+      .subscribe({
+        next: (serverCard) => {
+          this.cardsById[serverCard.id] = {
+            ...serverCard,
+            comments: serverCard.comments ?? [],
+          };
+        },
+        error: (err) => {
+          const message = this.getErrorMessage(err, 'Unable to save card title.');
+          this.cardsById[card.id] = previous;
+          this.panelCardTitle = previous.title;
+          this.emitInlineError({ scope: 'card-panel-title', message, cardId: card.id });
+          this.emitToast(message, true);
+        },
+      });
     return { success: true };
   }
 
@@ -641,8 +1140,19 @@ export class BoardService {
     if (existingParent && existingParent.parentCardId === parentCardId) {
       return { success: false, error: 'This parent is already linked.' };
     }
+    const parentCard = this.getCard(parentCardId);
+    const childCard = this.getCard(childCardId);
+    const parentCommentsLength = parentCard?.comments.length ?? 0;
+    const childCommentsLength = childCard?.comments.length ?? 0;
     if (existingParent) {
-      this.unlinkParent(childCardId);
+      this.cardRelationships = this.cardRelationships.filter(
+        (item) =>
+          !(
+            item.childCardId === existingParent.childCardId &&
+            item.parentCardId === existingParent.parentCardId
+          ),
+      );
+      this.recordRelationshipUnlink(existingParent.parentCardId, existingParent.childCardId);
     }
     const relationship: CardRelationship = {
       childCardId,
@@ -651,6 +1161,35 @@ export class BoardService {
     };
     this.cardRelationships.push(relationship);
     this.recordRelationshipLink(parentCardId, childCardId);
+    this.http
+      .post(`${this.apiBaseUrl}/cards/${parentCardId}/relationships`, {
+        childCardId,
+      })
+      .pipe(take(1))
+      .subscribe({
+        next: () => undefined,
+        error: (err) => {
+          const message = this.getErrorMessage(err, 'Unable to link parent.');
+          this.cardRelationships = this.cardRelationships.filter(
+            (item) =>
+              !(
+                item.childCardId === relationship.childCardId &&
+                item.parentCardId === relationship.parentCardId
+              ),
+          );
+          if (existingParent) {
+            this.cardRelationships.push(existingParent);
+          }
+          if (parentCard) {
+            parentCard.comments = parentCard.comments.slice(0, parentCommentsLength);
+          }
+          if (childCard) {
+            childCard.comments = childCard.comments.slice(0, childCommentsLength);
+          }
+          this.emitInlineError({ scope: 'card-parent', message, cardId: childCardId });
+          this.emitToast(message, true);
+        },
+      });
     return { success: true, relationship };
   }
 
@@ -659,6 +1198,10 @@ export class BoardService {
     if (!relationship) {
       return { success: false, error: 'No parent link to remove.' };
     }
+    const parentCard = this.getCard(relationship.parentCardId);
+    const childCard = this.getCard(relationship.childCardId);
+    const parentCommentsLength = parentCard?.comments.length ?? 0;
+    const childCommentsLength = childCard?.comments.length ?? 0;
     this.cardRelationships = this.cardRelationships.filter(
       (item) =>
         !(
@@ -667,6 +1210,26 @@ export class BoardService {
         ),
     );
     this.recordRelationshipUnlink(relationship.parentCardId, relationship.childCardId);
+    this.http
+      .delete(
+        `${this.apiBaseUrl}/cards/${relationship.parentCardId}/relationships/${relationship.childCardId}`,
+      )
+      .pipe(take(1))
+      .subscribe({
+        next: () => undefined,
+        error: (err) => {
+          const message = this.getErrorMessage(err, 'Unable to remove parent.');
+          this.cardRelationships.push(relationship);
+          if (parentCard) {
+            parentCard.comments = parentCard.comments.slice(0, parentCommentsLength);
+          }
+          if (childCard) {
+            childCard.comments = childCard.comments.slice(0, childCommentsLength);
+          }
+          this.emitInlineError({ scope: 'card-parent', message, cardId: childCardId });
+          this.emitToast(message, true);
+        },
+      });
     return { success: true };
   }
 
@@ -677,10 +1240,32 @@ export class BoardService {
     if (!relationship) {
       return { success: false, error: 'No child link to remove.' };
     }
+    const parentCard = this.getCard(parentCardId);
+    const childCard = this.getCard(childCardId);
+    const parentCommentsLength = parentCard?.comments.length ?? 0;
+    const childCommentsLength = childCard?.comments.length ?? 0;
     this.cardRelationships = this.cardRelationships.filter(
       (item) => !(item.parentCardId === parentCardId && item.childCardId === childCardId),
     );
     this.recordRelationshipUnlink(parentCardId, childCardId);
+    this.http
+      .delete(`${this.apiBaseUrl}/cards/${parentCardId}/relationships/${childCardId}`)
+      .pipe(take(1))
+      .subscribe({
+        next: () => undefined,
+        error: (err) => {
+          const message = this.getErrorMessage(err, 'Unable to unlink child.');
+          this.cardRelationships.push(relationship);
+          if (parentCard) {
+            parentCard.comments = parentCard.comments.slice(0, parentCommentsLength);
+          }
+          if (childCard) {
+            childCard.comments = childCard.comments.slice(0, childCommentsLength);
+          }
+          this.emitInlineError({ scope: 'card-child', message, cardId: childCardId });
+          this.emitToast(message, true);
+        },
+      });
     return { success: true };
   }
 
@@ -778,6 +1363,7 @@ export class BoardService {
     }
     const existing =
       this.boardRelationships.find((item) => item.childBoardId === childBoardId) ?? null;
+    const previousRelationships = [...this.boardRelationships];
     if (!parentBoardId) {
       if (!existing) {
         return { success: true };
@@ -785,6 +1371,18 @@ export class BoardService {
       this.boardRelationships = this.boardRelationships.filter(
         (item) => item.childBoardId !== childBoardId,
       );
+      this.http
+        .delete(`${this.apiBaseUrl}/boards/${existing.parentBoardId}/relationships/${childBoardId}`)
+        .pipe(take(1))
+        .subscribe({
+          next: () => undefined,
+        error: (err) => {
+          const message = this.getErrorMessage(err, 'Unable to remove board parent.');
+          this.boardRelationships = previousRelationships;
+          this.emitInlineError({ scope: 'board-parent', message, boardId: childBoardId });
+          this.emitToast(message, true);
+        },
+      });
       return { success: true };
     }
     if (existing?.parentBoardId === parentBoardId) {
@@ -800,6 +1398,20 @@ export class BoardService {
       parentBoardId,
       createdAt: new Date().toISOString(),
     });
+    this.http
+      .post(`${this.apiBaseUrl}/boards/${parentBoardId}/relationships`, {
+        childBoardId,
+      })
+      .pipe(take(1))
+      .subscribe({
+        next: () => undefined,
+        error: (err) => {
+          const message = this.getErrorMessage(err, 'Unable to set board parent.');
+          this.boardRelationships = previousRelationships;
+          this.emitInlineError({ scope: 'board-parent', message, boardId: childBoardId });
+          this.emitToast(message, true);
+        },
+      });
     return { success: true };
   }
 
@@ -835,6 +1447,163 @@ export class BoardService {
 
   getBoardForCard(cardId: string): Board | null {
     return this.boards.find((board) => this.isCardOnBoard(cardId, board.id)) ?? null;
+  }
+
+  private emitToast(message: string, isError = false): void {
+    this.toastSubject.next({ message, isError });
+  }
+
+  private emitInlineError(event: InlineErrorEvent): void {
+    this.inlineErrorSubject.next(event);
+  }
+
+  private getErrorMessage(error: unknown, fallback: string): string {
+    if (error instanceof HttpErrorResponse) {
+      const apiMessage = error.error?.error?.message;
+      if (typeof apiMessage === 'string' && apiMessage.trim()) {
+        return apiMessage;
+      }
+    }
+    return fallback;
+  }
+
+  private cloneBoard(board: Board): Board {
+    return {
+      ...board,
+      lists: board.lists.map((list) => ({
+        ...list,
+        cardIds: [...list.cardIds],
+      })),
+    };
+  }
+
+  private cloneCard(card: Card): Card {
+    return {
+      ...card,
+      status: { ...card.status },
+      comments: card.comments.map((comment) => ({ ...comment })),
+    };
+  }
+
+  private replaceBoardId(oldId: string, nextId: string): void {
+    this.boardOrder = this.boardOrder.map((id) => (id === oldId ? nextId : id));
+    this.pinnedOrder = this.pinnedOrder.map((id) => (id === oldId ? nextId : id));
+    this.archivedOrder = this.archivedOrder.map((id) => (id === oldId ? nextId : id));
+    const lastActive = this.lastActiveAt[oldId];
+    if (lastActive) {
+      delete this.lastActiveAt[oldId];
+      this.lastActiveAt[nextId] = lastActive;
+    }
+    if (this.boardViewModes[oldId]) {
+      this.boardViewModes[nextId] = this.boardViewModes[oldId];
+      delete this.boardViewModes[oldId];
+    }
+    if (this.board?.id === oldId) {
+      this.board.id = nextId;
+    }
+  }
+
+  private replaceListId(oldId: string, nextId: string): void {
+    const value = this.newCardTitles[oldId];
+    if (value !== undefined) {
+      delete this.newCardTitles[oldId];
+      this.newCardTitles[nextId] = value;
+    }
+    if (this.editingListId === oldId) {
+      this.editingListId = nextId;
+    }
+    if (this.selectedCard?.listId === oldId) {
+      this.selectedCard.listId = nextId;
+    }
+    if (this.editingCard?.listId === oldId) {
+      this.editingCard.listId = nextId;
+    }
+  }
+
+  private replaceCardId(oldId: string, nextId: string): void {
+    const card = this.cardsById[oldId];
+    if (card) {
+      delete this.cardsById[oldId];
+      this.cardsById[nextId] = { ...card, id: nextId };
+    }
+    this.boards.forEach((board) => {
+      board.lists.forEach((list) => {
+        list.cardIds = list.cardIds.map((id) => (id === oldId ? nextId : id));
+      });
+    });
+    if (this.selectedCard?.cardId === oldId) {
+      this.selectedCard.cardId = nextId;
+    }
+    if (this.editingCard?.cardId === oldId) {
+      this.editingCard.cardId = nextId;
+    }
+  }
+
+  private restoreListOrder(board: Board, order: string[]): void {
+    const listById = new Map(board.lists.map((list) => [list.id, list]));
+    board.lists = order.map((id) => listById.get(id)).filter((item): item is BoardList => !!item);
+  }
+
+  private restoreCardOrder(list: BoardList, order: string[]): void {
+    list.cardIds = [...order];
+  }
+
+  private syncBoardFlags(
+    boardId: string,
+    previous: { pinned: boolean; archived: boolean },
+    orderSnapshot: { boardOrder: string[]; pinnedOrder: string[]; archivedOrder: string[] },
+  ): void {
+    const board = this.getBoard(boardId);
+    if (!board) {
+      return;
+    }
+    this.http
+      .patch<Board>(`${this.apiBaseUrl}/boards/${boardId}`, {
+        title: board.title,
+        description: board.description ?? '',
+        pinned: board.pinned,
+        archived: board.archived,
+        rollupsEnabled: board.rollupsEnabled ?? false,
+      })
+      .pipe(take(1))
+      .subscribe({
+        next: (serverBoard) => {
+          this.reconcileBoardFromServer(serverBoard);
+        },
+        error: (err) => {
+          const message = this.getErrorMessage(err, 'Unable to update board.');
+          board.pinned = previous.pinned;
+          board.archived = previous.archived;
+          this.boardOrder = orderSnapshot.boardOrder;
+          this.pinnedOrder = orderSnapshot.pinnedOrder;
+          this.archivedOrder = orderSnapshot.archivedOrder;
+          this.emitInlineError({ scope: 'board-settings', message, boardId });
+          this.emitToast(message, true);
+        },
+      });
+  }
+
+  private reconcileBoardFromServer(serverBoard: Board): void {
+    const boardIndex = this.boards.findIndex((item) => item.id === serverBoard.id);
+    if (boardIndex === -1) {
+      return;
+    }
+    const existing = this.boards[boardIndex];
+    serverBoard.lists.forEach((serverList, index) => {
+      const localList = existing.lists[index];
+      if (localList && localList.title === serverList.title && localList.id !== serverList.id) {
+        this.replaceListId(localList.id, serverList.id);
+      }
+    });
+    const reconciled: Board = {
+      ...existing,
+      ...serverBoard,
+      lists: serverBoard.lists.map((list) => ({ ...list, cardIds: [...list.cardIds] })),
+    };
+    this.boards[boardIndex] = reconciled;
+    if (this.board?.id === serverBoard.id) {
+      this.board = reconciled;
+    }
   }
 
   private recordRelationshipLink(parentCardId: string, childCardId: string): void {
@@ -1018,16 +1787,56 @@ export class BoardService {
       return;
     }
 
+    const previousOrder = this.board.lists.map((list) => list.id);
     moveItemInArray(this.board.lists, event.previousIndex, event.currentIndex);
+    const boardId = this.board.id;
+    const nextOrder = this.board.lists.map((list) => list.id);
+    this.http
+      .patch(`${this.apiBaseUrl}/boards/${boardId}/list-order`, { listIds: nextOrder })
+      .pipe(take(1))
+      .subscribe({
+        next: () => undefined,
+        error: (err) => {
+          const message = this.getErrorMessage(err, 'Unable to reorder lists.');
+          const board = this.getBoard(boardId);
+          if (board) {
+            this.restoreListOrder(board, previousOrder);
+          }
+          this.emitToast(message, true);
+        },
+      });
   }
 
   dropCard(event: CdkDragDrop<string[]>): void {
     if (event.previousContainer === event.container) {
+      const previousOrder = [...event.container.data];
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+      const listId = event.container.id;
+      const nextOrder = [...event.container.data];
+      this.http
+        .patch(`${this.apiBaseUrl}/lists/${listId}/card-order`, { cardIds: nextOrder })
+        .pipe(take(1))
+        .subscribe({
+          next: () => undefined,
+          error: (err) => {
+            const message = this.getErrorMessage(err, 'Unable to reorder cards.');
+            const list = this.board?.lists.find((item) => item.id === listId);
+            if (list) {
+              this.restoreCardOrder(list, previousOrder);
+            }
+            this.emitToast(message, true);
+          },
+        });
       return;
     }
 
+    const previousSourceOrder = [...event.previousContainer.data];
+    const previousTargetOrder = [...event.container.data];
     const movedCardId = event.previousContainer.data[event.previousIndex];
+    const movedCard = this.getCard(movedCardId);
+    const previousStatus = movedCard ? { ...movedCard.status } : null;
+    const previousUpdatedAt = movedCard?.updatedAt ?? null;
+    const previousCommentsLength = movedCard?.comments.length ?? 0;
     const sourceListId = event.previousContainer.id;
     const targetListId = event.container.id;
     const sourceList = this.board?.lists.find((list) => list.id === sourceListId);
@@ -1040,6 +1849,58 @@ export class BoardService {
     );
     this.recordListMoveComment(movedCardId, sourceList, targetList, this.board?.id);
     this.applyCompletionFromListMove(movedCardId, sourceList, targetList);
+    this.http
+      .delete(`${this.apiBaseUrl}/lists/${sourceListId}/cards/${movedCardId}`)
+      .pipe(take(1))
+      .subscribe({
+        next: () => {
+          this.http
+            .post(`${this.apiBaseUrl}/lists/${targetListId}/cards`, { cardId: movedCardId })
+            .pipe(take(1))
+            .subscribe({
+              next: () => {
+                this.http
+                  .patch(`${this.apiBaseUrl}/lists/${sourceListId}/card-order`, {
+                    cardIds: event.previousContainer.data,
+                  })
+                  .pipe(take(1))
+                  .subscribe({ next: () => undefined, error: () => undefined });
+                this.http
+                  .patch(`${this.apiBaseUrl}/lists/${targetListId}/card-order`, {
+                    cardIds: event.container.data,
+                  })
+                  .pipe(take(1))
+                  .subscribe({ next: () => undefined, error: () => undefined });
+              },
+              error: (err) => {
+                const message = this.getErrorMessage(err, 'Unable to move card.');
+                if (sourceList && targetList) {
+                  sourceList.cardIds = [...previousSourceOrder];
+                  targetList.cardIds = [...previousTargetOrder];
+                }
+                if (movedCard && previousStatus) {
+                  movedCard.status = previousStatus;
+                  movedCard.updatedAt = previousUpdatedAt ?? movedCard.updatedAt;
+                  movedCard.comments = movedCard.comments.slice(0, previousCommentsLength);
+                }
+                this.emitToast(message, true);
+              },
+            });
+        },
+        error: (err) => {
+          const message = this.getErrorMessage(err, 'Unable to move card.');
+          if (sourceList && targetList) {
+            sourceList.cardIds = [...previousSourceOrder];
+            targetList.cardIds = [...previousTargetOrder];
+          }
+          if (movedCard && previousStatus) {
+            movedCard.status = previousStatus;
+            movedCard.updatedAt = previousUpdatedAt ?? movedCard.updatedAt;
+            movedCard.comments = movedCard.comments.slice(0, previousCommentsLength);
+          }
+          this.emitToast(message, true);
+        },
+      });
   }
 
   moveCardToList(
@@ -1066,6 +1927,16 @@ export class BoardService {
       return { success: false, error: 'Card is not in the source list.' };
     }
 
+    const previousSourceOrder = [...sourceList.cardIds];
+    const previousTargetOrder = [...targetList.cardIds];
+    const movedCard = this.getCard(cardId);
+    const previousStatus = movedCard ? { ...movedCard.status } : null;
+    const previousUpdatedAt = movedCard?.updatedAt ?? null;
+    const previousCommentsLength = movedCard?.comments.length ?? 0;
+    const previousSelectedListId =
+      this.selectedCard?.cardId === cardId ? this.selectedCard.listId : null;
+    const previousEditingListId =
+      this.editingCard?.cardId === cardId ? this.editingCard.listId : null;
     sourceList.cardIds = sourceList.cardIds.filter((id) => id !== cardId);
     if (!targetList.cardIds.includes(cardId)) {
       targetList.cardIds.push(cardId);
@@ -1080,6 +1951,66 @@ export class BoardService {
     if (!options.skipStatus) {
       this.applyCompletionFromListMove(cardId, sourceList, targetList);
     }
+    this.http
+      .delete(`${this.apiBaseUrl}/lists/${sourceListId}/cards/${cardId}`)
+      .pipe(take(1))
+      .subscribe({
+        next: () => {
+          this.http
+            .post(`${this.apiBaseUrl}/lists/${targetListId}/cards`, { cardId })
+            .pipe(take(1))
+            .subscribe({
+              next: () => {
+                this.http
+                  .patch(`${this.apiBaseUrl}/lists/${sourceListId}/card-order`, {
+                    cardIds: sourceList.cardIds,
+                  })
+                  .pipe(take(1))
+                  .subscribe({ next: () => undefined, error: () => undefined });
+                this.http
+                  .patch(`${this.apiBaseUrl}/lists/${targetListId}/card-order`, {
+                    cardIds: targetList.cardIds,
+                  })
+                  .pipe(take(1))
+                  .subscribe({ next: () => undefined, error: () => undefined });
+              },
+              error: (err) => {
+                const message = this.getErrorMessage(err, 'Unable to move card.');
+                sourceList.cardIds = [...previousSourceOrder];
+                targetList.cardIds = [...previousTargetOrder];
+                if (movedCard && previousStatus) {
+                  movedCard.status = previousStatus;
+                  movedCard.updatedAt = previousUpdatedAt ?? movedCard.updatedAt;
+                  movedCard.comments = movedCard.comments.slice(0, previousCommentsLength);
+                }
+                if (previousSelectedListId && this.selectedCard?.cardId === cardId) {
+                  this.selectedCard.listId = previousSelectedListId;
+                }
+                if (previousEditingListId && this.editingCard?.cardId === cardId) {
+                  this.editingCard.listId = previousEditingListId;
+                }
+                this.emitToast(message, true);
+              },
+            });
+        },
+        error: (err) => {
+          const message = this.getErrorMessage(err, 'Unable to move card.');
+          sourceList.cardIds = [...previousSourceOrder];
+          targetList.cardIds = [...previousTargetOrder];
+          if (movedCard && previousStatus) {
+            movedCard.status = previousStatus;
+            movedCard.updatedAt = previousUpdatedAt ?? movedCard.updatedAt;
+            movedCard.comments = movedCard.comments.slice(0, previousCommentsLength);
+          }
+          if (previousSelectedListId && this.selectedCard?.cardId === cardId) {
+            this.selectedCard.listId = previousSelectedListId;
+          }
+          if (previousEditingListId && this.editingCard?.cardId === cardId) {
+            this.editingCard.listId = previousEditingListId;
+          }
+          this.emitToast(message, true);
+        },
+      });
     return { success: true };
   }
 
@@ -1258,6 +2189,9 @@ export class BoardService {
     if (card.status?.state === state) {
       return false;
     }
+    const previousStatus = { ...card.status };
+    const previousUpdatedAt = card.updatedAt;
+    const previousCommentsLength = card.comments.length;
     const now = new Date().toISOString();
     card.status = {
       state,
@@ -1274,6 +2208,27 @@ export class BoardService {
           ? `Card marked incomplete (moved out of${listSuffix}).`
           : 'Card marked incomplete.';
     this.addSystemComment(card.id, message, now);
+    this.http
+      .patch<Card>(`${this.apiBaseUrl}/cards/${card.id}`, {
+        statusState: state,
+        completedAt: state === 'completed' ? now : null,
+      })
+      .pipe(take(1))
+      .subscribe({
+        next: (serverCard) => {
+          this.cardsById[serverCard.id] = {
+            ...serverCard,
+            comments: serverCard.comments ?? [],
+          };
+        },
+        error: (err) => {
+          const messageText = this.getErrorMessage(err, 'Unable to update card status.');
+          card.status = previousStatus;
+          card.updatedAt = previousUpdatedAt;
+          card.comments = card.comments.slice(0, previousCommentsLength);
+          this.emitToast(messageText, true);
+        },
+      });
     return true;
   }
 

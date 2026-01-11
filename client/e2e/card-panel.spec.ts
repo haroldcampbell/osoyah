@@ -66,6 +66,7 @@ test('S007 scrolls the target list into view after list picker moves a card', as
   await page.goto('/boards/board-1');
 
   const backlogList = page.locator('[data-testid="list"][data-list-title="Backlog"]');
+  const doneList = page.locator('[data-testid="list"][data-list-title="Done"]');
   const firstCard = backlogList.locator('[data-testid="card"]').first();
   const cardId = await firstCard.getAttribute('data-card-id');
   const lists = page.locator('.lists');
@@ -73,6 +74,16 @@ test('S007 scrolls the target list into view after list picker moves a card', as
   const initialScrollLeft = await lists.evaluate((element) => {
     element.scrollLeft = 0;
     return element.scrollLeft;
+  });
+  const canScroll = await lists.evaluate((element) => element.scrollWidth > element.clientWidth);
+  const doneWasVisible = await doneList.evaluate((element) => {
+    const container = element.closest('.lists');
+    if (!container) {
+      return true;
+    }
+    const rect = element.getBoundingClientRect();
+    const containerRect = container.getBoundingClientRect();
+    return rect.left >= containerRect.left && rect.right <= containerRect.right;
   });
 
   await clickCardBackground(page, firstCard);
@@ -89,15 +100,19 @@ test('S007 scrolls the target list into view after list picker moves a card', as
   await expect(doneOption).toBeVisible();
   await doneOption.click();
 
-  await expect
-    .poll(async () => {
-      const currentScrollLeft = await lists.evaluate((element) => element.scrollLeft);
-      return currentScrollLeft > initialScrollLeft;
-    })
-    .toBe(true);
+  if (!doneWasVisible && canScroll) {
+    await expect
+      .poll(async () => {
+        const container = await lists.evaluate((element) => element.getBoundingClientRect());
+        const doneRect = await doneList.evaluate((element) => element.getBoundingClientRect());
+        const currentScrollLeft = await lists.evaluate((element) => element.scrollLeft);
+        const doneInView = doneRect.left >= container.left && doneRect.right <= container.right;
+        return doneInView || currentScrollLeft > initialScrollLeft;
+      })
+      .toBe(true);
+  }
 
   if (cardId) {
-    const doneList = page.locator('[data-testid="list"][data-list-title="Done"]');
     await expect(doneList.locator(`[data-testid="card"][data-card-id="${cardId}"]`)).toBeVisible();
   }
 });

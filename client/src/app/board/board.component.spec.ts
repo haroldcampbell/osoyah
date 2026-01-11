@@ -92,7 +92,19 @@ describe('BoardComponent', () => {
     const fixture = TestBed.createComponent(BoardComponent);
     fixture.detectChanges();
     const request = httpMock.expectOne('assets/data.json');
-    request.flush({ boards: [mockBoard], cards: mockCards });
+    const boardPayload = {
+      ...mockBoard,
+      lists: mockBoard.lists.map((list) => ({
+        ...list,
+        cardIds: [...list.cardIds],
+      })),
+    };
+    const cardsPayload = mockCards.map((card) => ({
+      ...card,
+      comments: [...card.comments],
+      status: { ...card.status },
+    }));
+    request.flush({ boards: [boardPayload], cards: cardsPayload });
     fixture.detectChanges();
     return fixture.componentInstance;
   };
@@ -117,6 +129,11 @@ describe('BoardComponent', () => {
     const boardService = TestBed.inject(BoardService);
     boardService.newListTitle = 'Review';
     boardService.addList();
+    const createList = httpMock.expectOne('/api/boards/board-1/lists');
+    createList.flush({
+      ...mockBoard,
+      lists: boardService.board?.lists ?? [],
+    });
 
     expect(boardService.board?.lists.some((list) => list.title === 'Review')).toBe(true);
   });
@@ -131,6 +148,21 @@ describe('BoardComponent', () => {
 
     component.boardService.newCardTitles[list.id] = 'New card';
     component.boardService.addCard(list);
+    const createdCardId = list.cardIds.at(-1);
+    if (!createdCardId) {
+      throw new Error('Missing new card id.');
+    }
+    const createdCard = component.boardService.getCard(createdCardId);
+    if (!createdCard) {
+      throw new Error('Missing new card data.');
+    }
+    const createCard = httpMock.expectOne('/api/cards');
+    createCard.flush({
+      ...createdCard,
+      comments: [],
+    });
+    const attachCard = httpMock.expectOne(`/api/lists/${list.id}/cards`);
+    attachCard.flush({ success: true });
 
     const newCardId = list.cardIds.find(
       (cardId) => component.boardService.getCard(cardId)?.title === 'New card',
@@ -149,6 +181,8 @@ describe('BoardComponent', () => {
     } as CdkDragDrop<BoardList[]>;
 
     component.boardService.dropList(event);
+    const reorder = httpMock.expectOne('/api/boards/board-1/list-order');
+    reorder.flush({ success: true });
 
     expect(component.boardService.board?.lists[0].title).toBe('Doing');
   });
@@ -161,18 +195,31 @@ describe('BoardComponent', () => {
     if (!sourceList || !targetList) {
       throw new Error('Missing lists');
     }
+    const movedCardId = sourceList.cardIds[0];
 
     const event = {
       previousIndex: 0,
       currentIndex: 1,
-      previousContainer: { data: sourceList.cardIds },
-      container: { data: targetList.cardIds },
+      previousContainer: { data: sourceList.cardIds, id: sourceList.id },
+      container: { data: targetList.cardIds, id: targetList.id },
     } as CdkDragDrop<string[]>;
 
     component.boardService.dropCard(event);
+    const removeCard = httpMock.match(`/api/lists/${sourceList.id}/cards/${movedCardId}`);
+    expect(removeCard.length).toBe(1);
+    removeCard[0].flush({ success: true });
+    const attachCard = httpMock.match(`/api/lists/${targetList.id}/cards`);
+    expect(attachCard.length).toBe(1);
+    attachCard[0].flush({ success: true });
+    const reorderSource = httpMock.match(`/api/lists/${sourceList.id}/card-order`);
+    expect(reorderSource.length).toBe(1);
+    reorderSource[0].flush({ success: true });
+    const reorderTarget = httpMock.match(`/api/lists/${targetList.id}/card-order`);
+    expect(reorderTarget.length).toBe(1);
+    reorderTarget[0].flush({ success: true });
 
-    expect(sourceList.cardIds.includes('card-1')).toBe(false);
-    expect(targetList.cardIds.includes('card-1')).toBe(true);
+    expect(sourceList.cardIds.includes(movedCardId)).toBe(false);
+    expect(targetList.cardIds.includes(movedCardId)).toBe(true);
   });
 
   it('loads board from route params', fakeAsync(() => {
@@ -180,7 +227,26 @@ describe('BoardComponent', () => {
     const fixture = TestBed.createComponent(BoardComponent);
     fixture.detectChanges();
     const request = httpMock.expectOne('assets/data.json');
-    request.flush({ boards: [mockBoard, mockBoardTwo], cards: mockCards });
+    const boardPayload = {
+      ...mockBoard,
+      lists: mockBoard.lists.map((list) => ({
+        ...list,
+        cardIds: [...list.cardIds],
+      })),
+    };
+    const boardTwoPayload = {
+      ...mockBoardTwo,
+      lists: mockBoardTwo.lists.map((list) => ({
+        ...list,
+        cardIds: [...list.cardIds],
+      })),
+    };
+    const cardsPayload = mockCards.map((card) => ({
+      ...card,
+      comments: [...card.comments],
+      status: { ...card.status },
+    }));
+    request.flush({ boards: [boardPayload, boardTwoPayload], cards: cardsPayload });
     tick();
     fixture.detectChanges();
 
@@ -194,7 +260,19 @@ describe('BoardComponent', () => {
     const fixture = TestBed.createComponent(BoardComponent);
     fixture.detectChanges();
     const request = httpMock.expectOne('assets/data.json');
-    request.flush({ boards: [mockBoard], cards: mockCards });
+    const boardPayload = {
+      ...mockBoard,
+      lists: mockBoard.lists.map((list) => ({
+        ...list,
+        cardIds: [...list.cardIds],
+      })),
+    };
+    const cardsPayload = mockCards.map((card) => ({
+      ...card,
+      comments: [...card.comments],
+      status: { ...card.status },
+    }));
+    request.flush({ boards: [boardPayload], cards: cardsPayload });
     tick();
     fixture.detectChanges();
 
@@ -208,7 +286,19 @@ describe('BoardComponent', () => {
     const fixture = TestBed.createComponent(BoardComponent);
     fixture.detectChanges();
     const request = httpMock.expectOne('assets/data.json');
-    request.flush({ boards: [mockBoard], cards: mockCards });
+    const boardPayload = {
+      ...mockBoard,
+      lists: mockBoard.lists.map((list) => ({
+        ...list,
+        cardIds: [...list.cardIds],
+      })),
+    };
+    const cardsPayload = mockCards.map((card) => ({
+      ...card,
+      comments: [...card.comments],
+      status: { ...card.status },
+    }));
+    request.flush({ boards: [boardPayload], cards: cardsPayload });
     tick();
     fixture.detectChanges();
 
@@ -223,7 +313,19 @@ describe('BoardComponent', () => {
     const fixture = TestBed.createComponent(BoardComponent);
     fixture.detectChanges();
     const request = httpMock.expectOne('assets/data.json');
-    request.flush({ boards: [mockBoard], cards: mockCards });
+    const boardPayload = {
+      ...mockBoard,
+      lists: mockBoard.lists.map((list) => ({
+        ...list,
+        cardIds: [...list.cardIds],
+      })),
+    };
+    const cardsPayload = mockCards.map((card) => ({
+      ...card,
+      comments: [...card.comments],
+      status: { ...card.status },
+    }));
+    request.flush({ boards: [boardPayload], cards: cardsPayload });
     tick();
     fixture.detectChanges();
 

@@ -3,13 +3,16 @@ import { CommonModule } from '@angular/common';
 import {
   AfterViewChecked,
   Component,
+  DestroyRef,
   ElementRef,
   HostListener,
   Input,
+  OnInit,
   ViewChild,
   inject,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { BoardList, Card } from '../../models/board.model';
 import { BoardCardComponent } from '../card/board-card.component';
@@ -25,14 +28,25 @@ import { BoardService } from '../../services/board.service';
     class: 'list',
   },
 })
-export class BoardListComponent implements AfterViewChecked {
+export class BoardListComponent implements AfterViewChecked, OnInit {
   @Input({ required: true }) list!: BoardList;
   readonly boardService = inject(BoardService);
+  private readonly destroyRef = inject(DestroyRef);
   @ViewChild('titleInput') titleInput?: ElementRef<HTMLInputElement>;
   @ViewChild('listMenu') listMenu?: ElementRef<HTMLDetailsElement>;
   @ViewChild('newCardInput') newCardInput?: ElementRef<HTMLInputElement>;
   private needsFocus = false;
   addCardError = '';
+
+  ngOnInit(): void {
+    this.boardService.inlineError$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((event) => {
+        if (event.scope === 'card-create' && event.listId === this.list.id) {
+          this.addCardError = event.message;
+        }
+      });
+  }
 
   get isEditingList(): boolean {
     return this.boardService.isEditingList(this.list);

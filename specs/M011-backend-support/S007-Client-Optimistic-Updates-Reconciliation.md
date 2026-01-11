@@ -17,10 +17,13 @@ Maintain fast UI feedback while ensuring client state stays consistent with back
 
 ## Definition of Done
 
--   [ ] Client updates UI immediately for board/list/card/relationship mutations.
--   [ ] Server responses reconcile local state (ids, timestamps, validation errors).
--   [ ] Failures surface user-facing feedback consistent with UX patterns.
--   [ ] Rollback behavior is defined for rejected updates.
+-   [x] Client updates UI immediately for board/list/card/relationship mutations.
+-   [x] Server responses reconcile local state (ids, timestamps, validation errors).
+-   [x] Failures surface user-facing feedback consistent with UX patterns.
+-   [x] Rollback behavior is defined for rejected updates.
+-   [ ] Acceptance tests passed
+-   [ ] Backend tests pass
+-   [ ] Client tests pass
 
 ## Acceptance tests (exact commands + expected artifacts/output)
 

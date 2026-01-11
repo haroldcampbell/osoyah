@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { Board, BoardGallerySortMode } from '../models/board.model';
 import { BoardHeaderComponent } from '../board-header/board-header.component';
@@ -21,6 +22,7 @@ export class BoardGalleryComponent implements OnInit {
   readonly boardService = inject(BoardService);
   private readonly boardGalleryState = inject(BoardGalleryStateService);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
   searchTerm = '';
   sortMode: BoardGallerySortMode = 'name-asc';
@@ -40,6 +42,13 @@ export class BoardGalleryComponent implements OnInit {
   ngOnInit(): void {
     this.boardService.loadBoard({ recordActivity: false });
     this.sortMode = this.boardGalleryState.getSortMode(this.sortMode);
+    this.boardService.inlineError$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((event) => {
+        if (event.scope === 'board-create' && event.source === 'gallery') {
+          this.createBoardError = event.message;
+        }
+      });
   }
 
   get recentBoards(): Board[] {
@@ -95,7 +104,7 @@ export class BoardGalleryComponent implements OnInit {
   }
 
   createBoard(): void {
-    const result = this.boardService.createBoard(this.newBoardTitle);
+    const result = this.boardService.createBoard(this.newBoardTitle, { source: 'gallery' });
     if (!result.success || !result.board) {
       this.createBoardError = result.error ?? 'Unable to create board.';
       return;

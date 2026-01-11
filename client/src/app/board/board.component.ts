@@ -77,6 +77,16 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
 
   ngOnInit(): void {
     this.boardService.loadBoard({ recordActivity: false });
+    this.boardService.toast$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((toast) => this.showBoardSettingsToast(toast.message, toast.isError ?? false));
+    this.boardService.inlineError$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((event) => {
+        if (event.scope === 'board-create' && event.source === 'modal') {
+          this.createBoardModalError = event.message;
+        }
+      });
     combineLatest([this.boardService.boardLoaded$, this.route.paramMap])
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(([loaded, params]) => {
@@ -203,7 +213,7 @@ export class BoardComponent implements OnInit, AfterViewChecked, AfterViewInit {
   }
 
   saveCreateBoardModal(): void {
-    const result = this.boardService.createBoard(this.createBoardModalTitle);
+    const result = this.boardService.createBoard(this.createBoardModalTitle, { source: 'modal' });
     if (!result.success || !result.board) {
       this.createBoardModalError = result.error ?? 'Unable to create board.';
       return;

@@ -21,6 +21,7 @@ Ensure the app is fully backed by the API with resilient error handling that mat
 -   [ ] Retry behavior is defined for transient failures.
 -   [ ] Error messaging uses existing UX patterns for loading and failures.
 -   [ ] Board/gallery loading states remain visible and predictable.
+-   [ ] Acceptance tests passed
 
 ## Acceptance tests (exact commands + expected artifacts/output)
 

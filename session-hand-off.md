@@ -27,6 +27,7 @@
 
 ## Entries
 
+-   2026-01-10-06-optimistic-updates-wrap.md - Optimistic updates, backend wiring, test outcomes noted
 -   2026-01-10-05-s006-relationships-env-db.md - S006 relationships, env-specific DBs, test isolation
 -   2026-01-10-04-backend-refactor-coverage.md - Coverage tooling, app runner, and backend test expansion
 -   2026-01-10-03-backend-scripts-tests.md - Backend scripts, lint/test workflow, anyio async backend fix

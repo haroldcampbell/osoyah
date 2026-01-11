@@ -7,8 +7,20 @@ test('S002 adds an existing card to another board', async ({ page }) => {
   await page.goto('/boards/board-1');
   await expect(page.locator('[data-testid="board"]')).toBeVisible();
 
+  const targetListTitle = `Attach Target ${Date.now()}`;
+  await page.goto('/boards/board-2');
+  await page.locator('[data-testid="add-list-input"]').fill(targetListTitle);
+  await page.locator('[data-testid="add-list-button"]').click();
+  await expect(
+    page.locator(`[data-testid="list"][data-list-title="${targetListTitle}"]`),
+  ).toBeVisible();
+
+  await page.goto('/boards/board-1');
   const reviewList = page.locator('[data-testid="list"][data-list-title="Review"]');
-  const targetCard = reviewList.locator('[data-testid="card"][data-card-id="card-6"]');
+  const newCardTitle = `Attach card ${Date.now()}`;
+  await reviewList.locator('[data-testid="add-card-input"]').fill(newCardTitle);
+  await reviewList.locator('[data-testid="add-card-button"]').click();
+  const targetCard = reviewList.locator('[data-testid="card"]', { hasText: newCardTitle });
   await expect(targetCard).toBeVisible();
 
   await clickCardBackground(page, targetCard);
@@ -25,12 +37,12 @@ test('S002 adds an existing card to another board', async ({ page }) => {
     'Card already on this board.',
   );
   await boardSelect.selectOption({ value: 'board-2' });
-  await expect(listSelect).toHaveValue('list-8');
+  await listSelect.selectOption({ label: targetListTitle });
 
   await expect(attachButton).toBeEnabled();
   await attachButton.click();
 
   const status = panel.locator('[data-testid="attach-status"]');
   await expect(status).toBeVisible();
-  await expect(status).toContainText('Added to Sales Pipeline / Leads.');
+  await expect(status).toContainText(`Added to Sales Pipeline / ${targetListTitle}.`);
 });

@@ -1,5 +1,6 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { inject, Injectable } from '@angular/core';
+import { DestroyRef, inject, Injectable } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { Board } from '../models/board.model';
 import { HierarchyNode, HierarchyParentOption } from '../board/board-hierarchy.types';
@@ -16,6 +17,17 @@ export class HierarchyPanelStateService {
   isNarrowViewport = window.matchMedia('(max-width: 800px)').matches;
 
   private readonly boardService = inject(BoardService);
+  private readonly destroyRef = inject(DestroyRef);
+
+  constructor() {
+    this.boardService.inlineError$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((event) => {
+        if (event.scope === 'board-parent') {
+          this.parentError = event.message;
+        }
+      });
+  }
 
   get hierarchyParentLabel(): string {
     const board = this.boardService.board;

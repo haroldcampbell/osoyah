@@ -2,16 +2,19 @@ import { CdkMenuModule } from '@angular/cdk/menu';
 import { CommonModule } from '@angular/common';
 import {
   Component,
+  DestroyRef,
   ElementRef,
   EventEmitter,
   HostListener,
   Input,
+  OnInit,
   Output,
   ViewChild,
   inject,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { Board, BoardList } from '../../models/board.model';
 import { BoardService, BoardViewMode } from '../../services/board.service';
@@ -23,7 +26,7 @@ import { BoardService, BoardViewMode } from '../../services/board.service';
   templateUrl: './board-toolbar.component.html',
   styleUrl: './board-toolbar.component.scss',
 })
-export class BoardToolbarComponent {
+export class BoardToolbarComponent implements OnInit {
   @Input() viewMode: BoardViewMode = 'cards';
   @Output() viewModeChange = new EventEmitter<BoardViewMode>();
   @Output() closePanelRequested = new EventEmitter<boolean>();
@@ -37,6 +40,7 @@ export class BoardToolbarComponent {
 
   readonly boardService = inject(BoardService);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
   boardMenuOpen = false;
   boardSearchTerm = '';
@@ -47,6 +51,21 @@ export class BoardToolbarComponent {
   boardSettingsDescription = '';
   boardSettingsRollupsEnabled = false;
   boardSettingsError = '';
+
+  ngOnInit(): void {
+    this.boardService.inlineError$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((event) => {
+        if (event.scope === 'board-create' && event.source === 'toolbar') {
+          this.createBoardError = event.message;
+        }
+        if (event.scope === 'board-settings') {
+          if (!event.boardId || event.boardId === this.boardService.board?.id) {
+            this.boardSettingsError = event.message;
+          }
+        }
+      });
+  }
 
   get filteredBoards(): Board[] {
     const term = this.boardSearchTerm.trim().toLowerCase();
@@ -96,7 +115,7 @@ export class BoardToolbarComponent {
   }
 
   createBoard(): void {
-    const result = this.boardService.createBoard(this.newBoardTitle);
+    const result = this.boardService.createBoard(this.newBoardTitle, { source: 'toolbar' });
     if (!result.success) {
       this.createBoardError = result.error ?? 'Unable to create board.';
       return;

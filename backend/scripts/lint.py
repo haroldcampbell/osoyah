@@ -24,6 +24,9 @@ def main() -> int:
     if not _require_tool("ruff") or not _require_tool("mypy"):
         return 1
 
+    base_env = os.environ.copy()
+    base_env.setdefault("OSOYAH_ENV", "test")
+
     repo_root = Path(__file__).resolve().parents[2]
     log_dir = repo_root / "backend" / "server" / "logs"
     log_dir.mkdir(parents=True, exist_ok=True)
@@ -39,9 +42,9 @@ def main() -> int:
     exit_code = 0
     with log_path.open("w", encoding="utf-8") as log_file:
         for command in commands:
-            env = None
+            env = base_env
             if command[0] == "ruff":
-                env = {**os.environ, "FORCE_COLOR": "1"}
+                env = {**base_env, "FORCE_COLOR": "1"}
             process = subprocess.Popen(
                 command,
                 cwd=repo_root,

@@ -23,6 +23,7 @@ Ensure backend responses are observable, consistent, and do not regress performa
 -   [ ] Locations for logs and artifacts are documented.
 -   [ ] Contract checks validate `guid` presence, UUID4 format, and uniqueness.
 -   [ ] SQLite query timings are captured for key endpoints (boards, snapshot).
+-   [ ] Acceptance tests passed
 
 ## Acceptance tests (exact commands + expected artifacts/output)
 

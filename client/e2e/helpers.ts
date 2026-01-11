@@ -5,15 +5,24 @@ type ClickPage = {
 };
 
 export async function clickCardBackground(page: ClickPage, card: Locator): Promise<void> {
-  await card.scrollIntoViewIfNeeded();
-  const meta = card.locator('.card-meta');
-  if (await meta.count()) {
-    await meta.first().click();
-    return;
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    try {
+      await card.scrollIntoViewIfNeeded();
+      const meta = card.locator('.card-meta');
+      if (await meta.count()) {
+        await meta.first().click();
+        return;
+      }
+      const box = await card.boundingBox();
+      if (!box) {
+        throw new Error('Card bounding box missing.');
+      }
+      await page.mouse.click(box.x + box.width / 2, box.y + box.height - 6);
+      return;
+    } catch (error) {
+      if (attempt === 1) {
+        throw error;
+      }
+    }
   }
-  const box = await card.boundingBox();
-  if (!box) {
-    throw new Error('Card bounding box missing.');
-  }
-  await page.mouse.click(box.x + box.width / 2, box.y + box.height - 6);
 }

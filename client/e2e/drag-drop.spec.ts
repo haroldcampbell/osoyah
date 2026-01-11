@@ -14,8 +14,17 @@ async function dragToCenter(
   source: Locator,
   target: Locator,
 ): Promise<void> {
-  await source.scrollIntoViewIfNeeded();
-  await target.scrollIntoViewIfNeeded();
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    try {
+      await source.scrollIntoViewIfNeeded();
+      await target.scrollIntoViewIfNeeded();
+      break;
+    } catch (error) {
+      if (attempt === 1) {
+        throw error;
+      }
+    }
+  }
   const sourceBox = await source.boundingBox();
   const targetBox = await target.boundingBox();
   if (!sourceBox || !targetBox) {
@@ -44,19 +53,14 @@ test('S006-02 supports dragging a card between lists', async ({ page }) => {
   const newCard = backlogList.locator('[data-testid="card"]', { hasText: 'Draft launch notes' });
   await expect(newCard).toBeVisible();
 
-  const newCardId = await newCard.getAttribute('data-card-id');
-  if (!newCardId) {
-    throw new Error('New card id missing after add.');
-  }
-  const newCardById = backlogList.locator(`[data-testid="card"][data-card-id="${newCardId}"]`);
-  await dragToCenter(page, newCardById, inProgressList.locator('[data-testid="card-dropzone"]'));
+  await dragToCenter(page, newCard, inProgressList.locator('[data-testid="card-dropzone"]'));
 
-  const newCardInProgress = inProgressList.locator(
-    `[data-testid="card"][data-card-id="${newCardId}"]`,
-  );
+  const newCardInProgress = inProgressList.locator('[data-testid="card"]', {
+    hasText: 'Draft launch notes',
+  });
   await expect(newCardInProgress).toBeVisible();
   await expect(
-    backlogList.locator(`[data-testid="card"][data-card-id="${newCardId}"]`),
+    backlogList.locator('[data-testid="card"]', { hasText: 'Draft launch notes' }),
   ).toHaveCount(0);
 });
 

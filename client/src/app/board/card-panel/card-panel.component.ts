@@ -2,16 +2,19 @@ import { CdkMenuModule } from '@angular/cdk/menu';
 import { CommonModule } from '@angular/common';
 import {
   Component,
+  DestroyRef,
   ElementRef,
   HostListener,
   Input,
   OnChanges,
+  OnInit,
   SimpleChanges,
   ViewChild,
   inject,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { Board, BoardList, Card, CardComment } from '../../models/board.model';
 import { BoardService } from '../../services/board.service';
@@ -24,7 +27,7 @@ import { MarkdownService } from '../../services/markdown.service';
   templateUrl: './card-panel.component.html',
   styleUrl: './card-panel.component.scss',
 })
-export class CardPanelComponent implements OnChanges {
+export class CardPanelComponent implements OnChanges, OnInit {
   @Input({ required: true }) selectedCard!: Card;
   @Input({ required: true }) selectedList!: BoardList;
   @Input() boardLists?: HTMLElement | null;
@@ -34,6 +37,7 @@ export class CardPanelComponent implements OnChanges {
   private readonly markdown = inject(MarkdownService);
   private readonly elementRef = inject(ElementRef<HTMLElement>);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
   @ViewChild('descriptionInput') descriptionInput?: ElementRef<HTMLTextAreaElement>;
   @ViewChild('descriptionView') descriptionView?: ElementRef<HTMLElement>;
   @ViewChild('panelTitleInput') panelTitleInput?: ElementRef<HTMLInputElement>;
@@ -64,6 +68,28 @@ export class CardPanelComponent implements OnChanges {
   private descriptionSaveTimeout?: number;
   private parentSearchTimeout?: number;
   private lastScrolledCardId: string | null = null;
+
+  ngOnInit(): void {
+    this.boardService.inlineError$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((event) => {
+        if (event.scope === 'card-panel-title' && event.cardId === this.selectedCard?.id) {
+          this.panelCardTitleError = event.message;
+        }
+        if (event.scope === 'card-attach' && event.cardId === this.selectedCard?.id) {
+          this.attachStatus = event.message;
+          this.attachError = true;
+        }
+        if (event.scope === 'card-parent' && event.cardId === this.selectedCard?.id) {
+          this.parentStatus = event.message;
+          this.parentError = true;
+        }
+        if (event.scope === 'card-child' && event.cardId) {
+          this.childStatus = event.message;
+          this.childError = true;
+        }
+      });
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (!changes['selectedCard']) {
@@ -441,12 +467,8 @@ export class CardPanelComponent implements OnChanges {
     }
     this.boardService.moveCardToList(card.id, currentList.id, list.id);
     this.listPickerOpen = false;
-    window.setTimeout(() => {
-      this.scrollSelectedCardIntoView(card.id);
-    }, 80);
-    window.setTimeout(() => {
-      this.scrollSelectedCardIntoView(card.id);
-    }, 160);
+    this.scrollListIntoView(list.id);
+    this.scheduleScrollToCard(card.id);
   }
 
   renderMarkdown(text: string): string {
@@ -737,6 +759,35 @@ export class CardPanelComponent implements OnChanges {
       }
     });
     return true;
+  }
+
+  private scrollListIntoView(listId: string): void {
+    const lists = this.boardLists ?? null;
+    if (!lists) {
+      return;
+    }
+    const list = lists.querySelector(`[data-testid="list"][data-list-id="${listId}"]`);
+    if (!list) {
+      return;
+    }
+    list.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  }
+
+  private scheduleScrollToCard(cardId: string): void {
+    if (!cardId) {
+      return;
+    }
+    let attempts = 0;
+    const tryScroll = () => {
+      attempts += 1;
+      if (this.scrollSelectedCardIntoView(cardId)) {
+        return;
+      }
+      if (attempts < 6) {
+        window.setTimeout(tryScroll, 120);
+      }
+    };
+    window.setTimeout(tryScroll, 60);
   }
 
   private parentMatchesTerm(card: Card, term: string): boolean {

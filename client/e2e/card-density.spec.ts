@@ -1,26 +1,74 @@
 import { expect, test } from '@playwright/test';
+import {
+	createBoardAndFetchId,
+	createCardAndAttach,
+	createListAndFetchId,
+	deleteBoard,
+	randomSuffix,
+} from './api-helpers';
+import { clickCardBackground } from './helpers';
 
 // Spec: S005 Card Density Layout
 
 test('S005 shows metadata and description indicator on cards', async ({ page }) => {
-  await page.goto('/boards/board-1');
+	const suffix = randomSuffix();
+	const boardTitle = `Card density ${suffix}`;
+	const backlogTitle = `Backlog ${suffix}`;
+	const reviewTitle = `Review ${suffix}`;
+	let boardId = '';
+	let primaryCardId = '';
+	let describedCardId = '';
+	try {
+		boardId = await createBoardAndFetchId(page.request, boardTitle);
+		const backlogListId = await createListAndFetchId(page.request, boardId, backlogTitle);
+		const reviewListId = await createListAndFetchId(page.request, boardId, reviewTitle);
+		primaryCardId = await createCardAndAttach(page.request, backlogListId, 'Primary card');
+		describedCardId = await createCardAndAttach(
+			page.request,
+			reviewListId,
+			'Described card',
+			'Card description.',
+		);
 
-  const backlogList = page.locator('[data-testid="list"][data-list-title="Backlog"]');
-  const card = backlogList.locator('[data-testid="card"][data-card-id="card-1"]');
-  await expect(card).toBeVisible();
+		await page.goto(`/boards/${boardId}`);
 
-  const comments = card.locator('[data-testid="card-meta-comments"]');
-  await expect(comments).toHaveText('5 comments');
+		const backlogList = page.locator(
+			`[data-testid="list"][data-list-title="${backlogTitle}"]`,
+		);
+		const card = backlogList.locator(
+			`[data-testid="card"][data-card-id="${primaryCardId}"]`,
+		);
+		await expect(card).toBeVisible();
 
-  const activity = card.locator('[data-testid="card-meta-activity"]');
-  await expect(activity).toBeVisible();
-  const tooltip = await activity.getAttribute('title');
-  expect(tooltip).toContain('Created:');
-  expect(tooltip).toContain('Updated:');
+		await clickCardBackground(page, card);
+		const panel = page.locator('[data-testid="card-panel"]');
+		await expect(panel).toBeVisible();
+		const commentInput = panel.locator('#card-panel-comment');
+		for (let i = 0; i < 5; i += 1) {
+			await commentInput.fill(`Comment ${i + 1}`);
+			await panel.getByRole('button', { name: 'Post comment' }).click();
+		}
+		await page.keyboard.press('Escape');
 
-  const reviewList = page.locator('[data-testid="list"][data-list-title="Review"]');
-  const markdownCard = reviewList.locator('[data-testid="card"][data-card-id="card-5"]');
-  await expect(
-    markdownCard.locator('[data-testid="card-meta-description"] .card-meta-detail-icon'),
-  ).toBeVisible();
+		const comments = card.locator('[data-testid="card-meta-comments"]');
+		await expect(comments).toHaveText('5 comments');
+
+		const activity = card.locator('[data-testid="card-meta-activity"]');
+		await expect(activity).toBeVisible();
+		const tooltip = await activity.getAttribute('title');
+		expect(tooltip).toContain('Created:');
+		expect(tooltip).toContain('Updated:');
+
+		const reviewList = page.locator(`[data-testid="list"][data-list-title="${reviewTitle}"]`);
+		const describedCard = reviewList.locator(
+			`[data-testid="card"][data-card-id="${describedCardId}"]`,
+		);
+		await expect(
+			describedCard.locator('[data-testid="card-meta-description"] .card-meta-detail-icon'),
+		).toBeVisible();
+	} finally {
+		if (boardId) {
+			await deleteBoard(page.request, boardId);
+		}
+	}
 });

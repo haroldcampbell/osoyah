@@ -82,7 +82,7 @@
           </nav>
         }
       </div>
-      @if (hierarchyPanelState.isHierarchyBoard && boardService.board.rollupsEnabled) {
+      @if (boardService.board.rollupsEnabled) {
         <app-board-hierarchy-metrics></app-board-hierarchy-metrics>
       }
 

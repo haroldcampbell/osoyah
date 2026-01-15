@@ -254,12 +254,16 @@ export class CardPanelComponent implements OnChanges, OnInit {
     return Array.from({ length: total }, (_, index) => index);
   }
 
-  handleAttachBoardChange(boardId: string): void {
+  async handleAttachBoardChange(boardId: string): Promise<void> {
     this.attachBoardId = boardId;
-    const firstListId = this.attachBoard?.lists[0]?.id ?? '';
-    this.attachListId = firstListId;
     this.attachStatus = '';
     this.attachError = false;
+    const board = await this.boardService.ensureBoardListsLoaded(boardId);
+    if (!board) {
+      this.attachListId = '';
+      return;
+    }
+    this.attachListId = board.lists[0]?.id ?? '';
   }
 
   handleAttachListChange(listId: string): void {

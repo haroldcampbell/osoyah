@@ -50,6 +50,16 @@ export interface Board {
   archived?: boolean;
 }
 
+export interface BoardSummary {
+  id: string;
+  title: string;
+  createdAt: string;
+  description?: string;
+  rollupsEnabled?: boolean;
+  pinned?: boolean;
+  archived?: boolean;
+}
+
 export type BoardGallerySortMode =
   | 'name-asc'
   | 'name-desc'
@@ -66,9 +76,13 @@ export interface BoardActivityState {
   lastOpenedAtById: Record<string, number>;
 }
 
-export interface BoardsResponse {
-  boards: Board[];
+export interface BoardSummariesResponse {
+  boards: BoardSummary[];
+}
+
+export interface BoardSnapshotResponse {
+  board: Board;
   cards: Card[];
-  cardRelationships?: CardRelationship[];
-  boardRelationships?: BoardRelationship[];
+  cardRelationships: CardRelationship[];
+  boardRelationships: BoardRelationship[];
 }

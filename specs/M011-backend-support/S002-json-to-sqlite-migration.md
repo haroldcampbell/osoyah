@@ -33,7 +33,7 @@ Provide a clear migration specification that preserves identifiers, relationship
 ## Schema mapping (JSON -> SQLite)
 
 ### Source payload
-- JSON source: `client/public/assets/data.json` with `BoardsResponse` shape.
+- JSON source: `backend/server/assets/seed-2026-01-13.json` with `BoardsResponse` shape.
 - Collections: `boards`, `cards`, `cardRelationships`, `boardRelationships`.
 
 ### Tables and constraints (proposal)
@@ -56,7 +56,7 @@ Index guidance:
 ## Migration flow (input -> transformation -> output -> verification)
 
 ### Input
-- Read `client/public/assets/data.json`.
+- Read `backend/server/assets/seed-2026-01-13.json`.
 - Validate that required arrays exist; missing arrays treated as empty.
 
 ### Transformation

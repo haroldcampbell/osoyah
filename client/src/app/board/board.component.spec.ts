@@ -12,7 +12,7 @@ import { BehaviorSubject } from 'rxjs';
 
 import { BoardComponent } from './board.component';
 import { BoardService } from '../services/board.service';
-import { Board, BoardList, Card } from '../models/board.model';
+import { Board, BoardList, BoardSummary, Card } from '../models/board.model';
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
 
 const makeCard = (id: string, title: string, description: string): Card => ({
@@ -51,6 +51,12 @@ const mockBoard: Board = {
   ],
 };
 
+const mockBoardSummary: BoardSummary = {
+  id: 'board-1',
+  title: 'Test Board',
+  createdAt: '2025-01-01T09:00:00Z',
+};
+
 const mockBoardTwo: Board = {
   id: 'board-2',
   title: 'Second Board',
@@ -64,6 +70,27 @@ const mockBoardTwo: Board = {
     },
   ],
 };
+
+const mockBoardTwoSummary: BoardSummary = {
+  id: 'board-2',
+  title: 'Second Board',
+  createdAt: '2025-01-02T09:00:00Z',
+};
+
+const cloneBoard = (board: Board): Board => ({
+  ...board,
+  lists: board.lists.map((list) => ({
+    ...list,
+    cardIds: [...list.cardIds],
+  })),
+});
+
+const cloneCards = (cards: Card[]): Card[] =>
+  cards.map((card) => ({
+    ...card,
+    comments: [...card.comments],
+    status: { ...card.status },
+  }));
 
 describe('BoardComponent', () => {
   let httpMock: HttpTestingController;
@@ -91,20 +118,15 @@ describe('BoardComponent', () => {
   const initBoard = (): BoardComponent => {
     const fixture = TestBed.createComponent(BoardComponent);
     fixture.detectChanges();
-    const request = httpMock.expectOne('assets/data.json');
-    const boardPayload = {
-      ...mockBoard,
-      lists: mockBoard.lists.map((list) => ({
-        ...list,
-        cardIds: [...list.cardIds],
-      })),
-    };
-    const cardsPayload = mockCards.map((card) => ({
-      ...card,
-      comments: [...card.comments],
-      status: { ...card.status },
-    }));
-    request.flush({ boards: [boardPayload], cards: cardsPayload });
+    const summariesRequest = httpMock.expectOne('/api/boards');
+    summariesRequest.flush({ boards: [mockBoardSummary] });
+    const snapshotRequest = httpMock.expectOne('/api/boards/board-1/snapshot');
+    snapshotRequest.flush({
+      board: cloneBoard(mockBoard),
+      cards: cloneCards(mockCards),
+      cardRelationships: [],
+      boardRelationships: [],
+    });
     fixture.detectChanges();
     return fixture.componentInstance;
   };
@@ -112,8 +134,15 @@ describe('BoardComponent', () => {
   it('renders board lists and cards from data', () => {
     const fixture = TestBed.createComponent(BoardComponent);
     fixture.detectChanges();
-    const request = httpMock.expectOne('assets/data.json');
-    request.flush({ boards: [mockBoard], cards: mockCards });
+    const summariesRequest = httpMock.expectOne('/api/boards');
+    summariesRequest.flush({ boards: [mockBoardSummary] });
+    const snapshotRequest = httpMock.expectOne('/api/boards/board-1/snapshot');
+    snapshotRequest.flush({
+      board: cloneBoard(mockBoard),
+      cards: cloneCards(mockCards),
+      cardRelationships: [],
+      boardRelationships: [],
+    });
     fixture.detectChanges();
 
     const listTitles = fixture.debugElement.queryAll(By.css('[data-testid="list-title"]'));
@@ -226,27 +255,15 @@ describe('BoardComponent', () => {
     paramMapSubject.next(convertToParamMap({ boardId: 'board-1' }));
     const fixture = TestBed.createComponent(BoardComponent);
     fixture.detectChanges();
-    const request = httpMock.expectOne('assets/data.json');
-    const boardPayload = {
-      ...mockBoard,
-      lists: mockBoard.lists.map((list) => ({
-        ...list,
-        cardIds: [...list.cardIds],
-      })),
-    };
-    const boardTwoPayload = {
-      ...mockBoardTwo,
-      lists: mockBoardTwo.lists.map((list) => ({
-        ...list,
-        cardIds: [...list.cardIds],
-      })),
-    };
-    const cardsPayload = mockCards.map((card) => ({
-      ...card,
-      comments: [...card.comments],
-      status: { ...card.status },
-    }));
-    request.flush({ boards: [boardPayload, boardTwoPayload], cards: cardsPayload });
+    const summariesRequest = httpMock.expectOne('/api/boards');
+    summariesRequest.flush({ boards: [mockBoardSummary, mockBoardTwoSummary] });
+    const snapshotRequest = httpMock.expectOne('/api/boards/board-1/snapshot');
+    snapshotRequest.flush({
+      board: cloneBoard(mockBoard),
+      cards: cloneCards(mockCards),
+      cardRelationships: [],
+      boardRelationships: [],
+    });
     tick();
     fixture.detectChanges();
 
@@ -259,20 +276,15 @@ describe('BoardComponent', () => {
     paramMapSubject.next(convertToParamMap({ boardId: 'board-1', cardId: 'card-2' }));
     const fixture = TestBed.createComponent(BoardComponent);
     fixture.detectChanges();
-    const request = httpMock.expectOne('assets/data.json');
-    const boardPayload = {
-      ...mockBoard,
-      lists: mockBoard.lists.map((list) => ({
-        ...list,
-        cardIds: [...list.cardIds],
-      })),
-    };
-    const cardsPayload = mockCards.map((card) => ({
-      ...card,
-      comments: [...card.comments],
-      status: { ...card.status },
-    }));
-    request.flush({ boards: [boardPayload], cards: cardsPayload });
+    const summariesRequest = httpMock.expectOne('/api/boards');
+    summariesRequest.flush({ boards: [mockBoardSummary] });
+    const snapshotRequest = httpMock.expectOne('/api/boards/board-1/snapshot');
+    snapshotRequest.flush({
+      board: cloneBoard(mockBoard),
+      cards: cloneCards(mockCards),
+      cardRelationships: [],
+      boardRelationships: [],
+    });
     tick();
     fixture.detectChanges();
 
@@ -285,20 +297,15 @@ describe('BoardComponent', () => {
     paramMapSubject.next(convertToParamMap({ boardId: 'board-404' }));
     const fixture = TestBed.createComponent(BoardComponent);
     fixture.detectChanges();
-    const request = httpMock.expectOne('assets/data.json');
-    const boardPayload = {
-      ...mockBoard,
-      lists: mockBoard.lists.map((list) => ({
-        ...list,
-        cardIds: [...list.cardIds],
-      })),
-    };
-    const cardsPayload = mockCards.map((card) => ({
-      ...card,
-      comments: [...card.comments],
-      status: { ...card.status },
-    }));
-    request.flush({ boards: [boardPayload], cards: cardsPayload });
+    const summariesRequest = httpMock.expectOne('/api/boards');
+    summariesRequest.flush({ boards: [mockBoardSummary] });
+    const snapshotRequest = httpMock.expectOne('/api/boards/board-1/snapshot');
+    snapshotRequest.flush({
+      board: cloneBoard(mockBoard),
+      cards: cloneCards(mockCards),
+      cardRelationships: [],
+      boardRelationships: [],
+    });
     tick();
     fixture.detectChanges();
 
@@ -312,20 +319,15 @@ describe('BoardComponent', () => {
     paramMapSubject.next(convertToParamMap({ boardId: 'board-1', cardId: 'card-404' }));
     const fixture = TestBed.createComponent(BoardComponent);
     fixture.detectChanges();
-    const request = httpMock.expectOne('assets/data.json');
-    const boardPayload = {
-      ...mockBoard,
-      lists: mockBoard.lists.map((list) => ({
-        ...list,
-        cardIds: [...list.cardIds],
-      })),
-    };
-    const cardsPayload = mockCards.map((card) => ({
-      ...card,
-      comments: [...card.comments],
-      status: { ...card.status },
-    }));
-    request.flush({ boards: [boardPayload], cards: cardsPayload });
+    const summariesRequest = httpMock.expectOne('/api/boards');
+    summariesRequest.flush({ boards: [mockBoardSummary] });
+    const snapshotRequest = httpMock.expectOne('/api/boards/board-1/snapshot');
+    snapshotRequest.flush({
+      board: cloneBoard(mockBoard),
+      cards: cloneCards(mockCards),
+      cardRelationships: [],
+      boardRelationships: [],
+    });
     tick();
     fixture.detectChanges();
 
@@ -339,12 +341,28 @@ describe('BoardComponent', () => {
     paramMapSubject.next(convertToParamMap({ boardId: 'board-1' }));
     const fixture = TestBed.createComponent(BoardComponent);
     fixture.detectChanges();
-    const request = httpMock.expectOne('assets/data.json');
-    request.flush({ boards: [mockBoard, mockBoardTwo], cards: mockCards });
+    const summariesRequest = httpMock.expectOne('/api/boards');
+    summariesRequest.flush({ boards: [mockBoardSummary, mockBoardTwoSummary] });
+    const snapshotRequest = httpMock.expectOne('/api/boards/board-1/snapshot');
+    snapshotRequest.flush({
+      board: cloneBoard(mockBoard),
+      cards: cloneCards(mockCards),
+      cardRelationships: [],
+      boardRelationships: [],
+    });
     tick();
     fixture.detectChanges();
 
     paramMapSubject.next(convertToParamMap({ boardId: 'board-2', cardId: 'card-3' }));
+    tick();
+    fixture.detectChanges();
+    const boardTwoSnapshot = httpMock.expectOne('/api/boards/board-2/snapshot');
+    boardTwoSnapshot.flush({
+      board: cloneBoard(mockBoardTwo),
+      cards: cloneCards(mockCards),
+      cardRelationships: [],
+      boardRelationships: [],
+    });
     tick();
     fixture.detectChanges();
 

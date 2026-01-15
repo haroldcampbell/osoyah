@@ -10,7 +10,7 @@
     "format:check": "prettier --check . 2>&1 | tee logs/prettier.log",
     "watch": "ng build --watch --configuration development",
     "test": "ng test --watch=false 2>&1 | tee logs/test.log",
-    "e2e": "playwright test 2>&1 | tee logs/e2e.log",
+    "e2e": "bash -c 'playwright test \"$@\" 2>&1 | tee logs/e2e.log' --",
     "e2e:report": "playwright show-report logs/playwright-report"
   },
   "private": true,

@@ -8,7 +8,7 @@ Implement backend write endpoints for boards, lists, and cards to support creati
 
 ## Goal
 
-Provide API coverage for all board/list/card mutations currently performed in the client, backed by SQLite persistence seeded from `client/public/assets/data.json` on first run.
+Provide API coverage for all board/list/card mutations currently performed in the client, backed by SQLite persistence seeded from `backend/server/assets/seed-2026-01-13.json` on first run.
 
 ## Non-goals
 

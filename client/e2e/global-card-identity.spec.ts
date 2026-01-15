@@ -1,4 +1,11 @@
 import { expect, type Locator, test } from '@playwright/test';
+import {
+	createBoardAndFetchId,
+	createCardAndAttach,
+	createListAndFetchId,
+	deleteBoard,
+	randomSuffix,
+} from './api-helpers';
 
 // Spec: S001 Global Card Identity + Board Memberships
 
@@ -43,34 +50,56 @@ async function dragToCenter(
 }
 
 test('S001 renders cards from the global store and preserves IDs on drag', async ({ page }) => {
-  await page.goto('/boards/board-1');
+	const suffix = randomSuffix();
+	const backlogTitle = `Backlog ${suffix}`;
+	const inProgressTitle = `In Progress ${suffix}`;
+	const boardTitle = `Global identity ${suffix}`;
+	let boardId = '';
+	let cardId = '';
+	try {
+		boardId = await createBoardAndFetchId(page.request, boardTitle);
+		const backlogListId = await createListAndFetchId(page.request, boardId, backlogTitle);
+		await createListAndFetchId(page.request, boardId, inProgressTitle);
+		cardId = await createCardAndAttach(page.request, backlogListId, 'Global identity card');
 
-  const backlogList = page.locator('[data-testid="list"][data-list-title="Backlog"]');
-  const inProgressList = page.locator('[data-testid="list"][data-list-title="In Progress"]');
-  const cardId = 'card-1';
+		await page.goto(`/boards/${boardId}`);
 
-  const backlogCard = backlogList.locator(`[data-testid="card"][data-card-id="${cardId}"]`);
-  const inProgressCard = inProgressList.locator(`[data-testid="card"][data-card-id="${cardId}"]`);
-  const backlogCount = await backlogCard.count();
-  const inProgressCount = await inProgressCard.count();
-  if (!backlogCount && !inProgressCount) {
-    throw new Error('Expected card-1 to exist on the board.');
-  }
+		const backlogList = page.locator(
+			`[data-testid="list"][data-list-title="${backlogTitle}"]`,
+		);
+		const inProgressList = page.locator(
+			`[data-testid="list"][data-list-title="${inProgressTitle}"]`,
+		);
 
-  let moved = inProgressCount > 0;
-  if (!moved) {
-    const dropzone = inProgressList.locator('[data-testid="card-dropzone"]');
-    for (let attempt = 0; attempt < 2; attempt += 1) {
-      await dragToCenter(page, backlogCard, dropzone);
-      const count = await inProgressCard.count();
-      if (count === 1) {
-        moved = true;
-        break;
-      }
-    }
-  }
+		const backlogCard = backlogList.locator(`[data-testid="card"][data-card-id="${cardId}"]`);
+		const inProgressCard = inProgressList.locator(
+			`[data-testid="card"][data-card-id="${cardId}"]`,
+		);
+		const backlogCount = await backlogCard.count();
+		const inProgressCount = await inProgressCard.count();
+		if (!backlogCount && !inProgressCount) {
+			throw new Error(`Expected ${cardId} to exist on the board.`);
+		}
 
-  expect(moved).toBe(true);
-  await expect(inProgressCard).toBeVisible();
-  await expect(backlogCard).toHaveCount(0);
+		let moved = inProgressCount > 0;
+		if (!moved) {
+			const dropzone = inProgressList.locator('[data-testid="card-dropzone"]');
+			for (let attempt = 0; attempt < 2; attempt += 1) {
+				await dragToCenter(page, backlogCard, dropzone);
+				const count = await inProgressCard.count();
+				if (count === 1) {
+					moved = true;
+					break;
+				}
+			}
+		}
+
+		expect(moved).toBe(true);
+		await expect(inProgressCard).toBeVisible();
+		await expect(backlogCard).toHaveCount(0);
+	} finally {
+		if (boardId) {
+			await deleteBoard(page.request, boardId);
+		}
+	}
 });

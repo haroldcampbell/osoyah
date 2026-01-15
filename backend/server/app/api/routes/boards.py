@@ -165,7 +165,7 @@ def create_board(
         created_at=now,
         pinned=False,
         archived=False,
-        rollups_enabled=True,
+        rollups_enabled=False,
     )
     session.add(board)
     session.commit()
@@ -468,7 +468,5 @@ def remove_card_from_list(
     if not list_card:
         return error_response("not_found", "Card not found on list.", 404)
     session.delete(list_card)
-    session.commit()
-    delete_orphan_cards(session, [card_id])
     session.commit()
     return {"success": True}

@@ -33,7 +33,7 @@ def get_settings() -> Settings:
     if env not in {"dev", "prod", "test"}:
         env = "dev"
     db_path = assets_dir / f"osoyah-{env}.db"
-    data_json_path = repo_root / "client" / "public" / "assets" / "data.json"
+    data_json_path = assets_dir / "seed-2026-01-13.json"
     max_depth_raw = getenv("OSOYAH_RELATIONSHIP_MAX_DEPTH", "7")
     try:
         relationship_max_depth = max(1, int(max_depth_raw))

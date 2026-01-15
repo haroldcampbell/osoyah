@@ -137,3 +137,8 @@ Running list of communication/process learnings captured after sessions.
 
 ### Backend planning conventions
 - Backend tables require a UUID4-compliant, unique `guid` column; include `guid` in API payloads and contract checks.
+
+## 2026-01-15
+
+### UI/API service separation
+- Separate UI services from API services to avoid state mutation between calls.

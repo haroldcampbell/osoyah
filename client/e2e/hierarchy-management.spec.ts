@@ -1,4 +1,11 @@
 import { expect, type Locator, test } from '@playwright/test';
+import {
+	createBoardAndFetchId,
+	createBoardRelationship,
+	createListAndFetchId,
+	deleteBoard,
+	randomSuffix,
+} from './api-helpers';
 
 // Spec: M007-S003
 
@@ -34,60 +41,92 @@ async function dragToCenter(
 }
 
 test('M007-S003 manages hierarchy parents and sibling ordering', async ({ page }) => {
-  await page.goto('/boards/board-3');
+	const suffix = randomSuffix();
+	const parentTitle = `Hierarchy parent ${suffix}`;
+	const childTitleA = `Hierarchy child A ${suffix}`;
+	const childTitleB = `Hierarchy child B ${suffix}`;
+	let parentBoardId = '';
+	let childBoardIdA = '';
+	let childBoardIdB = '';
+	try {
+		parentBoardId = await createBoardAndFetchId(page.request, parentTitle);
+		childBoardIdA = await createBoardAndFetchId(page.request, childTitleA);
+		childBoardIdB = await createBoardAndFetchId(page.request, childTitleB);
+		await createListAndFetchId(page.request, parentBoardId, `Backlog ${suffix}`);
+		await createListAndFetchId(page.request, childBoardIdA, `Backlog ${suffix}`);
+		await createListAndFetchId(page.request, childBoardIdB, `Backlog ${suffix}`);
+		await createBoardRelationship(page.request, parentBoardId, childBoardIdA);
+		await createBoardRelationship(page.request, parentBoardId, childBoardIdB);
 
-  const hierarchyToggle = page.locator('[data-testid="hierarchy-toggle"]');
-  await hierarchyToggle.click();
+		await page.goto(`/boards/${parentBoardId}`);
 
-  const hierarchyPanel = page.locator('[data-testid="hierarchy-panel"]');
-  await expect(hierarchyPanel).toBeVisible();
+		const hierarchyToggle = page.locator('[data-testid="hierarchy-toggle"]');
+		await hierarchyToggle.click();
 
-  await hierarchyPanel.locator('[data-testid="hierarchy-edit-toggle"]').click();
+		const hierarchyPanel = page.locator('[data-testid="hierarchy-panel"]');
+		await expect(hierarchyPanel).toBeVisible();
 
-  const parentButton = hierarchyPanel.locator('[data-testid="hierarchy-parent-button"]');
-  await parentButton.click();
+		await hierarchyPanel.locator('[data-testid="hierarchy-edit-toggle"]').click();
 
-  const parentMenu = hierarchyPanel.locator('[data-testid="hierarchy-parent-menu"]');
-  await expect(parentMenu).toBeVisible();
-  const selfOption = parentMenu.locator('[data-parent-board-id="board-3"]');
-  await expect(selfOption).toBeDisabled();
-  await expect(selfOption.locator('..').locator('.board-hierarchy-parent-helper')).toHaveText(
-    'Cannot parent a board to itself.',
-  );
-  await parentMenu.locator('[data-parent-board-id="root"]').click();
+		const parentButton = hierarchyPanel.locator('[data-testid="hierarchy-parent-button"]');
+		await parentButton.click();
 
-  const hierarchyTree = hierarchyPanel.locator('[data-testid="hierarchy-tree"]');
-  await expect(
-    hierarchyTree.locator('[data-testid="hierarchy-node"][data-board-id="board-3"]'),
-  ).toBeVisible();
-  await expect(
-    hierarchyTree.locator(':scope > [data-testid="hierarchy-node"][data-board-id="board-3"]'),
-  ).toHaveCount(1);
+		const parentMenu = hierarchyPanel.locator('[data-testid="hierarchy-parent-menu"]');
+		await expect(parentMenu).toBeVisible();
+		const selfOption = parentMenu.locator(`[data-parent-board-id="${parentBoardId}"]`);
+		await expect(selfOption).toBeDisabled();
+		await expect(selfOption.locator('..').locator('.board-hierarchy-parent-helper')).toHaveText(
+			'Cannot parent a board to itself.',
+		);
+		await parentMenu.locator('[data-parent-board-id="root"]').click();
 
-  const reorderList = hierarchyPanel.locator('[data-testid="hierarchy-reorder"]');
-  const reorderItems = reorderList.locator('[data-testid="hierarchy-reorder-item"]');
-  const firstChild = reorderItems.first();
-  const secondChild = reorderItems.nth(1);
+		const hierarchyTree = hierarchyPanel.locator('[data-testid="hierarchy-tree"]');
+		await expect(
+			hierarchyTree.locator(
+				`[data-testid="hierarchy-node"][data-board-id="${parentBoardId}"]`,
+			),
+		).toBeVisible();
+		await expect(
+			hierarchyTree.locator(
+				`:scope > [data-testid="hierarchy-node"][data-board-id="${parentBoardId}"]`,
+			),
+		).toHaveCount(1);
 
-  const firstChildId = await firstChild.getAttribute('data-board-id');
-  const secondChildId = await secondChild.getAttribute('data-board-id');
-  if (!firstChildId || !secondChildId) {
-    throw new Error('Hierarchy child ids missing.');
-  }
+		const reorderList = hierarchyPanel.locator('[data-testid="hierarchy-reorder"]');
+		const reorderItems = reorderList.locator('[data-testid="hierarchy-reorder-item"]');
+		const firstChild = reorderItems.first();
+		const secondChild = reorderItems.nth(1);
 
-  await dragToCenter(
-    page,
-    secondChild.locator('[data-testid="hierarchy-reorder-handle"]'),
-    firstChild,
-  );
+		const firstChildId = await firstChild.getAttribute('data-board-id');
+		const secondChildId = await secondChild.getAttribute('data-board-id');
+		if (!firstChildId || !secondChildId) {
+			throw new Error('Hierarchy child ids missing.');
+		}
 
-  const reorderedFirst = await reorderItems.first().getAttribute('data-board-id');
-  expect(reorderedFirst).toBe(secondChildId);
+		await dragToCenter(
+			page,
+			secondChild.locator('[data-testid="hierarchy-reorder-handle"]'),
+			firstChild,
+		);
 
-  const childrenContainer = hierarchyPanel.locator(
-    '[data-testid="hierarchy-children"][data-parent-board-id="board-3"]',
-  );
-  const directChildren = childrenContainer.locator(':scope > [data-testid="hierarchy-node"]');
-  const treeFirstId = await directChildren.first().getAttribute('data-board-id');
-  expect(treeFirstId).toBe(secondChildId);
+		const reorderedFirst = await reorderItems.first().getAttribute('data-board-id');
+		expect(reorderedFirst).toBe(secondChildId);
+
+		const childrenContainer = hierarchyPanel.locator(
+			`[data-testid="hierarchy-children"][data-parent-board-id="${parentBoardId}"]`,
+		);
+		const directChildren = childrenContainer.locator(':scope > [data-testid="hierarchy-node"]');
+		const treeFirstId = await directChildren.first().getAttribute('data-board-id');
+		expect(treeFirstId).toBe(secondChildId);
+	} finally {
+		if (parentBoardId) {
+			await deleteBoard(page.request, parentBoardId);
+		}
+		if (childBoardIdA) {
+			await deleteBoard(page.request, childBoardIdA);
+		}
+		if (childBoardIdB) {
+			await deleteBoard(page.request, childBoardIdB);
+		}
+	}
 });

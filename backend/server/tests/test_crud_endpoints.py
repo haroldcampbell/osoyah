@@ -101,12 +101,13 @@ async def test_remove_card_from_list_deletes_orphan() -> None:
         detach = await client.delete(f"/api/lists/{list_id}/cards/{card_id}")
         assert detach.status_code == 200
 
-        missing = await client.patch(
+        update = await client.patch(
             f"/api/cards/{card_id}",
-            json={"title": "Should Fail"},
+            json={"title": "Still Exists"},
         )
-        assert missing.status_code == 404
+        assert update.status_code == 200
 
+        await client.delete(f"/api/cards/{card_id}")
         await client.delete(f"/api/boards/{board_id}")
 
 

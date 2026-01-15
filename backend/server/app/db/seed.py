@@ -25,6 +25,7 @@ def _parse_datetime(value: str) -> datetime:
 
 
 def seed_database(session: Session, settings: Settings) -> None:
+    print(f"Seeding database at {settings.db_path} from {settings.data_json_path}")
     payload = json.loads(settings.data_json_path.read_text(encoding="utf-8"))
     boards = payload.get("boards", [])
     cards = payload.get("cards", [])

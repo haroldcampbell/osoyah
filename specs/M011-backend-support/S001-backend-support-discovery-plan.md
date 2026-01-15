@@ -42,7 +42,7 @@ Deliver a concrete plan that outlines what to build, in what order, with clear t
 
 ### Data source and loading
 
--   `client/src/app/services/board.service.ts` loads `client/public/assets/data.json` once via `HttpClient` (`dataUrl = 'assets/data.json'`).
+-   `client/src/app/services/board.service.ts` loads board data via the backend API (`/api/boards`, `/api/boards/{boardId}/snapshot`).
 -   The initial payload shape is `BoardsResponse` (`client/src/app/models/board.model.ts`), containing `boards`, `cards`, `cardRelationships`, and `boardRelationships`.
 -   `BoardService.loadBoard()` de-duplicates the initial fetch using `hasLoaded`, updates in-memory state, and emits `boardLoaded$` via a `BehaviorSubject`.
 -   Failure mode is a local error string (`error = 'Unable to load board data.'`) and `loading` toggles; no retry or backoff logic today.
@@ -192,7 +192,7 @@ Phase 0: Discovery and contract (this spec)
 Phase 1: Read-only backend parity
 
 -   Implement backend read endpoints (`GET /api/boards`, `/api/boards/{id}`, `/api/boards/{id}/snapshot`).
--   Add client feature flag or environment switch to load from backend instead of `assets/data.json`.
+-   Remove client feature flag or environment switch; client reads from backend API by default.
 -   Keep writes in-memory (no server writes yet) to reduce risk.
 
 Phase 2: Write endpoints + optimistic client updates
@@ -203,7 +203,7 @@ Phase 2: Write endpoints + optimistic client updates
 
 Phase 3: Hardening + cleanup
 
--   Remove mock data dependency.
+-   Remove mock data dependency from the client; backend seeding uses `backend/server/assets/seed-2026-01-13.json`.
 -   Add conflict/edge-case handling (duplicate ids, list membership drift).
 -   Review local-only data (gallery sort mode, last-opened timestamps) for server sync or keep as client-only.
 

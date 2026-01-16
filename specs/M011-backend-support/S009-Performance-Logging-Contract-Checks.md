@@ -1,8 +1,12 @@
 # S009-Performance + Logging + Contract Checks
 
+NOTE: THIS SPEC IS WON'T DO
+
 Conform to `docs/principles.md`.
 
 ## Summary
+
+NOTE: THIS SPEC IS WON'T DO
 
 Add baseline performance expectations, logging conventions, and contract checks for backend integration with SQLite persistence.
 

@@ -35,11 +35,12 @@ In-scope:
 -   [x] S006-Relationship Endpoints + Validation
 -   [x] S007-Client Optimistic Updates + Reconciliation
 -   [x] S008-Remove Mock Data + Retry/Error States
--   [ ] S009-Performance + Logging + Contract Checks
--   [ ] S010-Hallucination Guardrails + Source Validation
+-   [ ] ~~S009-Performance + Logging + Contract Checks~~ (Won't do)
+-   [x] S010-Hallucination Guardrails + Source Validation
 -   [ ] S011-Regression Verification Strategy
 -   [ ] S012-Data Consistency Checks
 -   [ ] S013-API Board Service Refactor
+-   [ ] S014-Process Session Hand-Off Naming
 
 ## Notes
 

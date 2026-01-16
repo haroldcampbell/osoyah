@@ -18,10 +18,10 @@ Ensure every backend plan and implementation decision is traceable to code, spec
 
 ## Definition of Done
 
--   [ ] A review checklist exists that requires file/endpoint references for each plan assertion.
--   [ ] A mapping table links planned endpoints to current frontend usage and data needs.
--   [ ] A concise "source-of-truth" rule is documented (what counts as evidence and where it must be cited).
--   [ ] The checklist clarifies how to handle unknowns (flag, defer, or add follow-up spec).
+-   [x] A review checklist exists that requires file/endpoint references for each plan assertion.
+-   [x] A mapping table links planned endpoints to current frontend usage and data needs.
+-   [x] A concise "source-of-truth" rule is documented (what counts as evidence and where it must be cited).
+-   [x] The checklist clarifies how to handle unknowns (flag, defer, or add follow-up spec).
 
 ## Acceptance tests (exact commands + expected artifacts/output)
 

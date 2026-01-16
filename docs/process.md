@@ -25,6 +25,7 @@ and focuses on how we work session-to-session.
 -   All development starts with the spec review; no coding before the
     spec is reviewed together.
 -   The first step in the spec review process requires the Agent to ask clarifying questions or making recommendations to improve the spec when necessary. The use of numbered lists is preferred.
+-   For backend planning/implementation, use `docs/guardrails-checklist.md`, keep `docs/api/endpoint-mapping.md` updated when endpoints or data needs change, and refresh `docs/api/openapi.json` via `python backend/scripts/export_openapi.py` whenever endpoints change.
 -   Keep changes minimal and aligned with `docs/principles.md`.
 -   When ambiguous, prefer existing behavior and document the choice.
 -   Once the agent confirms the spec DoDs are met, check off the spec's DoD items.

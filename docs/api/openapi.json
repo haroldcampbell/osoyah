@@ -1,0 +1,1810 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "Osoyah API",
+        "version": "0.1.0"
+    },
+    "paths": {
+        "/api/boards": {
+            "get": {
+                "summary": "List Boards",
+                "operationId": "list_boards_api_boards_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BoardSummariesResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "summary": "Create Board",
+                "operationId": "create_board_api_boards_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/BoardCreateRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Board"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/boards/{board_id}": {
+            "get": {
+                "summary": "Get Board",
+                "operationId": "get_board_api_boards__board_id__get",
+                "parameters": [
+                    {
+                        "name": "board_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Board Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Board"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "summary": "Update Board",
+                "operationId": "update_board_api_boards__board_id__patch",
+                "parameters": [
+                    {
+                        "name": "board_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Board Id"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/BoardUpdateRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Board"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete Board",
+                "operationId": "delete_board_api_boards__board_id__delete",
+                "parameters": [
+                    {
+                        "name": "board_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Board Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/boards/{board_id}/snapshot": {
+            "get": {
+                "summary": "Get Board Snapshot",
+                "operationId": "get_board_snapshot_api_boards__board_id__snapshot_get",
+                "parameters": [
+                    {
+                        "name": "board_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Board Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BoardSnapshotResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/boards/{board_id}/list-order": {
+            "patch": {
+                "summary": "Update List Order",
+                "operationId": "update_list_order_api_boards__board_id__list_order_patch",
+                "parameters": [
+                    {
+                        "name": "board_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Board Id"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ListOrderRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/boards/{board_id}/lists": {
+            "post": {
+                "summary": "Create List",
+                "operationId": "create_list_api_boards__board_id__lists_post",
+                "parameters": [
+                    {
+                        "name": "board_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Board Id"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ListCreateRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Board"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/lists/{list_id}": {
+            "patch": {
+                "summary": "Update List",
+                "operationId": "update_list_api_lists__list_id__patch",
+                "parameters": [
+                    {
+                        "name": "list_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "List Id"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ListUpdateRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Board"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete List",
+                "operationId": "delete_list_api_lists__list_id__delete",
+                "parameters": [
+                    {
+                        "name": "list_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "List Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/lists/{list_id}/card-order": {
+            "patch": {
+                "summary": "Update Card Order",
+                "operationId": "update_card_order_api_lists__list_id__card_order_patch",
+                "parameters": [
+                    {
+                        "name": "list_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "List Id"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CardOrderRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/cards": {
+            "post": {
+                "summary": "Create Card",
+                "operationId": "create_card_api_cards_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CardCreateRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Card"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/cards/{card_id}": {
+            "patch": {
+                "summary": "Update Card",
+                "operationId": "update_card_api_cards__card_id__patch",
+                "parameters": [
+                    {
+                        "name": "card_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Card Id"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CardUpdateRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Card"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete Card",
+                "operationId": "delete_card_api_cards__card_id__delete",
+                "parameters": [
+                    {
+                        "name": "card_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Card Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/lists/{list_id}/cards": {
+            "post": {
+                "summary": "Attach Card To List",
+                "operationId": "attach_card_to_list_api_lists__list_id__cards_post",
+                "parameters": [
+                    {
+                        "name": "list_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "List Id"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ListCardAttachRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/lists/{list_id}/cards/{card_id}": {
+            "delete": {
+                "summary": "Remove Card From List",
+                "operationId": "remove_card_from_list_api_lists__list_id__cards__card_id__delete",
+                "parameters": [
+                    {
+                        "name": "list_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "List Id"
+                        }
+                    },
+                    {
+                        "name": "card_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Card Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/cards/{card_id}/relationships": {
+            "post": {
+                "summary": "Create Card Relationship",
+                "operationId": "create_card_relationship_api_cards__card_id__relationships_post",
+                "parameters": [
+                    {
+                        "name": "card_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Card Id"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CardRelationshipCreateRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        },
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/cards/{card_id}/relationships/{child_card_id}": {
+            "delete": {
+                "summary": "Delete Card Relationship",
+                "operationId": "delete_card_relationship_api_cards__card_id__relationships__child_card_id__delete",
+                "parameters": [
+                    {
+                        "name": "card_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Card Id"
+                        }
+                    },
+                    {
+                        "name": "child_card_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Child Card Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/boards/{board_id}/relationships": {
+            "post": {
+                "summary": "Create Board Relationship",
+                "operationId": "create_board_relationship_api_boards__board_id__relationships_post",
+                "parameters": [
+                    {
+                        "name": "board_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Board Id"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/BoardRelationshipCreateRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        },
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/boards/{board_id}/relationships/{child_board_id}": {
+            "delete": {
+                "summary": "Delete Board Relationship",
+                "operationId": "delete_board_relationship_api_boards__board_id__relationships__child_board_id__delete",
+                "parameters": [
+                    {
+                        "name": "board_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Board Id"
+                        }
+                    },
+                    {
+                        "name": "child_board_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Child Board Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Board": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "title": "Id"
+                    },
+                    "guid": {
+                        "type": "string",
+                        "title": "Guid"
+                    },
+                    "title": {
+                        "type": "string",
+                        "title": "Title"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "title": "Createdat"
+                    },
+                    "description": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Description"
+                    },
+                    "pinned": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Pinned"
+                    },
+                    "archived": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Archived"
+                    },
+                    "rollupsEnabled": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Rollupsenabled"
+                    },
+                    "lists": {
+                        "items": {
+                            "$ref": "#/components/schemas/BoardList"
+                        },
+                        "type": "array",
+                        "title": "Lists"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "id",
+                    "guid",
+                    "title",
+                    "createdAt",
+                    "lists"
+                ],
+                "title": "Board"
+            },
+            "BoardCreateRequest": {
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "title": "Title"
+                    },
+                    "description": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Description"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "title"
+                ],
+                "title": "BoardCreateRequest"
+            },
+            "BoardList": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "title": "Id"
+                    },
+                    "guid": {
+                        "type": "string",
+                        "title": "Guid"
+                    },
+                    "title": {
+                        "type": "string",
+                        "title": "Title"
+                    },
+                    "cardIds": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "title": "Cardids"
+                    },
+                    "isProcessDone": {
+                        "type": "boolean",
+                        "title": "Isprocessdone"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "id",
+                    "guid",
+                    "title",
+                    "cardIds",
+                    "isProcessDone"
+                ],
+                "title": "BoardList"
+            },
+            "BoardRelationship": {
+                "properties": {
+                    "childBoardId": {
+                        "type": "string",
+                        "title": "Childboardid"
+                    },
+                    "parentBoardId": {
+                        "type": "string",
+                        "title": "Parentboardid"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "title": "Createdat"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "childBoardId",
+                    "parentBoardId",
+                    "createdAt"
+                ],
+                "title": "BoardRelationship"
+            },
+            "BoardRelationshipCreateRequest": {
+                "properties": {
+                    "childBoardId": {
+                        "type": "string",
+                        "title": "Childboardid"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "childBoardId"
+                ],
+                "title": "BoardRelationshipCreateRequest"
+            },
+            "BoardSnapshotResponse": {
+                "properties": {
+                    "board": {
+                        "$ref": "#/components/schemas/Board"
+                    },
+                    "cards": {
+                        "items": {
+                            "$ref": "#/components/schemas/Card"
+                        },
+                        "type": "array",
+                        "title": "Cards"
+                    },
+                    "cardRelationships": {
+                        "items": {
+                            "$ref": "#/components/schemas/CardRelationship"
+                        },
+                        "type": "array",
+                        "title": "Cardrelationships"
+                    },
+                    "boardRelationships": {
+                        "items": {
+                            "$ref": "#/components/schemas/BoardRelationship"
+                        },
+                        "type": "array",
+                        "title": "Boardrelationships"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "board",
+                    "cards",
+                    "cardRelationships",
+                    "boardRelationships"
+                ],
+                "title": "BoardSnapshotResponse"
+            },
+            "BoardSummariesResponse": {
+                "properties": {
+                    "boards": {
+                        "items": {
+                            "$ref": "#/components/schemas/BoardSummary"
+                        },
+                        "type": "array",
+                        "title": "Boards"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "boards"
+                ],
+                "title": "BoardSummariesResponse"
+            },
+            "BoardSummary": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "title": "Id"
+                    },
+                    "guid": {
+                        "type": "string",
+                        "title": "Guid"
+                    },
+                    "title": {
+                        "type": "string",
+                        "title": "Title"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "title": "Createdat"
+                    },
+                    "description": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Description"
+                    },
+                    "pinned": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Pinned"
+                    },
+                    "archived": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Archived"
+                    },
+                    "rollupsEnabled": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Rollupsenabled"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "id",
+                    "guid",
+                    "title",
+                    "createdAt"
+                ],
+                "title": "BoardSummary"
+            },
+            "BoardUpdateRequest": {
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "title": "Title"
+                    },
+                    "description": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Description"
+                    },
+                    "rollupsEnabled": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Rollupsenabled"
+                    },
+                    "pinned": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Pinned"
+                    },
+                    "archived": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Archived"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "title"
+                ],
+                "title": "BoardUpdateRequest"
+            },
+            "Card": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "title": "Id"
+                    },
+                    "guid": {
+                        "type": "string",
+                        "title": "Guid"
+                    },
+                    "title": {
+                        "type": "string",
+                        "title": "Title"
+                    },
+                    "description": {
+                        "type": "string",
+                        "title": "Description"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "title": "Createdat"
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "title": "Updatedat"
+                    },
+                    "comments": {
+                        "items": {
+                            "$ref": "#/components/schemas/CardComment"
+                        },
+                        "type": "array",
+                        "title": "Comments"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/CardStatus"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "id",
+                    "guid",
+                    "title",
+                    "description",
+                    "createdAt",
+                    "updatedAt",
+                    "comments",
+                    "status"
+                ],
+                "title": "Card"
+            },
+            "CardComment": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "title": "Id"
+                    },
+                    "guid": {
+                        "type": "string",
+                        "title": "Guid"
+                    },
+                    "message": {
+                        "type": "string",
+                        "title": "Message"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "title": "Createdat"
+                    },
+                    "authorType": {
+                        "type": "string",
+                        "enum": [
+                            "user",
+                            "system",
+                            "bot"
+                        ],
+                        "title": "Authortype"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "id",
+                    "guid",
+                    "message",
+                    "createdAt",
+                    "authorType"
+                ],
+                "title": "CardComment"
+            },
+            "CardCreateRequest": {
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "title": "Title"
+                    },
+                    "description": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Description"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "title"
+                ],
+                "title": "CardCreateRequest"
+            },
+            "CardOrderRequest": {
+                "properties": {
+                    "cardIds": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "title": "Cardids"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "cardIds"
+                ],
+                "title": "CardOrderRequest"
+            },
+            "CardRelationship": {
+                "properties": {
+                    "childCardId": {
+                        "type": "string",
+                        "title": "Childcardid"
+                    },
+                    "parentCardId": {
+                        "type": "string",
+                        "title": "Parentcardid"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "title": "Createdat"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "childCardId",
+                    "parentCardId",
+                    "createdAt"
+                ],
+                "title": "CardRelationship"
+            },
+            "CardRelationshipCreateRequest": {
+                "properties": {
+                    "childCardId": {
+                        "type": "string",
+                        "title": "Childcardid"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "childCardId"
+                ],
+                "title": "CardRelationshipCreateRequest"
+            },
+            "CardStatus": {
+                "properties": {
+                    "state": {
+                        "type": "string",
+                        "enum": [
+                            "incomplete",
+                            "completed"
+                        ],
+                        "title": "State"
+                    },
+                    "completedAt": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Completedat"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "state"
+                ],
+                "title": "CardStatus"
+            },
+            "CardUpdateRequest": {
+                "properties": {
+                    "title": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Title"
+                    },
+                    "description": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Description"
+                    },
+                    "statusState": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "enum": [
+                                    "incomplete",
+                                    "completed"
+                                ]
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Statusstate"
+                    },
+                    "completedAt": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Completedat"
+                    }
+                },
+                "type": "object",
+                "title": "CardUpdateRequest"
+            },
+            "ErrorDetail": {
+                "properties": {
+                    "code": {
+                        "type": "string",
+                        "title": "Code"
+                    },
+                    "message": {
+                        "type": "string",
+                        "title": "Message"
+                    },
+                    "details": {
+                        "additionalProperties": true,
+                        "type": "object",
+                        "title": "Details"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "code",
+                    "message"
+                ],
+                "title": "ErrorDetail"
+            },
+            "ErrorResponse": {
+                "properties": {
+                    "error": {
+                        "$ref": "#/components/schemas/ErrorDetail"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "error"
+                ],
+                "title": "ErrorResponse"
+            },
+            "HTTPValidationError": {
+                "properties": {
+                    "detail": {
+                        "items": {
+                            "$ref": "#/components/schemas/ValidationError"
+                        },
+                        "type": "array",
+                        "title": "Detail"
+                    }
+                },
+                "type": "object",
+                "title": "HTTPValidationError"
+            },
+            "ListCardAttachRequest": {
+                "properties": {
+                    "cardId": {
+                        "type": "string",
+                        "title": "Cardid"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "cardId"
+                ],
+                "title": "ListCardAttachRequest"
+            },
+            "ListCreateRequest": {
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "title": "Title"
+                    },
+                    "isProcessDone": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Isprocessdone"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "title"
+                ],
+                "title": "ListCreateRequest"
+            },
+            "ListOrderRequest": {
+                "properties": {
+                    "listIds": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "title": "Listids"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "listIds"
+                ],
+                "title": "ListOrderRequest"
+            },
+            "ListUpdateRequest": {
+                "properties": {
+                    "title": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Title"
+                    },
+                    "isProcessDone": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Isprocessdone"
+                    }
+                },
+                "type": "object",
+                "title": "ListUpdateRequest"
+            },
+            "ValidationError": {
+                "properties": {
+                    "loc": {
+                        "items": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                }
+                            ]
+                        },
+                        "type": "array",
+                        "title": "Location"
+                    },
+                    "msg": {
+                        "type": "string",
+                        "title": "Message"
+                    },
+                    "type": {
+                        "type": "string",
+                        "title": "Error Type"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "loc",
+                    "msg",
+                    "type"
+                ],
+                "title": "ValidationError"
+            }
+        }
+    }
+}

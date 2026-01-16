@@ -37,6 +37,10 @@ Current active decisions, consolidated from session hand-offs. When a decision c
 -   Relationship tables do not add standalone `guid` values unless relationships become first-class entities (metadata, audit, or comments).
 -   Use separate SQLite databases per environment: `osoyah-dev.db`, `osoyah-test.db`, `osoyah-prod.db`. Tests must only write to `osoyah-test.db`.
 
+## API documentation
+
+-   `docs/api/openapi.json` is the canonical API contract and is refreshed via `python backend/scripts/export_openapi.py`.
+
 ## Tooling
 
 -   Prefer Python scripts over bash/shell scripts for developer tooling.

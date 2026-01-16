@@ -27,6 +27,7 @@
 
 ## Entries
 
+-   2026-01-16-01-api-openapi-docs.md - API output examples, OpenAPI export script, canonical contract decision
 -   2026-01-15-01-e2e-isolation-wrap.md - E2E isolation refactor, rollup defaults, parallel flakiness noted
 -   2026-01-10-06-optimistic-updates-wrap.md - Optimistic updates, backend wiring, test outcomes noted
 -   2026-01-10-05-s006-relationships-env-db.md - S006 relationships, env-specific DBs, test isolation

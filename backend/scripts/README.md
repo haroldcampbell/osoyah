@@ -61,3 +61,17 @@ Usage:
 ```bash
 python backend/scripts/coverage.py
 ```
+
+## `export_openapi.py`
+
+Fetches the FastAPI OpenAPI schema and writes it to `docs/api/openapi.json`.
+
+Usage:
+```bash
+python backend/scripts/export_openapi.py
+```
+
+Specify a custom URL if needed:
+```bash
+python backend/scripts/export_openapi.py --url http://127.0.0.1:9876/openapi.json
+```
